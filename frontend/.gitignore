@@ -1,0 +1,85 @@
+# ==========================
+# Python
+# ==========================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Flask
+instance/
+.pytest_cache/
+
+# ==========================
+# Environment Variables
+# ==========================
+
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Logs
+# ==========================
+
+*.log
+logs/
+
+# ==========================
+# Database
+# ==========================
+
+*.db
+*.sqlite3
+
+# ==========================
+# Node
+# ==========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite
+dist/
+.vite/
+
+# ==========================
+# IDE
+# ==========================
+
+.vscode/
+.idea/
+
+# ==========================
+# OS
+# ==========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================
+# Build
+# ==========================
+
+build/
+coverage/
+
+# ==========================
+# Misc
+# ==========================
+
+*.tmp
+*.temp
