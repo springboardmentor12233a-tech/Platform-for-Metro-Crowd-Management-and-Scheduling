@@ -1,0 +1,9 @@
+# Ignore datasets
+backend/datasets/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
