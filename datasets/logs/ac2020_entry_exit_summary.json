@@ -1,0 +1,23 @@
+{
+  "dataset": "ac2020_entry_exit",
+  "run_started": "2026-07-07T19:26:04",
+  "input_rows": 458,
+  "input_cols": 15,
+  "output_rows": 426,
+  "output_cols": 17,
+  "duplicates_removed": 32,
+  "missing_values_handled": {
+    "coverage": "filled 2 with Unknown",
+    "source": "filled 2 with Unknown"
+  },
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "nlc:numeric"
+  ],
+  "outliers_detected": {
+    "nlc": 85
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\ac2020_entry_exit_preprocessed.csv",
+  "warnings": [],
+  "run_finished": "2026-07-07T19:26:04"
+}

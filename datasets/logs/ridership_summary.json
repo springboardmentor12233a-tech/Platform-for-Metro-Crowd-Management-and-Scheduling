@@ -1,0 +1,30 @@
+{
+  "dataset": "ridership",
+  "run_started": "2026-07-07T19:26:02",
+  "input_rows": 12,
+  "input_cols": 5,
+  "output_rows": 9,
+  "output_cols": 11,
+  "duplicates_removed": 0,
+  "missing_values_handled": {
+    "ridership": "filled 3 with median",
+    "operational_route_km": "filled 3 with median",
+    "rolling_stock_num_cars": "filled 3 with median",
+    "start_year": "dropped 3 rows"
+  },
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "year:start_year",
+    "ridership:numeric",
+    "operational_route_km:numeric",
+    "rolling_stock_num_cars:numeric"
+  ],
+  "outliers_detected": {
+    "ridership": 1,
+    "operational_route_km": 0,
+    "rolling_stock_num_cars": 0
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\ridership_preprocessed.csv",
+  "warnings": [],
+  "run_finished": "2026-07-07T19:26:02"
+}

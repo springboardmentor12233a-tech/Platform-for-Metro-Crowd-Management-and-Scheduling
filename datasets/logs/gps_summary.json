@@ -1,0 +1,25 @@
+{
+  "dataset": "gps",
+  "run_started": "2026-07-07T19:26:02",
+  "input_rows": 285,
+  "input_cols": 8,
+  "output_rows": 49,
+  "output_cols": 11,
+  "duplicates_removed": 236,
+  "missing_values_handled": {},
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "station_id:numeric",
+    "distance_from_start_km:numeric",
+    "latitude:numeric",
+    "longitude:numeric",
+    "opening_date:datetime"
+  ],
+  "outliers_detected": {
+    "invalid_coordinates": 1,
+    "distance_from_start_km": 0
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\gps_preprocessed.csv",
+  "warnings": [],
+  "run_finished": "2026-07-07T19:26:02"
+}

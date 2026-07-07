@@ -1,0 +1,42 @@
+{
+  "dataset": "sensor",
+  "run_started": "2026-07-07T19:26:11",
+  "input_rows": 1516948,
+  "input_cols": 17,
+  "output_rows": 1516948,
+  "output_cols": 28,
+  "duplicates_removed": 0,
+  "missing_values_handled": {},
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "timestamp:datetime",
+    "source_row_id:numeric",
+    "tp2:numeric",
+    "tp3:numeric",
+    "h1:numeric",
+    "dv_pressure:numeric",
+    "reservoirs:numeric",
+    "oil_temperature:numeric",
+    "motor_current:numeric",
+    "comp:numeric",
+    "dv_eletric:numeric",
+    "towers:numeric",
+    "mpg:numeric",
+    "lps:numeric",
+    "pressure_switch:numeric",
+    "oil_level:numeric",
+    "caudal_impulses:numeric"
+  ],
+  "outliers_detected": {
+    "tp2": 269592,
+    "tp3": 4518,
+    "h1": 241327,
+    "dv_pressure": 113111,
+    "reservoirs": 4526,
+    "oil_temperature": 5194,
+    "motor_current": 0
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\sensor_preprocessed.csv",
+  "warnings": [],
+  "run_finished": "2026-07-07T19:26:51"
+}

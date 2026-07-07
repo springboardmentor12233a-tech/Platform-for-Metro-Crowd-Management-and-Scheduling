@@ -1,0 +1,40 @@
+{
+  "dataset": "delay",
+  "run_started": "2026-07-07T19:26:02",
+  "input_rows": 2000,
+  "input_cols": 24,
+  "output_rows": 2000,
+  "output_cols": 36,
+  "duplicates_removed": 0,
+  "missing_values_handled": {
+    "event_type": "filled 1173 with Unknown"
+  },
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "date:datetime",
+    "actual_departure_delay_min:numeric",
+    "actual_arrival_delay_min:numeric",
+    "temperature_c:numeric",
+    "humidity_percent:numeric",
+    "wind_speed_kmh:numeric",
+    "precipitation_mm:numeric",
+    "event_attendance_est:numeric",
+    "traffic_congestion_index:numeric",
+    "holiday:numeric",
+    "peak_hour:numeric",
+    "weekday:numeric",
+    "delayed:numeric",
+    "time:time_minutes",
+    "scheduled_departure:time_minutes",
+    "scheduled_arrival:time_minutes"
+  ],
+  "outliers_detected": {
+    "actual_departure_delay_min": 0,
+    "actual_arrival_delay_min": 0,
+    "event_attendance_est": 393,
+    "traffic_congestion_index": 0
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\delay_preprocessed.csv",
+  "warnings": [],
+  "run_finished": "2026-07-07T19:26:02"
+}

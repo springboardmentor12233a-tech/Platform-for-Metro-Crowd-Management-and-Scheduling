@@ -1,0 +1,44 @@
+{
+  "dataset": "trains",
+  "run_started": "2026-07-07T19:26:05",
+  "input_rows": 5208,
+  "input_cols": 27,
+  "output_rows": 5208,
+  "output_cols": 41,
+  "duplicates_removed": 0,
+  "missing_values_handled": {
+    "duration_m": "filled 15 with median",
+    "duration_h": "filled 15 with median"
+  },
+  "invalid_rows_removed": 0,
+  "columns_converted": [
+    "duration_m:numeric",
+    "duration_h:numeric",
+    "distance:numeric",
+    "num_route_coords:numeric",
+    "origin_lon:numeric",
+    "origin_lat:numeric",
+    "dest_lon:numeric",
+    "dest_lat:numeric",
+    "third_ac:numeric",
+    "chair_car:numeric",
+    "first_class:numeric",
+    "sleeper:numeric",
+    "second_ac:numeric",
+    "first_ac:numeric",
+    "departure:time_minutes",
+    "arrival:time_minutes"
+  ],
+  "outliers_detected": {
+    "invalid_coordinates": 0,
+    "duration_m": 0,
+    "route_distance_km": 644,
+    "avg_speed_kmh": 498,
+    "num_route_coords": 576
+  },
+  "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\trains_preprocessed.csv",
+  "warnings": [
+    "2774 train speed values outside [5,300] km/h flagged"
+  ],
+  "run_finished": "2026-07-07T19:26:05"
+}
