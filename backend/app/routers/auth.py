@@ -21,10 +21,7 @@ router = APIRouter(
     tags=["Authentication"],
 )
 
-
-# ---------------------------
 # Register User
-# ---------------------------
 @router.post("/register")
 def register(
     request: UserCreate,
@@ -57,10 +54,7 @@ def register(
         "message": "User registered successfully"
     }
 
-
-# ---------------------------
 # Login User
-# ---------------------------
 @router.post("/login")
 def login(
     request: LoginRequest,

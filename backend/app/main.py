@@ -18,9 +18,7 @@ app = FastAPI(
     description="AI Metro Crowd Management and Scheduling Platform",
 )
 
-# -------------------------
 # CORS Configuration
-# -------------------------
 
 origins = [
     "http://localhost:5173",
@@ -34,17 +32,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------------
 # Register Routers
-# -------------------------
 
 app.include_router(auth.router)
 app.include_router(station.router)
 app.include_router(passenger_flow.router)
 app.include_router(dashboard.router)
-# -------------------------
+
 # Root Endpoint
-# -------------------------
 
 @app.get("/")
 def root():
@@ -53,9 +48,7 @@ def root():
         "status": "Running"
     }
 
-# -------------------------
 # Health Check
-# -------------------------
 
 @app.get("/health")
 def health():

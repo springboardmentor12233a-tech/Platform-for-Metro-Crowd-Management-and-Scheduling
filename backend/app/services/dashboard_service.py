@@ -4,10 +4,8 @@ from sqlalchemy.orm import Session
 from app.models.trip_record import TripRecord
 from app.models.station import Station
 
-
-# -----------------------------------
 # Dashboard Summary
-# -----------------------------------
+
 def get_dashboard_summary(db: Session):
     total_passengers = (
         db.query(func.sum(TripRecord.passengers))
@@ -36,10 +34,8 @@ def get_dashboard_summary(db: Session):
         "total_revenue": round(float(total_revenue), 2),
     }
 
-
-# -----------------------------------
 # Top 5 Busiest Stations
-# -----------------------------------
+
 def get_busiest_stations(db: Session):
     stations = (
         db.query(
@@ -61,9 +57,7 @@ def get_busiest_stations(db: Session):
     ]
 
 
-# -----------------------------------
 # Passenger Trend (Monthly)
-# -----------------------------------
 def get_passenger_trend(db: Session):
     month = func.to_char(
         func.to_date(TripRecord.trip_date, "YYYY-MM-DD"),
@@ -88,10 +82,8 @@ def get_passenger_trend(db: Session):
         for m, passengers in trend
     ]
 
-
-# -----------------------------------
 # Ticket Type Distribution
-# -----------------------------------
+
 def get_ticket_distribution(db: Session):
     ticket_data = (
         db.query(
@@ -111,9 +103,8 @@ def get_ticket_distribution(db: Session):
     ]
 
 
-# -----------------------------------
 # Revenue Analysis (Monthly)
-# -----------------------------------
+
 def get_revenue_analysis(db: Session):
     month = func.to_char(
         func.to_date(TripRecord.trip_date, "YYYY-MM-DD"),
@@ -138,10 +129,8 @@ def get_revenue_analysis(db: Session):
         for m, total in revenue
     ]
 
-
-# -----------------------------------
 # Top Routes
-# -----------------------------------
+
 def get_top_routes(db: Session):
     routes = (
         db.query(
