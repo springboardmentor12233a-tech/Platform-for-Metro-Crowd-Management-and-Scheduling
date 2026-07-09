@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroFlow: AI Metro Crowd Management</title>
+    <!-- Tailwind CSS for Modern Premium Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-blue:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        /* Custom Animations */
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col">
+
+    <!-- LOGIN CONTAINER -->
+    <div id="login-container" class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600/20 text-blue-400 mb-4 text-3xl">
+                    <i class="fa-solid fa-train-subway"></i>
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight text-white">MetroFlow</h1>
+                <p class="text-slate-400 mt-2">AI Metro Crowd Management & Scheduling</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300">Username</label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="username" required 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="admin / operator">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300">Password</label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="password" required
+                            class="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-400 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+                    <p class="font-semibold mb-1 text-slate-300">Demo Logins (SQL Database):</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Admin: <code class="text-blue-300">admin</code> / <code class="text-blue-300">adminpassword</code></li>
+                        <li>Operator: <code class="text-blue-300">operator</code> / <code class="text-blue-300">operatorpassword</code></li>
+                    </ul>
+                </div>
+
+                <div id="login-error" class="hidden text-red-400 text-sm text-center font-medium"></div>
+
+                <button type="submit" 
+                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 active:scale-95">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD (HIDDEN BY DEFAULT) -->
+    <div id="dashboard-container" class="hidden flex-grow flex flex-col">
+        <!-- Header -->
+        <header class="glass-panel border-b border-slate-800 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="text-blue-500 text-2xl"><i class="fa-solid fa-train-subway"></i></span>
+                    <span class="text-xl font-bold tracking-wider text-white">MetroFlow</span>
+                    <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20 font-semibold uppercase tracking-wider">AI Operations</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-right">
+                        <div id="user-display-name" class="font-semibold text-white">Guest User</div>
+                        <div id="user-display-role" class="text-xs text-slate-400 capitalize">Operator</div>
+                    </div>
+                    <button id="logout-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 transition-all text-sm font-semibold">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="max-w-7xl mx-auto w-full px-6 py-8 flex-grow space-y-8">
+            
+            <!-- Summary Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-blue-500">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Daily Entries</p>
+                        <h3 id="stat-total-entries" class="text-3xl font-bold mt-2 text-white">-</h3>
+                    </div>
+                    <div class="text-blue-400 text-3xl opacity-80"><i class="fa-solid fa-right-to-bracket"></i></div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-emerald-500">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Daily Exits</p>
+                        <h3 id="stat-total-exits" class="text-3xl font-bold mt-2 text-white">-</h3>
+                    </div>
+                    <div class="text-emerald-400 text-3xl opacity-80"><i class="fa-solid fa-right-from-bracket"></i></div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-violet-500">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Avg Hourly Flow</p>
+                        <h3 id="stat-avg-entries" class="text-3xl font-bold mt-2 text-white">-</h3>
+                    </div>
+                    <div class="text-violet-400 text-3xl opacity-80"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-rose-500">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">System Status</p>
+                        <h3 class="text-xl font-bold mt-2 text-emerald-400 flex items-center">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                            Healthy
+                        </h3>
+                    </div>
+                    <div class="text-rose-400 text-3xl opacity-80"><i class="fa-solid fa-shield-halved"></i></div>
+                </div>
+            </div>
+
+            <!-- Main Layout Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Live Passenger Flow Table & Controls (Left Column) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Live Tracker Table -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Live Station Density Tracker</h2>
+                                <p class="text-xs text-slate-400 mt-1">Real-time inflows & outflows from database sensors</p>
+                            </div>
+                            <button id="refresh-summary-btn" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition-all">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-slate-400 text-xs uppercase border-b border-slate-800">
+                                        <th class="py-3 px-4 font-semibold">Station Name</th>
+                                        <th class="py-3 px-4 font-semibold">Metro Line</th>
+                                        <th class="py-3 px-4 font-semibold text-center">Entries</th>
+                                        <th class="py-3 px-4 font-semibold text-center">Exits</th>
+                                        <th class="py-3 px-4 font-semibold text-center">Net Flow</th>
+                                        <th class="py-3 px-4 font-semibold text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crowd-table-body" class="divide-y divide-slate-800/60 text-sm">
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-slate-500">Loading live database records...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Operator Mitigation Controls (Visible only to Operator role) -->
+                    <div id="operator-controls" class="hidden glass-panel p-6 rounded-2xl space-y-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-screwdriver-wrench mr-2 text-indigo-400"></i>
+                            Operator Mitigation Controls
+                        </h2>
+                        <p class="text-xs text-slate-400">Deploy supplementary train capacity or schedule overrides for active congestion zones.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                            <button id="dispatch-train-btn" class="p-4 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 hover:text-white rounded-xl border border-indigo-500/20 text-sm font-semibold transition-all flex flex-col items-center justify-center space-y-2 active:scale-95">
+                                <i class="fa-solid fa-train text-xl"></i>
+                                <span>Dispatch Extra Train</span>
+                            </button>
+                            <button id="bypass-station-btn" class="p-4 bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 hover:text-white rounded-xl border border-amber-500/20 text-sm font-semibold transition-all flex flex-col items-center justify-center space-y-2 active:scale-95">
+                                <i class="fa-solid fa-ban text-xl"></i>
+                                <span>Set Station Bypass</span>
+                            </button>
+                            <button id="broadcast-alert-btn" class="p-4 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 hover:text-white rounded-xl border border-rose-500/20 text-sm font-semibold transition-all flex flex-col items-center justify-center space-y-2 active:scale-95">
+                                <i class="fa-solid fa-bullhorn text-xl"></i>
+                                <span>Broadcast Rider Notice</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Admin User Management (Visible only to Admin role) -->
+                    <div id="admin-controls" class="hidden glass-panel p-6 rounded-2xl space-y-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-users-gear mr-2 text-blue-400"></i>
+                            System Operators Directory
+                        </h2>
+                        <p class="text-xs text-slate-400">Review registered operators, operational emails, and role-based permissions in the SQLite database.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse mt-2">
+                                <thead>
+                                    <tr class="text-slate-400 text-xs uppercase border-b border-slate-800">
+                                        <th class="py-2 px-3 font-semibold">Name</th>
+                                        <th class="py-2 px-3 font-semibold">Username</th>
+                                        <th class="py-2 px-3 font-semibold">Email</th>
+                                        <th class="py-2 px-3 font-semibold">Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="operators-list-body" class="divide-y divide-slate-800/40 text-xs text-slate-300">
+                                    <!-- Populated via admin endpoint -->
+                                    <tr>
+                                        <td colspan="4" class="py-4 text-center text-slate-500">Loading operator directory...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Congestion Alerts & Density Summary (Right Column) -->
+                <div class="space-y-6">
+                    <!-- Real-time Active Alerts -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Congestion Alerts</h2>
+                                <p class="text-xs text-slate-400 mt-1">Live automated density notifications</p>
+                            </div>
+                            <span id="alerts-count" class="px-2.5 py-0.5 text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-full animate-pulse-soft">0 Active</span>
+                        </div>
+                        
+                        <!-- Alerts Feed -->
+                        <div id="alerts-feed" class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                            <p class="text-center text-slate-500 py-6 text-sm">No active congestion alerts</p>
+                        </div>
+                    </div>
+
+                    <!-- Density Summary Card -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Station Density Summary</h2>
+                            <p class="text-xs text-slate-400 mt-1">Ranked by total entries in current snapshot</p>
+                        </div>
+
+                        <!-- Busiest Stations List -->
+                        <div id="busiest-stations-list" class="space-y-4">
+                            <p class="text-center text-slate-500 py-4 text-sm">Loading insights...</p>
+                        </div>
+
+                        <div class="bg-blue-500/5 p-4 rounded-xl border border-blue-500/10 text-xs text-slate-400 space-y-2">
+                            <p class="font-semibold text-blue-400"><i class="fa-solid fa-lightbulb mr-2"></i>AI Operator Insight:</p>
+                            <p>Congestion levels are calculated automatically using entry rates. Red highlights identify stations experiencing peak-hour loads requiring potential train frequency adjustments.</p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Core App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
