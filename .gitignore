@@ -57,7 +57,7 @@ htmlcov/
 
 # Env files (Backend)
 .env
-.env.*
+.env
 
 # Databases
 *.sqlite
