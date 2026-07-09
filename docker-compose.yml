@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: metroflow_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: metroflow
+      POSTGRES_USER: metroflow_user
+      POSTGRES_PASSWORD: metroflow_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - metroflow_pgdata:/var/lib/postgresql/data
+
+volumes:
+  metroflow_pgdata:
