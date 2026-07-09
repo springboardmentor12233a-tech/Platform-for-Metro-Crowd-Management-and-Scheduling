@@ -42,12 +42,12 @@ MetroFlow is an AI-powered platform designed to help metro authorities modernize
 
 | Module | Description | Status |
 |--------|-------------|--------|
-| **User Management** | Admin/operator login, role-based access, profiles | 🔲 Not Started |
-| **Crowd Monitoring** | Passenger density tracking, heatmaps, station congestion | 🔲 Not Started |
-| **Scheduling Management** | Dynamic train scheduling, frequency adjustments, delay handling | 🔲 Not Started |
-| **AI Prediction** | Demand forecasting, crowd prediction, traffic pattern analysis | 🔲 Not Started |
-| **Alert & Notification** | Overcrowding alerts, delay notifications, emergency announcements | 🔲 Not Started |
-| **Analytics Dashboard** | Passenger traffic reports, station performance, operational KPIs | 🔲 Not Started |
+| **User Management** | Admin/operator login, role-based access, profiles |  In Progress |
+| **Crowd Monitoring** | Passenger density tracking, heatmaps, station congestion |  Not Started |
+| **Scheduling Management** | Dynamic train scheduling, frequency adjustments, delay handling |  Not Started |
+| **AI Prediction** | Demand forecasting, crowd prediction, traffic pattern analysis |  Not Started |
+| **Alert & Notification** | Overcrowding alerts, delay notifications, emergency announcements |  Not Started |
+| **Analytics Dashboard** | Passenger traffic reports, station performance, operational KPIs |  Not Started |
 
 ---
 
