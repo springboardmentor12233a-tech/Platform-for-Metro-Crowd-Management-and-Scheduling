@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+.next/
+.npm
+
+# Large files (don't commit PassengerDemandForecast - it's too big)
+data/PassengerDemandForecast.csv
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
