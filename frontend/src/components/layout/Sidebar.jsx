@@ -126,7 +126,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             `}
           >
             <h1 className="text-3xl font-bold whitespace-nowrap">
-              MetroFlow
+              MetroVision
             </h1>
 
             <p className="text-xs text-slate-400 mt-1 whitespace-nowrap">
