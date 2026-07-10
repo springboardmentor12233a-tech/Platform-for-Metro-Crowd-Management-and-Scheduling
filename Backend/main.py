@@ -47,9 +47,10 @@ def update_station(station_id: int, name: str = None, capacity: int = None):
     db.close()
     return station
 
-
 @app.delete("/stations/{station_id}")
-def delete_station(station_id: int):
+def delete_station(station_id: int, role: str):
+    if role != "admin":
+        return {"error": "Only admin can delete stations"}
     db = SessionLocal()
     station = db.query(models.Station).filter(models.Station.id == station_id).first()
     if not station:
