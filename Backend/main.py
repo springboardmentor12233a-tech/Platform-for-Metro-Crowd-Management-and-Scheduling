@@ -1,0 +1,66 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+from backend.config import settings
+from backend.database import connect_db, close_db, init_db
+from backend.routers.auth import router as auth_router
+from backend.routers.stations import router as stations_router
+from backend.routers.trains import router as trains_router
+from backend.routers.schedules import router as schedules_router
+from backend.routers.crowd import router as crowd_router, simulation_loop
+from backend.routers.predictions import router as predictions_router
+from backend.routers.alerts import router as alerts_router
+from backend.routers.reports import router as reports_router
+from backend.routers.analytics import router as analytics_router
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="Backend service for AI Metro Crowd Management & Scheduling Platform",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, restrict to frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Register Routers
+app.include_router(auth_router)
+app.include_router(stations_router)
+app.include_router(trains_router)
+app.include_router(schedules_router)
+app.include_router(crowd_router)
+app.include_router(predictions_router)
+app.include_router(alerts_router)
+app.include_router(reports_router)
+app.include_router(analytics_router)
+
+@app.on_event("startup")
+async def startup_event():
+    # 1. Connect to Database
+    await connect_db()
+    # 2. Setup indexes and seed files if empty
+    await init_db()
+    # 3. Start real-time simulated system loop in background
+    asyncio.create_task(simulation_loop())
+    print("AI MetroFlow Backend Service Started Successfully.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_db()
+    print("AI MetroFlow Backend Service Stopped.")
+
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "project": "AI MetroFlow – AI Metro Crowd Management and Scheduling Platform",
+        "api_documentation": "/docs",
+        "system_time": asyncio.get_event_loop().time()
+    }
