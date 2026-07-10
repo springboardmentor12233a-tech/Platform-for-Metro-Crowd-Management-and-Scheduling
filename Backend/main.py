@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from database import engine, Base, SessionLocal
+from passlib.context import CryptContext
 import models
 
 Base.metadata.create_all(bind=engine)
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -56,3 +59,15 @@ def delete_station(station_id: int):
     db.commit()
     db.close()
     return {"message": f"Station {station_id} deleted"}
+
+@app.post("/users/register")
+def register_user(username: str, email: str, password: str):
+    db = SessionLocal()
+    hashed = pwd_context.hash(password)
+    user = models.User(username=username, email=email, hashed_password=hashed)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    db.close()
+    return {"id": user.id, "username": user.username, "email": user.email}
+
