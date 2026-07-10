@@ -71,3 +71,12 @@ def register_user(username: str, email: str, password: str):
     db.close()
     return {"id": user.id, "username": user.username, "email": user.email}
 
+@app.post("/users/login")
+def login_user(email: str, password: str):
+    db = SessionLocal()
+    user = db.query(models.User).filter(models.User.email == email).first()
+    db.close()
+    if not user or not pwd_context.verify(password, user.hashed_password):
+        return {"error": "Invalid email or password"}
+    return {"message": "Login successful", "username": user.username}
+
