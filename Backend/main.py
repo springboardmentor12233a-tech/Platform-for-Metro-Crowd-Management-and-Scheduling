@@ -61,15 +61,15 @@ def delete_station(station_id: int):
     return {"message": f"Station {station_id} deleted"}
 
 @app.post("/users/register")
-def register_user(username: str, email: str, password: str):
+def register_user(username: str, email: str, password: str, role: str = "operator"):
     db = SessionLocal()
     hashed = pwd_context.hash(password)
-    user = models.User(username=username, email=email, hashed_password=hashed)
+    user = models.User(username=username, email=email, hashed_password=hashed, role=role)
     db.add(user)
     db.commit()
     db.refresh(user)
     db.close()
-    return {"id": user.id, "username": user.username, "email": user.email}
+    return {"id": user.id, "username": user.username, "email": user.email, "role": user.role}
 
 @app.post("/users/login")
 def login_user(email: str, password: str):
@@ -78,5 +78,4 @@ def login_user(email: str, password: str):
     db.close()
     if not user or not pwd_context.verify(password, user.hashed_password):
         return {"error": "Invalid email or password"}
-    return {"message": "Login successful", "username": user.username}
-
+    return {"message": "Login successful", "username": user.username, "role": user.role}
