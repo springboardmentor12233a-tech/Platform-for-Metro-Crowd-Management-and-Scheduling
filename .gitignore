@@ -7,3 +7,4 @@ __pycache__/
 
 # Ignore Jupyter checkpoints
 .ipynb_checkpoints/
+backend/outputs/
