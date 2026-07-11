@@ -5,6 +5,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,57 +16,73 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (data.error) {
+      setIsError(true);
       setMessage(data.error);
     } else {
+      setIsError(false);
       setMessage(`Welcome ${data.username}! Role: ${data.role}`);
     }
   };
 
   return (
-    <main style={{ padding: "40px", fontFamily: "sans-serif", maxWidth: "400px" }}>
-      <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>MetroFlow Login</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 px-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8">
+        <h1 className="text-2xl font-bold text-slate-800 text-center">
+          MetroFlow
+        </h1>
+        <p className="text-slate-500 text-center text-sm mb-6">
+          Sign in to your account
+        </p>
 
-      <form onSubmit={handleLogin} style={{ marginTop: "20px" }}>
-        <div style={{ marginBottom: "12px" }}>
-          <label>Email</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-            required
-          />
-        </div>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "4px" }}
-            required
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Password
+            </label>
+           <input
+             type="password"
+             value={password}
+             onChange={(e) => setPassword(e.target.value)}
+             className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+             placeholder="••••••••"
+             required
+            />
+          </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: "10px 20px",
-            background: "black",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Login
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
+          >
+            Login
+          </button>
+        </form>
 
-      {message && <p style={{ marginTop: "16px" }}>{message}</p>}
+        {message && (
+          <p
+            className={`mt-4 text-sm text-center rounded-lg py-2 px-3 ${
+              isError
+                ? "bg-red-100 text-red-700"
+                : "bg-green-100 text-green-700"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+      </div>
     </main>
   );
 }
