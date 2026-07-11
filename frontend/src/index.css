@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --card: rgba(255, 255, 255, 0.8);
+    --card-solid: #ffffff;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --border: rgba(148, 163, 184, 0.15);
+    --primary: #8b5cf6; /* violet-500 */
+    --primary-hover: #7c3aed;
+    --accent: #06b6d4; /* cyan-500 */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --glow: rgba(139, 92, 246, 0.12);
+  }
+
+  :root.dark {
+    --background: #05050e; /* deep void cosmic violet-black */
+    --card: rgba(12, 12, 28, 0.5); /* dark glass */
+    --card-solid: #0d0d1e;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: rgba(139, 92, 246, 0.15); /* violet-tinged border line */
+    --primary: #8b5cf6; /* electric violet */
+    --primary-hover: #a78bfa;
+    --accent: #06b6d4; /* cyber-cyan */
+    --glass-bg: rgba(8, 8, 20, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glow: rgba(139, 92, 246, 0.28);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 var(--glow);
+  border-color: var(--primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Pulse animation for crowd density levels */
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(34, 197, 94, 0.4); }
+}
+@keyframes pulse-yellow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(234, 179, 8, 0.4); }
+}
+@keyframes pulse-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(249, 115, 22, 0.4); }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.4); }
+}
+
+.pulse-green { animation: pulse-green 2s infinite; }
+.pulse-yellow { animation: pulse-yellow 2s infinite; }
+.pulse-orange { animation: pulse-orange 2s infinite; }
+.pulse-red { animation: pulse-red 2s infinite; }
+
+/* Custom Leaflet Map styling */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  background-color: #0b0f19 !important;
+}
+
+.custom-map-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Floating animations to simulate anti-gravity weightlessness */
+@keyframes antigravity-float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes antigravity-float-medium {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes antigravity-float-fast {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-float-slow {
+  animation: antigravity-float-slow 6s ease-in-out infinite;
+}
+.animate-float-medium {
+  animation: antigravity-float-medium 4.5s ease-in-out infinite;
+}
+.animate-float-fast {
+  animation: antigravity-float-fast 3s ease-in-out infinite;
+}
+
