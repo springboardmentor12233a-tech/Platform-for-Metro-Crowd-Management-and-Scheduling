@@ -1,0 +1,79 @@
+
+============================================================
+                METROFLOW EDA SUMMARY
+============================================================
+
+Generated On :
+10-07-2026 13:31:41
+
+------------------------------------------------------------
+DATASET INFORMATION
+------------------------------------------------------------
+
+Dataset Name          : delhi_metro_featured.csv
+
+Rows                  : 150000
+
+Columns               : 17
+
+Missing Values        : 0
+
+Duplicate Rows        : 0
+
+------------------------------------------------------------
+FEATURE ENGINEERING
+------------------------------------------------------------
+
+New Features Added
+
+✓ Year
+✓ Month
+✓ Month_Name
+✓ Day
+✓ Day_Name
+✓ Is_Weekend
+✓ Route
+
+------------------------------------------------------------
+VISUALIZATIONS
+------------------------------------------------------------
+
+Graphs Generated      : 10
+
+Business Reports      : 1
+
+------------------------------------------------------------
+KEY BUSINESS INSIGHTS
+------------------------------------------------------------
+
+Average Fare          : 105.12
+
+Average Distance      : 5.49 km
+
+Average Passengers    : 20.00
+
+Top Source Station    : Rajiv Chowk
+
+Top Destination       : Hauz Khas
+
+Most Used Ticket      : Tourist Card
+
+------------------------------------------------------------
+PROJECT STATUS
+------------------------------------------------------------
+
+✓ Dataset Profiled
+
+✓ Data Quality Checked
+
+✓ Data Cleaned
+
+✓ Feature Engineering Completed
+
+✓ Visualizations Generated
+
+✓ Business Insights Generated
+
+============================================================
+END OF REPORT
+============================================================

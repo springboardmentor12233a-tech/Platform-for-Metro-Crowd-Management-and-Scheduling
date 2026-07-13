@@ -1,0 +1,12 @@
+METROFLOW BUSINESS INSIGHTS
+==================================================
+
+Total Trips : 150000
+Average Fare : ₹105.12
+Average Distance : 5.49 km
+Average Passengers : 20.00
+
+Most Used Ticket : Tourist Card
+Top Source Station : Rajiv Chowk
+Top Destination Station : Hauz Khas
+Most Popular Route : Rajiv Chowk → Chandni Chowk
