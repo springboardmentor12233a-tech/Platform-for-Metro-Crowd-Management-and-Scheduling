@@ -1,165 +1,165 @@
 id,station_id,alert_type,message,severity,is_active,created_at,resolved_at
-1,1,overcrowding,Alert at Dilshad Garden,high,True,2026-07-06 17:26:03.913946,
-2,1,overcrowding,Alert at Dilshad Garden,medium,False,2026-07-06 18:26:03.914106,
-3,2,delay,Alert at Jhilmil,medium,True,2026-07-06 07:26:03.914179,
-4,2,overcrowding,Alert at Jhilmil,low,False,2026-07-07 21:26:03.914237,
-5,2,maintenance,Alert at Jhilmil,high,True,2026-07-07 11:26:03.914309,
-6,6,overcrowding,Alert at Seelam Pur,low,True,2026-07-06 00:26:03.914386,
-7,6,delay,Alert at Seelam Pur,low,True,2026-07-06 01:26:03.914441,
-8,6,overcrowding,Alert at Seelam Pur,low,False,2026-07-07 16:26:03.914514,
-9,7,maintenance,Alert at Shastri Park,medium,True,2026-07-06 22:26:03.914738,
-10,8,overcrowding,Alert at Kashmere Gate,low,False,2026-07-07 23:26:03.914849,
-11,10,overcrowding,Alert at Pul Bangash,high,False,2026-07-06 14:26:03.914973,
-12,11,delay,Alert at Pratap Nagar,low,False,2026-07-07 01:26:03.915091,
-13,13,overcrowding,Alert at Inderlok,low,False,2026-07-07 17:26:03.915187,
-14,14,maintenance,Alert at Kanhaiya Nagar,medium,False,2026-07-06 11:26:03.915283,
-15,14,delay,Alert at Kanhaiya Nagar,high,True,2026-07-06 16:26:03.915376,
-16,14,overcrowding,Alert at Kanhaiya Nagar,high,True,2026-07-07 06:26:03.915464,
-17,15,delay,Alert at Keshav Puram,medium,True,2026-07-07 11:26:03.915679,
-18,15,overcrowding,Alert at Keshav Puram,low,True,2026-07-06 05:26:03.915756,
-19,15,overcrowding,Alert at Keshav Puram,low,True,2026-07-06 20:26:03.915818,
-20,16,overcrowding,Alert at Netaji Subash Place,high,True,2026-07-06 09:26:03.915879,
-21,16,overcrowding,Alert at Netaji Subash Place,low,False,2026-07-07 19:26:03.915934,
-22,17,overcrowding,Alert at Kohat Enclave,medium,True,2026-07-07 13:26:03.916009,
-23,17,overcrowding,Alert at Kohat Enclave,low,False,2026-07-06 09:26:03.916097,
-24,17,delay,Alert at Kohat Enclave,high,True,2026-07-07 12:26:03.916178,
-25,18,maintenance,Alert at Pitampura,medium,False,2026-07-06 00:26:03.916347,
-26,18,overcrowding,Alert at Pitampura,medium,False,2026-07-05 23:26:03.916428,
-27,19,delay,Alert at Rohini East,medium,True,2026-07-06 19:26:03.916513,
-28,19,delay,Alert at Rohini East,medium,True,2026-07-07 17:26:03.916611,
-29,19,overcrowding,Alert at Rohini East,medium,True,2026-07-06 09:26:03.916673,
-30,21,maintenance,Alert at Rithala,medium,False,2026-07-06 12:26:03.916732,
-31,23,overcrowding,Alert at Rajdhani Park,low,False,2026-07-07 10:26:03.916790,
-32,23,delay,Alert at Rajdhani Park,medium,False,2026-07-07 18:26:03.916842,
-33,23,delay,Alert at Rajdhani Park,low,False,2026-07-07 02:26:03.916894,
-34,24,overcrowding,Alert at Nangloi Railway Station,high,False,2026-07-06 15:26:03.916951,
-35,24,delay,Alert at Nangloi Railway Station,medium,False,2026-07-07 05:26:03.917004,
-36,25,delay,Alert at Nangloi,high,False,2026-07-06 05:26:03.917059,
-37,25,maintenance,Alert at Nangloi,high,True,2026-07-07 23:26:03.917151,
-38,26,maintenance,Alert at Maharaja Surajmal Stadium,high,False,2026-07-06 23:26:03.917230,
-39,26,overcrowding,Alert at Maharaja Surajmal Stadium,high,False,2026-07-06 17:26:03.917626,
-40,28,delay,Alert at Peera Garhi,high,True,2026-07-07 15:26:03.917834,
-41,28,delay,Alert at Peera Garhi,low,False,2026-07-06 01:26:03.917950,
-42,30,delay,Alert at Paschim Vihar (East),medium,True,2026-07-06 00:26:03.918043,
-43,31,overcrowding,Alert at Madipur,high,True,2026-07-07 20:26:03.918137,
-44,31,delay,Alert at Madipur,medium,True,2026-07-07 11:26:03.918222,
-45,31,maintenance,Alert at Madipur,high,True,2026-07-06 20:26:03.918304,
-46,32,delay,Alert at Shivaji Park,medium,True,2026-07-07 01:26:03.918400,
-47,33,delay,Alert at Punjabi Bagh,high,False,2026-07-05 23:26:03.918497,
-48,33,delay,Alert at Punjabi Bagh,medium,False,2026-07-06 20:26:03.918584,
-49,33,delay,Alert at Punjabi Bagh,low,False,2026-07-07 13:26:03.918668,
-50,34,maintenance,Alert at Ashok Park Main,medium,False,2026-07-06 01:26:03.918752,
-51,34,maintenance,Alert at Ashok Park Main,low,True,2026-07-05 23:26:03.918853,
-52,34,delay,Alert at Ashok Park Main,medium,False,2026-07-07 12:26:03.918944,
-53,35,maintenance,Alert at Satguru Ram Singh Marg,high,True,2026-07-07 14:26:03.919040,
-54,35,maintenance,Alert at Satguru Ram Singh Marg,medium,False,2026-07-07 19:26:03.919125,
-55,35,maintenance,Alert at Satguru Ram Singh Marg,high,True,2026-07-07 06:26:03.919190,
-56,36,delay,Alert at Samaypur Badli,medium,False,2026-07-07 17:26:03.919251,
-57,36,maintenance,Alert at Samaypur Badli,low,False,2026-07-07 02:26:03.919629,
-58,36,delay,Alert at Samaypur Badli,medium,True,2026-07-07 22:26:03.919795,
-59,37,delay,Alert at Rohini Sector 18-19,medium,True,2026-07-06 01:26:03.919901,
-60,37,maintenance,Alert at Rohini Sector 18-19,high,True,2026-07-07 16:26:03.919994,
-61,37,delay,Alert at Rohini Sector 18-19,medium,False,2026-07-06 08:26:03.920083,
-62,39,overcrowding,Alert at Jahangirpuri,medium,False,2026-07-06 14:26:03.920179,
-63,40,maintenance,Alert at Adarsh Nagar,medium,False,2026-07-07 09:26:03.920281,
-64,41,delay,Alert at Azadpur,low,True,2026-07-07 01:26:03.920368,
-65,41,delay,Alert at Azadpur,low,True,2026-07-07 02:26:03.920429,
-66,41,delay,Alert at Azadpur,medium,True,2026-07-07 23:26:03.920510,
-67,42,overcrowding,Alert at Model Town,low,True,2026-07-06 15:26:03.920568,
-68,42,maintenance,Alert at Model Town,low,True,2026-07-07 18:26:03.920623,
-69,42,delay,Alert at Model Town,high,True,2026-07-07 00:26:03.920682,
-70,43,delay,Alert at Guru Tegh Bahadur Nagar,low,False,2026-07-06 16:26:03.920738,
-71,43,maintenance,Alert at Guru Tegh Bahadur Nagar,low,True,2026-07-07 04:26:03.920793,
-72,44,maintenance,Alert at Vishwavidyalaya,high,False,2026-07-07 08:26:03.920866,
-73,44,maintenance,Alert at Vishwavidyalaya,high,True,2026-07-07 07:26:03.920940,
-74,44,maintenance,Alert at Vishwavidyalaya,high,False,2026-07-07 10:26:03.921029,
-75,45,maintenance,Alert at Vidhan Sabha,high,False,2026-07-06 22:26:03.921119,
-76,45,maintenance,Alert at Vidhan Sabha,high,True,2026-07-07 21:26:03.921220,
-77,46,maintenance,Alert at Civil Lines,medium,True,2026-07-07 00:26:03.921296,
-78,46,delay,Alert at Civil Lines,medium,False,2026-07-07 05:26:03.921352,
-79,48,maintenance,Alert at Chawri Bazar,low,False,2026-07-06 17:26:03.921415,
-80,48,maintenance,Alert at Chawri Bazar,medium,False,2026-07-07 16:26:03.921467,
-81,49,overcrowding,Alert at New Delhi,high,False,2026-07-07 23:26:03.921521,
-82,51,delay,Alert at Patel Chowk,high,False,2026-07-07 06:26:03.921606,
-83,51,overcrowding,Alert at Patel Chowk,medium,False,2026-07-06 17:26:03.921728,
-84,51,overcrowding,Alert at Patel Chowk,low,True,2026-07-06 12:26:03.921801,
-85,52,delay,Alert at Central Secretariat,medium,False,2026-07-06 22:26:03.921858,
-86,52,delay,Alert at Central Secretariat,high,True,2026-07-07 13:26:03.921922,
-87,53,delay,Alert at Udyog Bhawan,high,True,2026-07-06 17:26:03.921980,
-88,53,overcrowding,Alert at Udyog Bhawan,high,False,2026-07-07 11:26:03.922033,
-89,53,maintenance,Alert at Udyog Bhawan,high,True,2026-07-06 07:26:03.922085,
-90,54,delay,Alert at Lok Kalyan Marg,high,True,2026-07-06 09:26:03.922139,
-91,54,maintenance,Alert at Lok Kalyan Marg,low,False,2026-07-06 13:26:03.922190,
-92,54,maintenance,Alert at Lok Kalyan Marg,high,False,2026-07-07 13:26:03.922243,
-93,56,maintenance,Alert at Dilli Haat - INA,low,True,2026-07-07 09:26:03.922302,
-94,57,maintenance,Alert at AIIMS,low,False,2026-07-07 09:26:03.922356,
-95,58,maintenance,Alert at Green Park,low,True,2026-07-06 15:26:03.922418,
-96,59,maintenance,Alert at Hauz Khas,high,True,2026-07-07 03:26:03.922503,
-97,59,delay,Alert at Hauz Khas,low,False,2026-07-06 08:26:03.922564,
-98,59,delay,Alert at Hauz Khas,high,True,2026-07-06 02:26:03.922617,
-99,62,maintenance,Alert at Qutab Minar,high,False,2026-07-06 02:26:03.922684,
-100,62,delay,Alert at Qutab Minar,high,False,2026-07-06 11:26:03.922760,
-101,62,delay,Alert at Qutab Minar,low,True,2026-07-07 14:26:03.922815,
-102,63,delay,Alert at Chhattarpur,low,False,2026-07-07 08:26:03.922871,
-103,63,maintenance,Alert at Chhattarpur,low,True,2026-07-06 13:26:03.922923,
-104,64,delay,Alert at Sultanpur,medium,False,2026-07-07 14:26:03.922977,
-105,64,overcrowding,Alert at Sultanpur,low,True,2026-07-06 21:26:03.923034,
-106,64,maintenance,Alert at Sultanpur,high,True,2026-07-07 23:26:03.923086,
-107,65,delay,Alert at Ghitorni,low,True,2026-07-06 01:26:03.923146,
-108,65,maintenance,Alert at Ghitorni,high,False,2026-07-06 16:26:03.923199,
-109,65,overcrowding,Alert at Ghitorni,low,False,2026-07-07 09:26:03.923256,
-110,66,delay,Alert at Arjan Garh,high,False,2026-07-05 23:26:03.923310,
-111,66,maintenance,Alert at Arjan Garh,medium,True,2026-07-06 07:26:03.923361,
-112,68,overcrowding,Alert at Sikanderpur,medium,True,2026-07-07 09:26:03.923418,
-113,70,overcrowding,Alert at IFFCO Chowk,medium,False,2026-07-07 19:26:03.923474,
-114,70,maintenance,Alert at IFFCO Chowk,medium,False,2026-07-07 17:26:03.923526,
-115,71,overcrowding,Alert at Huda City Centre,low,False,2026-07-07 08:26:03.923588,
-116,71,overcrowding,Alert at Huda City Centre,high,True,2026-07-07 19:26:03.923640,
-117,72,delay,Alert at Vaishali,high,True,2026-07-06 19:26:03.923693,
-118,72,delay,Alert at Vaishali,high,True,2026-07-06 03:26:03.923749,
-119,72,overcrowding,Alert at Vaishali,medium,False,2026-07-07 19:26:03.923802,
-120,73,delay,Alert at Kaushambi,low,True,2026-07-06 11:26:03.923857,
-121,73,overcrowding,Alert at Kaushambi,high,True,2026-07-07 04:26:03.923916,
-122,73,overcrowding,Alert at Kaushambi,medium,True,2026-07-07 17:26:03.923970,
-123,75,maintenance,Alert at Karkarduma,medium,False,2026-07-06 21:26:03.924033,
-124,75,delay,Alert at Karkarduma,high,False,2026-07-06 05:26:03.924086,
-125,78,maintenance,Alert at Laxmi Nagar,medium,False,2026-07-07 18:26:03.924148,
-126,78,overcrowding,Alert at Laxmi Nagar,medium,False,2026-07-06 00:26:03.924201,
-127,79,maintenance,Alert at Noida City Centre,low,True,2026-07-07 03:26:03.924256,
-128,79,delay,Alert at Noida City Centre,medium,False,2026-07-07 06:26:03.924308,
-129,79,delay,Alert at Noida City Centre,low,True,2026-07-06 10:26:03.924365,
-130,80,delay,Alert at Golf Course,low,False,2026-07-06 21:26:03.924449,
-131,80,maintenance,Alert at Golf Course,high,True,2026-07-05 23:26:03.924588,
-132,80,delay,Alert at Golf Course,low,False,2026-07-06 16:26:03.924696,
-133,81,delay,Alert at Botanical Garden,medium,False,2026-07-05 23:26:03.924785,
-134,82,overcrowding,Alert at Noida Sec -18,medium,False,2026-07-06 01:26:03.924854,
-135,83,overcrowding,Alert at Noida Sec -16,high,True,2026-07-06 07:26:03.924916,
-136,83,overcrowding,Alert at Noida Sec -16,low,True,2026-07-07 06:26:03.924977,
-137,84,overcrowding,Alert at Noida Sec -15,high,False,2026-07-07 15:26:03.925060,
-138,84,overcrowding,Alert at Noida Sec -15,low,False,2026-07-07 01:26:03.925188,
-139,84,delay,Alert at Noida Sec -15,high,False,2026-07-06 04:26:03.925289,
-140,85,maintenance,Alert at New Ashok Nagar,medium,True,2026-07-07 22:26:03.925395,
-141,85,delay,Alert at New Ashok Nagar,medium,True,2026-07-07 14:26:03.925488,
-142,85,overcrowding,Alert at New Ashok Nagar,medium,False,2026-07-06 07:26:03.925576,
-143,86,delay,Alert at Mayur Vihar Ext,high,False,2026-07-07 15:26:03.925665,
-144,87,maintenance,Alert at Mayur Vihar-I,high,False,2026-07-06 12:26:03.925733,
-145,87,overcrowding,Alert at Mayur Vihar-I,medium,True,2026-07-07 12:26:03.925787,
-146,88,maintenance,Alert at Akshardham,high,False,2026-07-07 19:26:03.925845,
-147,88,overcrowding,Alert at Akshardham,high,False,2026-07-06 22:26:03.925903,
-148,89,overcrowding,Alert at Yamuna Bank,low,True,2026-07-07 19:26:03.925959,
-149,89,maintenance,Alert at Yamuna Bank,high,False,2026-07-07 17:26:03.926015,
-150,91,overcrowding,Alert at Supreme Court,medium,False,2026-07-07 21:26:03.926075,
-151,91,delay,Alert at Supreme Court,medium,False,2026-07-07 15:26:03.926128,
-152,92,overcrowding,Alert at Mandi House,high,True,2026-07-06 03:26:03.926181,
-153,92,overcrowding,Alert at Mandi House,high,True,2026-07-07 21:26:03.926234,
-154,94,delay,Alert at RK Ashram Marg,low,True,2026-07-06 16:26:03.926297,
-155,95,maintenance,Alert at Jhandewalan,high,True,2026-07-06 08:26:03.926353,
-156,95,overcrowding,Alert at Jhandewalan,high,True,2026-07-06 04:26:03.926406,
-157,95,maintenance,Alert at Jhandewalan,medium,False,2026-07-07 18:26:03.926457,
-158,96,overcrowding,Alert at Karol Bagh,medium,False,2026-07-06 05:26:03.926537,
-159,96,maintenance,Alert at Karol Bagh,high,False,2026-07-06 19:26:03.926594,
-160,97,overcrowding,Alert at Rajendra Place,high,False,2026-07-06 07:26:03.926648,
-161,97,overcrowding,Alert at Rajendra Place,high,False,2026-07-07 02:26:03.926700,
-162,97,maintenance,Alert at Rajendra Place,medium,True,2026-07-06 15:26:03.926760,
-163,99,maintenance,Alert at Shadipur,high,False,2026-07-06 14:26:03.926819,
-164,99,overcrowding,Alert at Shadipur,low,True,2026-07-06 22:26:03.926877,
+165,94,overcrowding,Station 94 exceeds 90% capacity,high,False,2026-07-04 01:00:00,2026-07-04 12:00:00
+166,161,overcrowding,Station 161 exceeds 90% capacity,high,False,2026-07-06 06:00:00,2026-07-07 18:00:00
+167,172,overcrowding,Station 172 exceeds 90% capacity,high,False,2026-07-04 08:00:00,2026-07-02 07:00:00
+168,213,overcrowding,Station 213 exceeds 90% capacity,high,False,2026-07-01 02:00:00,2026-07-07 05:00:00
+169,164,overcrowding,Station 164 exceeds 90% capacity,high,False,2026-07-01 22:00:00,2026-07-06 08:00:00
+170,106,overcrowding,Station 106 exceeds 90% capacity,high,False,2026-07-03 11:00:00,2026-07-04 17:00:00
+171,230,overcrowding,Station 230 exceeds 90% capacity,high,False,2026-07-01 00:00:00,2026-07-01 19:00:00
+172,13,overcrowding,Station 13 exceeds 90% capacity,high,False,2026-07-07 04:00:00,2026-07-04 09:00:00
+173,510,overcrowding,Station 510 exceeds 90% capacity,high,False,2026-07-02 22:00:00,2026-07-07 18:00:00
+174,202,overcrowding,Station 202 exceeds 90% capacity,high,False,2026-07-04 21:00:00,2026-07-01 09:00:00
+175,195,overcrowding,Station 195 exceeds 90% capacity,high,False,2026-07-01 01:00:00,2026-07-07 11:00:00
+176,96,overcrowding,Station 96 exceeds 90% capacity,high,False,2026-07-01 01:00:00,2026-07-05 04:00:00
+177,204,overcrowding,Station 204 exceeds 90% capacity,high,False,2026-07-05 02:00:00,2026-07-03 23:00:00
+178,126,overcrowding,Station 126 exceeds 90% capacity,high,False,2026-07-06 03:00:00,2026-07-01 18:00:00
+179,113,overcrowding,Station 113 exceeds 90% capacity,high,False,2026-07-06 22:00:00,2026-07-03 21:00:00
+180,104,overcrowding,Station 104 exceeds 90% capacity,high,False,2026-07-05 03:00:00,2026-07-06 03:00:00
+181,156,overcrowding,Station 156 exceeds 90% capacity,high,False,2026-07-03 10:00:00,2026-07-02 12:00:00
+182,204,overcrowding,Station 204 exceeds 90% capacity,high,False,2026-07-02 15:00:00,2026-07-04 08:00:00
+183,131,overcrowding,Station 131 exceeds 90% capacity,high,False,2026-07-05 09:00:00,2026-07-05 14:00:00
+184,159,overcrowding,Station 159 exceeds 90% capacity,high,False,2026-07-06 06:00:00,2026-07-05 01:00:00
+185,232,overcrowding,Station 232 exceeds 90% capacity,high,False,2026-07-04 09:00:00,2026-07-06 14:00:00
+186,56,overcrowding,Station 56 exceeds 90% capacity,high,False,2026-07-07 11:00:00,2026-07-06 11:00:00
+187,503,overcrowding,Station 503 exceeds 90% capacity,high,False,2026-07-07 01:00:00,2026-07-01 07:00:00
+188,196,overcrowding,Station 196 exceeds 90% capacity,high,False,2026-07-04 02:00:00,2026-07-02 21:00:00
+189,70,overcrowding,Station 70 exceeds 90% capacity,high,False,2026-07-05 14:00:00,2026-07-04 06:00:00
+190,83,overcrowding,Station 83 exceeds 90% capacity,high,False,2026-07-05 16:00:00,2026-07-02 18:00:00
+191,510,overcrowding,Station 510 exceeds 90% capacity,high,False,2026-07-07 19:00:00,2026-07-02 12:00:00
+192,125,overcrowding,Station 125 exceeds 90% capacity,high,False,2026-07-07 05:00:00,2026-07-01 00:00:00
+193,149,overcrowding,Station 149 exceeds 90% capacity,high,False,2026-07-02 09:00:00,2026-07-05 15:00:00
+194,153,overcrowding,Station 153 exceeds 90% capacity,high,False,2026-07-05 13:00:00,2026-07-04 20:00:00
+195,41,overcrowding,Station 41 exceeds 90% capacity,high,False,2026-07-03 00:00:00,2026-07-02 05:00:00
+196,224,overcrowding,Station 224 exceeds 90% capacity,high,False,2026-07-07 22:00:00,2026-07-03 12:00:00
+197,108,overcrowding,Station 108 exceeds 90% capacity,high,False,2026-07-03 14:00:00,2026-07-01 08:00:00
+198,229,overcrowding,Station 229 exceeds 90% capacity,high,False,2026-07-06 09:00:00,2026-07-07 20:00:00
+199,165,overcrowding,Station 165 exceeds 90% capacity,high,False,2026-07-07 16:00:00,2026-07-01 02:00:00
+200,132,overcrowding,Station 132 exceeds 90% capacity,high,False,2026-07-01 02:00:00,2026-07-06 23:00:00
+201,148,overcrowding,Station 148 exceeds 90% capacity,high,False,2026-07-02 13:00:00,2026-07-04 14:00:00
+202,51,overcrowding,Station 51 exceeds 90% capacity,high,False,2026-07-07 03:00:00,2026-07-04 11:00:00
+203,61,overcrowding,Station 61 exceeds 90% capacity,high,False,2026-07-02 05:00:00,2026-07-06 20:00:00
+204,90,overcrowding,Station 90 exceeds 90% capacity,high,False,2026-07-03 17:00:00,2026-07-02 10:00:00
+205,34,overcrowding,Station 34 exceeds 90% capacity,high,False,2026-07-07 14:00:00,2026-07-02 21:00:00
+206,7,overcrowding,Station 7 exceeds 90% capacity,high,False,2026-07-02 18:00:00,2026-07-05 01:00:00
+207,240,overcrowding,Station 240 exceeds 90% capacity,high,False,2026-07-05 01:00:00,2026-07-05 12:00:00
+208,128,overcrowding,Station 128 exceeds 90% capacity,high,False,2026-07-01 16:00:00,2026-07-02 16:00:00
+209,163,overcrowding,Station 163 exceeds 90% capacity,high,False,2026-07-04 13:00:00,2026-07-03 21:00:00
+210,182,overcrowding,Station 182 exceeds 90% capacity,high,False,2026-07-07 14:00:00,2026-07-05 12:00:00
+211,63,overcrowding,Station 63 exceeds 90% capacity,high,False,2026-07-02 23:00:00,2026-07-05 05:00:00
+212,65,overcrowding,Station 65 exceeds 90% capacity,high,False,2026-07-05 04:00:00,2026-07-06 20:00:00
+213,75,overcrowding,Station 75 exceeds 90% capacity,high,False,2026-07-07 17:00:00,2026-07-08 00:00:00
+214,195,overcrowding,Station 195 exceeds 90% capacity,high,False,2026-07-06 23:00:00,2026-07-02 09:00:00
+215,108,overcrowding,Station 108 exceeds 90% capacity,high,False,2026-07-03 20:00:00,2026-07-07 19:00:00
+216,95,overcrowding,Station 95 exceeds 90% capacity,high,False,2026-07-04 05:00:00,2026-07-05 20:00:00
+217,183,overcrowding,Station 183 exceeds 90% capacity,high,False,2026-07-06 03:00:00,2026-07-05 19:00:00
+218,122,overcrowding,Station 122 exceeds 90% capacity,high,False,2026-07-02 14:00:00,2026-07-01 14:00:00
+219,138,overcrowding,Station 138 exceeds 90% capacity,high,False,2026-07-02 23:00:00,2026-07-07 09:00:00
+220,2,overcrowding,Station 2 exceeds 90% capacity,high,False,2026-07-01 10:00:00,2026-07-03 02:00:00
+221,510,overcrowding,Station 510 exceeds 90% capacity,high,False,2026-07-06 18:00:00,2026-07-06 15:00:00
+222,100,overcrowding,Station 100 exceeds 90% capacity,high,False,2026-07-01 05:00:00,2026-07-04 11:00:00
+223,123,overcrowding,Station 123 exceeds 90% capacity,high,False,2026-07-04 02:00:00,2026-07-05 17:00:00
+224,221,overcrowding,Station 221 exceeds 90% capacity,high,False,2026-07-02 14:00:00,2026-07-01 07:00:00
+225,15,overcrowding,Station 15 exceeds 90% capacity,high,False,2026-07-02 17:00:00,2026-07-02 18:00:00
+226,54,overcrowding,Station 54 exceeds 90% capacity,high,False,2026-07-06 14:00:00,2026-07-02 13:00:00
+227,232,overcrowding,Station 232 exceeds 90% capacity,high,False,2026-07-05 15:00:00,2026-07-04 06:00:00
+228,64,overcrowding,Station 64 exceeds 90% capacity,high,False,2026-07-03 16:00:00,2026-07-03 22:00:00
+229,234,overcrowding,Station 234 exceeds 90% capacity,high,False,2026-07-06 15:00:00,2026-07-04 06:00:00
+230,154,overcrowding,Station 154 exceeds 90% capacity,high,False,2026-07-04 17:00:00,2026-07-02 23:00:00
+231,201,overcrowding,Station 201 exceeds 90% capacity,high,False,2026-07-02 17:00:00,2026-07-02 09:00:00
+232,82,overcrowding,Station 82 exceeds 90% capacity,high,False,2026-07-06 00:00:00,2026-07-01 19:00:00
+233,72,overcrowding,Station 72 exceeds 90% capacity,high,False,2026-07-02 02:00:00,2026-07-01 03:00:00
+234,228,overcrowding,Station 228 exceeds 90% capacity,high,False,2026-07-05 14:00:00,2026-07-04 15:00:00
+235,193,overcrowding,Station 193 exceeds 90% capacity,high,False,2026-07-01 09:00:00,2026-07-05 09:00:00
+236,220,overcrowding,Station 220 exceeds 90% capacity,high,False,2026-07-05 11:00:00,2026-07-04 03:00:00
+237,13,overcrowding,Station 13 exceeds 90% capacity,high,False,2026-07-04 10:00:00,2026-07-06 07:00:00
+238,169,overcrowding,Station 169 exceeds 90% capacity,high,False,2026-07-04 01:00:00,2026-07-05 06:00:00
+239,217,overcrowding,Station 217 exceeds 90% capacity,high,False,2026-07-05 15:00:00,2026-07-01 13:00:00
+240,45,overcrowding,Station 45 exceeds 90% capacity,high,False,2026-07-02 02:00:00,2026-07-05 21:00:00
+241,232,overcrowding,Station 232 exceeds 90% capacity,high,False,2026-07-05 11:00:00,2026-07-01 09:00:00
+242,95,overcrowding,Station 95 exceeds 90% capacity,high,False,2026-07-04 12:00:00,2026-07-07 23:00:00
+243,114,overcrowding,Station 114 exceeds 90% capacity,high,False,2026-07-04 18:00:00,2026-07-03 02:00:00
+244,204,overcrowding,Station 204 exceeds 90% capacity,high,False,2026-07-04 04:00:00,2026-07-07 06:00:00
+245,5,overcrowding,Station 5 exceeds 90% capacity,high,False,2026-07-03 11:00:00,2026-07-01 18:00:00
+246,103,overcrowding,Station 103 exceeds 90% capacity,high,False,2026-07-02 02:00:00,2026-07-05 22:00:00
+247,140,overcrowding,Station 140 exceeds 90% capacity,high,False,2026-07-01 13:00:00,2026-07-06 16:00:00
+248,209,overcrowding,Station 209 exceeds 90% capacity,high,False,2026-07-06 20:00:00,2026-07-05 15:00:00
+249,225,overcrowding,Station 225 exceeds 90% capacity,high,False,2026-07-05 23:00:00,2026-07-04 04:00:00
+250,232,overcrowding,Station 232 exceeds 90% capacity,high,False,2026-07-07 07:00:00,2026-07-07 14:00:00
+251,77,overcrowding,Station 77 exceeds 90% capacity,high,False,2026-07-03 07:00:00,2026-07-01 14:00:00
+252,52,overcrowding,Station 52 exceeds 90% capacity,high,False,2026-07-05 01:00:00,2026-07-04 19:00:00
+253,54,overcrowding,Station 54 exceeds 90% capacity,high,False,2026-07-01 15:00:00,2026-07-04 04:00:00
+254,89,overcrowding,Station 89 exceeds 90% capacity,high,False,2026-07-04 07:00:00,2026-07-02 23:00:00
+255,515,overcrowding,Station 515 exceeds 90% capacity,high,False,2026-07-05 15:00:00,2026-07-06 08:00:00
+256,202,overcrowding,Station 202 exceeds 90% capacity,high,False,2026-07-02 03:00:00,2026-07-06 17:00:00
+257,116,overcrowding,Station 116 exceeds 90% capacity,high,False,2026-07-01 02:00:00,2026-07-02 15:00:00
+258,106,overcrowding,Station 106 exceeds 90% capacity,high,False,2026-07-02 04:00:00,2026-07-04 03:00:00
+259,513,overcrowding,Station 513 exceeds 90% capacity,high,False,2026-07-02 04:00:00,2026-07-07 16:00:00
+260,77,overcrowding,Station 77 exceeds 90% capacity,high,False,2026-07-01 12:00:00,2026-07-03 02:00:00
+261,60,overcrowding,Station 60 exceeds 90% capacity,high,False,2026-07-07 03:00:00,2026-07-05 15:00:00
+262,96,overcrowding,Station 96 exceeds 90% capacity,high,False,2026-07-03 09:00:00,2026-07-06 10:00:00
+263,118,overcrowding,Station 118 exceeds 90% capacity,high,False,2026-07-06 23:00:00,2026-07-01 16:00:00
+264,78,overcrowding,Station 78 exceeds 90% capacity,high,False,2026-07-02 18:00:00,2026-07-01 16:00:00
+265,167,overcrowding,Station 167 exceeds 90% capacity,high,False,2026-07-03 20:00:00,2026-07-04 23:00:00
+266,128,overcrowding,Station 128 exceeds 90% capacity,high,False,2026-07-02 15:00:00,2026-07-03 13:00:00
+267,152,overcrowding,Station 152 exceeds 90% capacity,high,False,2026-07-06 04:00:00,2026-07-06 21:00:00
+268,123,overcrowding,Station 123 exceeds 90% capacity,high,False,2026-07-02 04:00:00,2026-07-01 06:00:00
+269,188,overcrowding,Station 188 exceeds 90% capacity,high,False,2026-07-05 01:00:00,2026-07-05 01:00:00
+270,516,overcrowding,Station 516 exceeds 90% capacity,high,False,2026-07-06 16:00:00,2026-07-03 05:00:00
+271,511,overcrowding,Station 511 exceeds 90% capacity,high,False,2026-07-02 14:00:00,2026-07-04 22:00:00
+272,161,overcrowding,Station 161 exceeds 90% capacity,high,False,2026-07-06 19:00:00,2026-07-04 18:00:00
+273,125,overcrowding,Station 125 exceeds 90% capacity,high,False,2026-07-05 03:00:00,2026-07-03 15:00:00
+274,105,overcrowding,Station 105 exceeds 90% capacity,high,False,2026-07-03 06:00:00,2026-07-01 22:00:00
+275,59,overcrowding,Station 59 exceeds 90% capacity,high,False,2026-07-02 03:00:00,2026-07-03 07:00:00
+276,106,overcrowding,Station 106 exceeds 90% capacity,high,False,2026-07-04 03:00:00,2026-07-04 01:00:00
+277,221,overcrowding,Station 221 exceeds 90% capacity,high,False,2026-07-03 12:00:00,2026-07-02 06:00:00
+278,79,overcrowding,Station 79 exceeds 90% capacity,high,False,2026-07-06 07:00:00,2026-07-01 23:00:00
+279,140,overcrowding,Station 140 exceeds 90% capacity,high,False,2026-07-05 17:00:00,2026-07-05 02:00:00
+280,161,overcrowding,Station 161 exceeds 90% capacity,high,False,2026-07-01 18:00:00,2026-07-02 09:00:00
+281,200,overcrowding,Station 200 exceeds 90% capacity,high,False,2026-07-01 05:00:00,2026-07-07 21:00:00
+282,211,overcrowding,Station 211 exceeds 90% capacity,high,False,2026-07-04 09:00:00,2026-07-06 09:00:00
+283,227,overcrowding,Station 227 exceeds 90% capacity,high,False,2026-07-03 17:00:00,2026-07-05 19:00:00
+284,231,overcrowding,Station 231 exceeds 90% capacity,high,False,2026-07-06 20:00:00,2026-07-01 15:00:00
+285,85,overcrowding,Station 85 exceeds 90% capacity,high,False,2026-07-06 14:00:00,2026-07-06 08:00:00
+286,173,overcrowding,Station 173 exceeds 90% capacity,high,False,2026-07-01 05:00:00,2026-07-07 01:00:00
+287,67,overcrowding,Station 67 exceeds 90% capacity,high,False,2026-07-03 10:00:00,2026-07-06 01:00:00
+288,508,overcrowding,Station 508 exceeds 90% capacity,high,False,2026-07-02 14:00:00,2026-07-03 16:00:00
+289,162,overcrowding,Station 162 exceeds 90% capacity,high,False,2026-07-01 09:00:00,2026-07-04 08:00:00
+290,90,overcrowding,Station 90 exceeds 90% capacity,high,False,2026-07-04 22:00:00,2026-07-02 02:00:00
+291,166,overcrowding,Station 166 exceeds 90% capacity,high,False,2026-07-04 12:00:00,2026-07-05 09:00:00
+292,126,overcrowding,Station 126 exceeds 90% capacity,high,False,2026-07-05 00:00:00,2026-07-06 13:00:00
+293,153,overcrowding,Station 153 exceeds 90% capacity,high,False,2026-07-02 15:00:00,2026-07-07 19:00:00
+294,190,overcrowding,Station 190 exceeds 90% capacity,high,False,2026-07-07 15:00:00,2026-07-05 04:00:00
+295,181,overcrowding,Station 181 exceeds 90% capacity,high,False,2026-07-03 09:00:00,2026-07-05 12:00:00
+296,241,overcrowding,Station 241 exceeds 90% capacity,high,False,2026-07-04 09:00:00,2026-07-03 10:00:00
+297,121,overcrowding,Station 121 exceeds 90% capacity,high,False,2026-07-02 20:00:00,2026-07-02 06:00:00
+298,506,overcrowding,Station 506 exceeds 90% capacity,high,False,2026-07-07 01:00:00,2026-07-03 04:00:00
+299,113,overcrowding,Station 113 exceeds 90% capacity,high,False,2026-07-03 13:00:00,2026-07-03 10:00:00
+300,22,overcrowding,Station 22 exceeds 90% capacity,high,False,2026-07-05 14:00:00,2026-07-03 09:00:00
+301,170,overcrowding,Station 170 exceeds 90% capacity,high,False,2026-07-05 12:00:00,2026-07-07 14:00:00
+302,112,overcrowding,Station 112 exceeds 90% capacity,high,False,2026-07-07 21:00:00,2026-07-02 13:00:00
+303,208,overcrowding,Station 208 exceeds 90% capacity,high,False,2026-07-06 10:00:00,2026-07-02 21:00:00
+304,24,overcrowding,Station 24 exceeds 90% capacity,high,False,2026-07-05 10:00:00,2026-07-01 07:00:00
+305,46,overcrowding,Station 46 exceeds 90% capacity,high,False,2026-07-01 03:00:00,2026-07-04 11:00:00
+306,111,overcrowding,Station 111 exceeds 90% capacity,high,False,2026-07-02 22:00:00,2026-07-07 01:00:00
+307,34,overcrowding,Station 34 exceeds 90% capacity,high,False,2026-07-04 18:00:00,2026-07-04 03:00:00
+308,235,overcrowding,Station 235 exceeds 90% capacity,high,False,2026-07-05 04:00:00,2026-07-01 22:00:00
+309,8,overcrowding,Station 8 exceeds 90% capacity,high,False,2026-07-04 10:00:00,2026-07-02 00:00:00
+310,90,overcrowding,Station 90 exceeds 90% capacity,high,False,2026-07-04 00:00:00,2026-07-01 11:00:00
+311,80,overcrowding,Station 80 exceeds 90% capacity,high,False,2026-07-01 20:00:00,2026-07-07 03:00:00
+312,189,overcrowding,Station 189 exceeds 90% capacity,high,False,2026-07-02 13:00:00,2026-07-07 22:00:00
+313,98,overcrowding,Station 98 exceeds 90% capacity,high,False,2026-07-02 11:00:00,2026-07-03 06:00:00
+314,82,overcrowding,Station 82 exceeds 90% capacity,high,False,2026-07-06 16:00:00,2026-07-01 07:00:00
+315,173,overcrowding,Station 173 exceeds 90% capacity,high,False,2026-07-06 07:00:00,2026-07-01 07:00:00
+316,237,overcrowding,Station 237 exceeds 90% capacity,high,False,2026-07-03 18:00:00,2026-07-04 15:00:00
+317,68,overcrowding,Station 68 exceeds 90% capacity,high,False,2026-07-04 21:00:00,2026-07-05 16:00:00
+318,57,overcrowding,Station 57 exceeds 90% capacity,high,False,2026-07-07 20:00:00,2026-07-07 14:00:00
+319,6,overcrowding,Station 6 exceeds 90% capacity,high,False,2026-07-05 12:00:00,2026-07-03 04:00:00
+320,88,overcrowding,Station 88 exceeds 90% capacity,high,False,2026-07-03 14:00:00,2026-07-01 05:00:00
+321,20,overcrowding,Station 20 exceeds 90% capacity,high,False,2026-07-01 12:00:00,2026-07-07 04:00:00
+322,155,overcrowding,Station 155 exceeds 90% capacity,high,False,2026-07-07 11:00:00,2026-07-04 06:00:00
+323,218,overcrowding,Station 218 exceeds 90% capacity,high,False,2026-07-04 11:00:00,2026-07-06 04:00:00
+324,122,overcrowding,Station 122 exceeds 90% capacity,high,False,2026-07-01 06:00:00,2026-07-05 19:00:00
+325,232,overcrowding,Station 232 exceeds 90% capacity,high,False,2026-07-06 17:00:00,2026-07-07 20:00:00
+326,148,overcrowding,Station 148 exceeds 90% capacity,high,False,2026-07-06 18:00:00,2026-07-01 00:00:00
+327,516,overcrowding,Station 516 exceeds 90% capacity,high,False,2026-07-06 19:00:00,2026-07-05 03:00:00
+328,76,overcrowding,Station 76 exceeds 90% capacity,high,False,2026-07-07 03:00:00,2026-07-01 23:00:00
