@@ -1,0 +1,52 @@
+# Environment Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Dependencies
+**/node_modules/
+**/bower_components/
+
+# Build outputs
+**/dist/
+**/build/
+**/out/
+
+# Python Cache & Environments
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Large binary/data files
+**/*.pdf
+**/*.shp
+**/*.dbf
+**/*.sbn
+**/*.sbx
+**/*.shx
+**/*.prj
+**/*.DAT
+**/*.MAP
+**/*.TAB
+**/*.ID
+**/*.IND
+**/*.ind
+**/*.map
+**/*.tab
+datasets/TFL Entry and Exit Data/Geodata/statistical-gis-boundaries-london/
+datasets/TFL Entry and Exit Data/Tube maps/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+*.swp
+*.swo
