@@ -1,6 +1,6 @@
 {
     "demand_model": {
-        "mae": 3.5489903856720617,
+        "mae": 3.548990385672062,
         "rmse": 4.472579194031648,
         "feature_importance": {
             "From_Station_Code": 0.17890365036854194,
@@ -25,7 +25,7 @@
             ]
         ],
         "mae": 8.362812486262698,
-        "rmse": 9.786186920487125,
+        "rmse": 9.786186920487127,
         "feature_importance": {
             "temperature_C": 0.16398179962909165,
             "humidity_percent": 0.1374412415983691,

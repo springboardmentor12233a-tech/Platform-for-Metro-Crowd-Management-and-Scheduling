@@ -15,7 +15,7 @@ import {
   LogOut
 } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeMenu }) => {
   const { user, logout } = useAuth();
   
   const userRole = user?.role || 'Guest';
@@ -37,7 +37,21 @@ const Sidebar = () => {
   const filteredMenu = menuItems.filter(item => item.roles.includes(userRole));
 
   return (
-    <aside className="w-64 glass-panel border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-20">
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          onClick={closeMenu}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside 
+        className={`fixed inset-y-0 left-0 w-64 bg-[var(--card)] border-r border-[var(--border)] z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } flex flex-col h-screen`}
+      >
       {/* Brand Header */}
       <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20 text-white font-extrabold text-xl">
@@ -99,6 +113,7 @@ const Sidebar = () => {
         </button>
       </div>
     </aside>
+    </>
   );
 };
 

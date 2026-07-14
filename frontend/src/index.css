@@ -2,66 +2,63 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --card: rgba(255, 255, 255, 0.8);
+    --background: #ffffff;
+    --background-mesh: none;
+    --card: #ffffff;
     --card-solid: #ffffff;
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --border: rgba(148, 163, 184, 0.15);
-    --primary: #8b5cf6; /* violet-500 */
-    --primary-hover: #7c3aed;
-    --accent: #06b6d4; /* cyan-500 */
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.8);
-    --glow: rgba(139, 92, 246, 0.12);
+    --text: #09090b;
+    --text-muted: #71717a;
+    --border: #e4e4e7;
+    --primary: #18181b; 
+    --primary-hover: #27272a;
+    --accent: #0ea5e9; 
+    --glass-bg: #ffffff;
+    --glass-border: #e4e4e7;
+    --glow: rgba(0, 0, 0, 0.05);
   }
 
   :root.dark {
-    --background: #05050e; /* deep void cosmic violet-black */
-    --card: rgba(12, 12, 28, 0.5); /* dark glass */
-    --card-solid: #0d0d1e;
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: rgba(139, 92, 246, 0.15); /* violet-tinged border line */
-    --primary: #8b5cf6; /* electric violet */
-    --primary-hover: #a78bfa;
-    --accent: #06b6d4; /* cyber-cyan */
-    --glass-bg: rgba(8, 8, 20, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --glow: rgba(139, 92, 246, 0.28);
+    --background: #09090b; 
+    --background-mesh: none;
+    --card: #09090b; 
+    --card-solid: #09090b;
+    --text: #fafafa;
+    --text-muted: #a1a1aa;
+    --border: #27272a; 
+    --primary: #fafafa; 
+    --primary-hover: #f4f4f5;
+    --accent: #38bdf8; 
+    --glass-bg: #09090b;
+    --glass-border: #27272a;
+    --glow: rgba(255, 255, 255, 0.05);
   }
 
   body {
     background-color: var(--background);
     color: var(--text);
-    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
   }
 }
 
-/* Glassmorphism Styles */
+/* Clean UI Styles */
 .glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  background: var(--background);
+  border: 1px solid var(--border);
 }
 
 .glass-card {
   background: var(--card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.75rem; /* xl */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 .glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px 0 var(--glow);
-  border-color: var(--primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--text-muted);
 }
 
 /* Scrollbar styling */
@@ -140,3 +137,16 @@
   animation: antigravity-float-fast 3s ease-in-out infinite;
 }
 
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }

@@ -21,6 +21,10 @@ import AlertsPage from './pages/AlertsPage';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import LiveMonitoring from './pages/LiveMonitoring';
+import FrequencyAdjustment from './pages/FrequencyAdjustment';
+import CrowdPrediction from './pages/CrowdPrediction';
+import PassengerForecast from './pages/PassengerForecast';
 
 function App() {
   return (
@@ -50,6 +54,7 @@ function App() {
                 <Route path="alerts" element={<AlertsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="live-monitoring" element={<LiveMonitoring />} />
 
 
                 {/* Operations restricted pages (Admin & Operators) */}
@@ -58,6 +63,14 @@ function App() {
                   element={
                     <RoleRoute allowedRoles={['Admin', 'Metro Operator']}>
                       <Scheduling />
+                    </RoleRoute>
+                  } 
+                />
+                <Route 
+                  path="frequency" 
+                  element={
+                    <RoleRoute allowedRoles={['Admin', 'Metro Operator']}>
+                      <FrequencyAdjustment />
                     </RoleRoute>
                   } 
                 />
@@ -84,6 +97,22 @@ function App() {
                   element={
                     <RoleRoute allowedRoles={['Admin', 'Analyst']}>
                       <AIPrediction />
+                    </RoleRoute>
+                  } 
+                />
+                <Route 
+                  path="predict-crowd" 
+                  element={
+                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
+                      <CrowdPrediction />
+                    </RoleRoute>
+                  } 
+                />
+                <Route 
+                  path="passenger-forecast" 
+                  element={
+                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
+                      <PassengerForecast />
                     </RoleRoute>
                   } 
                 />

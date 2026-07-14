@@ -83,6 +83,23 @@ async def list_schedules(
         "pages": (total + limit - 1) // limit
     }
 
+@router.get("/routes")
+async def list_routes():
+    db = db_instance.db
+    if db is None:
+        return []
+    cursor = db.routes.find({})
+    routes = []
+    async for r in cursor:
+        r["id"] = str(r["_id"])
+        r["_id"] = str(r["_id"])
+        if "stations" in r:
+            for s in r["stations"]:
+                if "station_id" in s:
+                    s["station_id"] = str(s["station_id"])
+        routes.append(r)
+    return routes
+
 @router.get("/{schedule_id}", response_model=ScheduleResponse)
 async def get_schedule(schedule_id: str):
     db = db_instance.db

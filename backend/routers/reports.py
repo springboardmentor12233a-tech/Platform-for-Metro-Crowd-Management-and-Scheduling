@@ -254,3 +254,182 @@ async def generate_report(
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={filename}.pdf"}
         )
+
+
+@router.get("/traffic-report")
+async def get_traffic_report(
+    format: str = Query("csv", pattern="^(pdf|xlsx|csv)$"),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    current_user: dict = Depends(analyst_only)
+):
+    return await generate_report("passenger", format, start_date, end_date, current_user)
+
+
+@router.get("/frequency-report")
+async def get_frequency_report(
+    format: str = Query("csv", pattern="^(pdf|xlsx|csv)$"),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    current_user: dict = Depends(analyst_only)
+):
+    return await generate_report("occupancy", format, start_date, end_date, current_user)
+
+
+# ============================================================
+# DATASET-POWERED ANALYTICS ENDPOINTS
+# Pre-computed from delhi_metro_updated.csv, public_transport_delays.csv
+# ============================================================
+import os
+import pandas as pd
+import numpy as np
+from functools import lru_cache
+
+_ANALYTICS_CACHE = {}
+
+def _load_analytics_cache():
+    """Load and precompute analytics data from datasets on first call."""
+    global _ANALYTICS_CACHE
+    if _ANALYTICS_CACHE:
+        return _ANALYTICS_CACHE
+
+    metro_path = "datasets/delhi_metro_updated.csv"
+    delay_path = "datasets/public_transport_delays.csv"
+    network_path = "datasets/Delhi-Metro-Network.csv"
+
+    result = {}
+
+    # --- 1. Passenger Monthly Trends ---
+    if os.path.exists(metro_path):
+        try:
+            df = pd.read_csv(metro_path, parse_dates=['Date'])
+            df['From_Station'] = df['From_Station'].str.strip()
+            df['To_Station'] = df['To_Station'].str.strip()
+            df['YearMonth'] = df['Date'].dt.to_period('M').astype(str)
+            monthly = df.groupby('YearMonth')['Passengers'].agg(['sum', 'mean', 'count']).reset_index()
+            monthly.columns = ['month', 'total_passengers', 'avg_per_trip', 'total_trips']
+            monthly = monthly.sort_values('month')
+            result['passenger_trends'] = monthly.to_dict(orient='records')
+
+            # --- 2. Top Routes ---
+            df['route'] = df['From_Station'] + ' → ' + df['To_Station']
+            top_routes = df.groupby('route').agg(
+                total_passengers=('Passengers', 'sum'),
+                total_trips=('TripID', 'count'),
+                avg_fare=('Fare', 'mean'),
+                avg_distance=('Distance_km', 'mean')
+            ).reset_index()
+            top_routes = top_routes.nlargest(10, 'total_passengers')
+            result['top_routes'] = top_routes.round(2).to_dict(orient='records')
+
+            # --- 3. Ticket type breakdown ---
+            ticket_types = df.groupby('Ticket_Type')['Passengers'].sum().reset_index()
+            ticket_types.columns = ['ticket_type', 'passengers']
+            result['ticket_breakdown'] = ticket_types.to_dict(orient='records')
+
+            # --- 4. Day of week patterns ---
+            df['DayOfWeek'] = df['Date'].dt.day_name()
+            day_order = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+            dow = df.groupby('DayOfWeek')['Passengers'].agg(['sum','mean']).reindex(day_order).reset_index()
+            dow.columns = ['day', 'total_passengers', 'avg_passengers']
+            result['day_patterns'] = dow.round(1).to_dict(orient='records')
+        except Exception as e:
+            print(f"Analytics cache: metro CSV error: {e}")
+
+    # --- 5. Delay Factors ---
+    if os.path.exists(delay_path):
+        try:
+            df2 = pd.read_csv(delay_path)
+            metro_delays = df2[df2['transport_type'] == 'Metro'].copy()
+            if len(metro_delays) < 50:
+                metro_delays = df2.copy()
+
+            # Weather impact
+            weather_impact = metro_delays.groupby('weather_condition').agg(
+                delayed_rate=('delayed', 'mean'),
+                avg_delay_min=('actual_arrival_delay_min', 'mean'),
+                count=('trip_id', 'count')
+            ).reset_index()
+            weather_impact.columns = ['weather', 'delayed_rate', 'avg_delay_min', 'count']
+            result['weather_impact'] = weather_impact.round(2).to_dict(orient='records')
+
+            # Event type impact
+            df2_events = df2.copy()
+            df2_events['event_type'] = df2_events['event_type'].fillna('No Event')
+            event_impact = df2_events.groupby('event_type').agg(
+                delayed_rate=('delayed', 'mean'),
+                avg_delay_min=('actual_arrival_delay_min', 'mean')
+            ).reset_index()
+            event_impact.columns = ['event_type', 'delayed_rate', 'avg_delay_min']
+            result['event_impact'] = event_impact.round(2).to_dict(orient='records')
+
+            # Season pattern
+            season_impact = df2.groupby('season').agg(
+                delayed_rate=('delayed', 'mean'),
+                avg_delay_min=('actual_arrival_delay_min', 'mean')
+            ).reset_index()
+            season_impact.columns = ['season', 'delayed_rate', 'avg_delay_min']
+            result['season_impact'] = season_impact.round(2).to_dict(orient='records')
+        except Exception as e:
+            print(f"Analytics cache: delay CSV error: {e}")
+
+    # --- 6. Network overview ---
+    if os.path.exists(network_path):
+        try:
+            df3 = pd.read_csv(network_path)
+            df3['Line'] = df3['Line'].str.strip()
+            line_stats = df3.groupby('Line').agg(
+                station_count=('Station Name', 'count'),
+                total_km=('Distance from Start (km)', 'max')
+            ).reset_index()
+            line_stats.columns = ['line', 'station_count', 'total_km']
+            result['network_overview'] = line_stats.sort_values('station_count', ascending=False).to_dict(orient='records')
+        except Exception as e:
+            print(f"Analytics cache: network CSV error: {e}")
+
+    _ANALYTICS_CACHE = result
+    return result
+
+
+@router.get("/analytics/passenger-trends")
+async def get_passenger_trends(current_user: dict = Depends(analyst_only)):
+    """Monthly passenger trends from real delhi_metro_updated.csv dataset."""
+    data = _load_analytics_cache()
+    return {
+        "trends": data.get('passenger_trends', []),
+        "day_patterns": data.get('day_patterns', []),
+        "ticket_breakdown": data.get('ticket_breakdown', []),
+        "source": "delhi_metro_updated.csv (150,000 trip records)"
+    }
+
+
+@router.get("/analytics/top-routes")
+async def get_top_routes(current_user: dict = Depends(analyst_only)):
+    """Top 10 busiest origin-destination routes from real dataset."""
+    data = _load_analytics_cache()
+    return {
+        "routes": data.get('top_routes', []),
+        "source": "delhi_metro_updated.csv (150,000 trip records)"
+    }
+
+
+@router.get("/analytics/delay-factors")
+async def get_delay_factors(current_user: dict = Depends(analyst_only)):
+    """Weather, event, and seasonal delay analysis from public_transport_delays.csv."""
+    data = _load_analytics_cache()
+    return {
+        "weather_impact": data.get('weather_impact', []),
+        "event_impact": data.get('event_impact', []),
+        "season_impact": data.get('season_impact', []),
+        "source": "public_transport_delays.csv (2,000 records)"
+    }
+
+
+@router.get("/analytics/network-overview")
+async def get_network_overview(current_user: dict = Depends(analyst_only)):
+    """Delhi Metro network line statistics from Delhi-Metro-Network.csv."""
+    data = _load_analytics_cache()
+    return {
+        "lines": data.get('network_overview', []),
+        "source": "Delhi-Metro-Network.csv (285 stations)"
+    }

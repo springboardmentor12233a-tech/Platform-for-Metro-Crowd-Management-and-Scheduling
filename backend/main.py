@@ -12,6 +12,10 @@ from backend.routers.predictions import router as predictions_router
 from backend.routers.alerts import router as alerts_router
 from backend.routers.reports import router as reports_router
 from backend.routers.analytics import router as analytics_router
+from backend.routers.predictions import PredictCrowdRequest, ForecastDemandRequest, predict_crowd, forecast_demand, analyst_only
+from backend.routers.reports import get_traffic_report, get_frequency_report
+from backend.routers.crowd import get_live_status
+from fastapi import Depends
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -64,3 +68,38 @@ async def root():
         "api_documentation": "/docs",
         "system_time": asyncio.get_event_loop().time()
     }
+
+
+@app.post("/api/predict-crowd")
+async def app_predict_crowd(req: PredictCrowdRequest, current_user: dict = Depends(analyst_only)):
+    return await predict_crowd(req, current_user)
+
+
+@app.post("/api/forecast-demand")
+async def app_forecast_demand(req: ForecastDemandRequest, current_user: dict = Depends(analyst_only)):
+    return await forecast_demand(req, current_user)
+
+
+@app.get("/api/traffic-report")
+async def app_traffic_report(
+    format: str = "csv",
+    start_date: str = None,
+    end_date: str = None,
+    current_user: dict = Depends(analyst_only)
+):
+    return await get_traffic_report(format, start_date, end_date, current_user)
+
+
+@app.get("/api/frequency-report")
+async def app_frequency_report(
+    format: str = "csv",
+    start_date: str = None,
+    end_date: str = None,
+    current_user: dict = Depends(analyst_only)
+):
+    return await get_frequency_report(format, start_date, end_date, current_user)
+
+
+@app.get("/api/live-status")
+async def app_live_status():
+    return await get_live_status()

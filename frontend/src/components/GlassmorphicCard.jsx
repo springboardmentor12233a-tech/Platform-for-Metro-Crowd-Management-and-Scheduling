@@ -2,7 +2,7 @@ import React from 'react';
 
 const GlassmorphicCard = ({ children, className = '', hoverEffect = true }) => {
   return (
-    <div className={`${hoverEffect ? 'glass-card' : 'glass-panel rounded-2xl p-6 shadow-md border border-slate-200/60 dark:border-slate-800/40'} p-6 ${className}`}>
+    <div className={`${hoverEffect ? 'glass-card' : 'glass-panel rounded-xl shadow-sm'} p-6 bg-[var(--card)] text-[var(--text)] border border-[var(--border)] transition-all ${className}`}>
       {children}
     </div>
   );

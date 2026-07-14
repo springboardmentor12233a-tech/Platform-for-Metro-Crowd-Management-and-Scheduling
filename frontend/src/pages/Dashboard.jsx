@@ -48,8 +48,8 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Charts Grid Skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
           <div className="lg:col-span-2 h-96 bg-slate-200 dark:bg-slate-900 rounded-2xl"></div>
           <div className="h-96 bg-slate-200 dark:bg-slate-900 rounded-2xl"></div>
         </div>
@@ -70,7 +70,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center animate-fade-in-up">
         <div>
           <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
             System Dashboard
@@ -82,7 +82,7 @@ const Dashboard = () => {
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up delay-100">
         <GlassmorphicCard className="flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Passengers Today</span>
@@ -127,7 +127,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up delay-200">
         {/* Daily Ridership Trend */}
         <GlassmorphicCard className="lg:col-span-2 space-y-4">
           <div className="flex justify-between items-center">
@@ -173,8 +173,8 @@ const Dashboard = () => {
         </GlassmorphicCard>
       </div>
 
-      {/* Grid for delays, station congestion, and activity feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom Grid: Recent Activity & System Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up delay-300">
         {/* Top 5 Congested Stations */}
         <GlassmorphicCard className="space-y-4">
           <h3 className="font-bold text-lg">Top Congested Stations</h3>

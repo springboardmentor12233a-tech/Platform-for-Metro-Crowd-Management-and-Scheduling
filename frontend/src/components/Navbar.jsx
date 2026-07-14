@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useWebSockets } from '../context/WebSocketContext';
-import { Sun, Moon, Bell, Shield, Wifi, WifiOff } from 'lucide-react';
+import { Sun, Moon, Bell, Shield, Wifi, WifiOff, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ toggleMobileMenu }) => {
   const { isDark, toggleTheme } = useTheme();
   const { realTimeData, wsConnected } = useWebSockets();
   const [showAlerts, setShowAlerts] = useState(false);
@@ -12,9 +12,15 @@ const Navbar = () => {
   const activeAlerts = realTimeData?.alerts || [];
 
   return (
-    <header className="h-16 glass-panel border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 fixed top-0 right-0 left-64 z-10">
-      {/* Search / Page title placeholder */}
-      <div>
+    <header className="h-16 bg-[var(--card)]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-8 fixed top-0 right-0 left-0 md:left-64 z-20">
+      {/* Mobile Menu Toggle & Title */}
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={toggleMobileMenu}
+          className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+        >
+          <Menu size={20} />
+        </button>
         <h2 className="font-bold text-slate-800 dark:text-slate-100 hidden sm:block">
           AI MetroFlow Operations Center
         </h2>

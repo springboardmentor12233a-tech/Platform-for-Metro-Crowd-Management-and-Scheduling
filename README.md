@@ -88,19 +88,36 @@ AI_MetroFlow/
 - `DELETE /{id}` (Admin only): Deletes a schedule entry.
 - `POST /optimize-frequency` (Admin/Operator): Recommends optimal train headway schedules based on route demand.
 
-### AI Predictions (`/api/predictions`)
+### AI Predictions (`/api/predictions` and Direct Aliases)
 - `GET /metrics` (Analyst/Admin): Returns trained models performance summaries (MAE, RMSE, confusion matrix, feature importances).
 - `POST /demand` (Analyst/Admin): Predicts passenger demand group size.
 - `POST /delay` (Analyst/Admin): Forecasts trip delay probabilities and duration.
+- `POST /api/predict-crowd` (Analyst/Admin): Returns predicted passenger count, crowd level classification (Green/Yellow/Orange/Red), congestion risk index, and model confidence score. Writes prediction log to the `predictions` collection.
+- `POST /api/forecast-demand` (Analyst/Admin): Predicts hourly, daily, or weekly demand trends with peak alerts and warning notifications.
 
-### Alerts (`/api/alerts`)
-- `GET /`: Lists alerts log history.
-- `POST /` (Admin/Operator): Publishes an alert event, broadcasting it immediately over WebSockets.
-- `PUT /{id}` (Admin/Operator): Resolves an active alert and logs operational notes.
-- `DELETE /{id}` (Admin only): Deletes an alert entry.
-
-### Reports & Export (`/api/reports`)
+### Reports & Export (`/api/reports` and Direct Aliases)
 - `GET /generate` (Analyst/Admin): Compiles logs and streams downloads for `.csv`, `.xlsx`, or `.pdf` formats.
+- `GET /api/traffic-report` (Analyst/Admin): Compiles and streams passenger count traffic sheets.
+- `GET /api/frequency-report` (Analyst/Admin): Compiles and streams fleet utilization reports.
+
+### Monitoring WebSocket & REST API
+- `WS /api/crowd/ws`: Async WebSocket channel streaming active trains, delayed logs, and station footfall.
+- `GET /api/live-status`: Exposes a REST snapshot of the WebSocket state.
+
+---
+
+## 🗄️ Database Collections
+
+The MongoDB layer uses the following collections to organize states:
+- `users`: Operator profile info, credentials, and console theme options.
+- `stations`: Metro network station metadata, coordinate positions, and status.
+- `routes`: Station sequences mapping individual metro line paths.
+- `trains`: Running metro cars fleet, capacities, and active schedules.
+- `schedules`: Live timetable dispatch entries, delays, and platforms.
+- `predictions`: Log entries of crowd predictions queried by analysts.
+- `passenger_history`: Aggregated logs of passenger station entries for analytics.
+- `traffic_reports`: Database records tracking generated and exported PDF/CSV documents.
+- `train_status`: Live status checkpoints tracking transit logs.
 
 ---
 

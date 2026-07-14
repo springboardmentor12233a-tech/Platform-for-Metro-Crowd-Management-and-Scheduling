@@ -36,6 +36,10 @@ manager = ConnectionManager()
 # Background simulation variables
 simulation_running = False
 
+@router.get("/live-status")
+async def get_live_status():
+    return await get_simulated_state()
+
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)

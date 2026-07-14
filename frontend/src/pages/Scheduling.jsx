@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import GlassmorphicCard from '../components/GlassmorphicCard';
@@ -15,6 +15,13 @@ const Scheduling = () => {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Search, Filter, Sort State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStation, setFilterStation] = useState('All');
+  const [filterTrain, setFilterTrain] = useState('All');
+  const [sortBy, setSortBy] = useState('time'); // 'time', 'train', 'station', 'delay'
+  const [sortOrder, setSortOrder] = useState('asc');
   
   // Optimization State
   const [selectedRoute, setSelectedRoute] = useState('');
@@ -137,6 +144,59 @@ const Scheduling = () => {
     }
   };
 
+  const filteredAndSortedSchedules = useMemo(() => {
+    let result = [...schedules];
+
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      result = result.filter(s => 
+        (s.train_number && s.train_number.toLowerCase().includes(q)) ||
+        (s.route_name && s.route_name.toLowerCase().includes(q)) ||
+        (s.station_name && s.station_name.toLowerCase().includes(q))
+      );
+    }
+
+    if (filterStation !== 'All') {
+      result = result.filter(s => s.station_name === filterStation);
+    }
+
+    if (filterTrain !== 'All') {
+      result = result.filter(s => s.train_number === filterTrain);
+    }
+
+    result.sort((a, b) => {
+      let valA, valB;
+      if (sortBy === 'time') {
+        valA = a.scheduled_departure || '';
+        valB = b.scheduled_departure || '';
+      } else if (sortBy === 'train') {
+        valA = a.train_number || '';
+        valB = b.train_number || '';
+      } else if (sortBy === 'station') {
+        valA = a.station_name || '';
+        valB = b.station_name || '';
+      } else if (sortBy === 'delay') {
+        valA = a.delay_min || 0;
+        valB = b.delay_min || 0;
+      }
+      
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [schedules, searchTerm, filterStation, filterTrain, sortBy, sortOrder]);
+
+  const toggleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
   if (loading) return <div className="text-center py-20 font-semibold">Loading Schedules...</div>;
 
   return (
@@ -175,27 +235,59 @@ const Scheduling = () => {
         {/* Timetable List (Takes 2/3 width) */}
         <div className="lg:col-span-2 space-y-4">
           <GlassmorphicCard className="space-y-4" hoverEffect={false}>
-            <h3 className="font-bold text-lg flex items-center gap-2">
-              <CalendarRange size={18} className="text-blue-500" />
-              <span>Timetable Schedules</span>
-            </h3>
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <CalendarRange size={18} className="text-blue-500" />
+                <span>Timetable Schedules</span>
+              </h3>
+              
+              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                <input 
+                  type="text" 
+                  placeholder="Search..." 
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 w-32"
+                />
+                <select 
+                  value={filterStation} 
+                  onChange={e => setFilterStation(e.target.value)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 max-w-[120px] truncate"
+                >
+                  <option value="All">All Stations</option>
+                  {[...new Set(schedules.map(s => s.station_name))].filter(Boolean).map(st => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
+                </select>
+                <select 
+                  value={filterTrain} 
+                  onChange={e => setFilterTrain(e.target.value)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 max-w-[100px] truncate"
+                >
+                  <option value="All">All Trains</option>
+                  {[...new Set(schedules.map(s => s.train_number))].filter(Boolean).map(tr => (
+                    <option key={tr} value={tr}>{tr}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 opacity-60">
-                    <th className="pb-3 font-bold">Train</th>
+                    <th className="pb-3 font-bold cursor-pointer hover:text-blue-500" onClick={() => toggleSort('train')}>Train {sortBy === 'train' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                     <th className="pb-3 font-bold">Route</th>
-                    <th className="pb-3 font-bold">Station</th>
+                    <th className="pb-3 font-bold cursor-pointer hover:text-blue-500" onClick={() => toggleSort('station')}>Station {sortBy === 'station' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                     <th className="pb-3 font-bold text-center">Plat</th>
-                    <th className="pb-3 font-bold text-center">Sched Dep</th>
-                    <th className="pb-3 font-bold text-center">Delay</th>
+                    <th className="pb-3 font-bold text-center cursor-pointer hover:text-blue-500" onClick={() => toggleSort('time')}>Sched Dep {sortBy === 'time' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
+                    <th className="pb-3 font-bold text-center cursor-pointer hover:text-blue-500" onClick={() => toggleSort('delay')}>Delay {sortBy === 'delay' && (sortOrder === 'asc' ? '↑' : '↓')}</th>
                     <th className="pb-3 font-bold text-center">Status</th>
                     {isAdmin && <th className="pb-3 font-bold text-right">Actions</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200/50 dark:divide-slate-800/50">
-                  {schedules.map((sched) => (
+                  {filteredAndSortedSchedules.map((sched) => (
                     <tr key={sched.id} className="hover:bg-slate-200/20 dark:hover:bg-slate-800/20 transition-all">
                       <td className="py-3 font-bold text-slate-800 dark:text-slate-200">{sched.train_number || 'TR-01'}</td>
                       <td className="py-3 opacity-85 truncate max-w-[120px]">{sched.route_name || 'Red Line'}</td>
