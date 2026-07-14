@@ -26,3 +26,20 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# Large ML model files (GitHub size limit)
+models/lstm_demand_forecast.keras
+models/lstm_demand_forecast.h5
+models/lstm_demand_forecast.h5.index
+
+# Large training data files
+data/X_train.npy
+data/y_train.npy
+data/X_test.npy
+data/y_test.npy
+data/PassengerDemandForecast.csv
+
+# Keep these small files
+!data/StationCrowdData.csv
+!data/TrafficPattern.csv
+!data/AlertNotification.csv
