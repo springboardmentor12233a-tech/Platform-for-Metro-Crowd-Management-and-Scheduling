@@ -1,6 +1,6 @@
 {
   "dataset": "trains",
-  "run_started": "2026-07-07T19:26:05",
+  "run_started": "2026-07-09T11:08:09",
   "input_rows": 5208,
   "input_cols": 27,
   "output_rows": 5208,
@@ -40,5 +40,6 @@
   "warnings": [
     "2774 train speed values outside [5,300] km/h flagged"
   ],
-  "run_finished": "2026-07-07T19:26:05"
+  "errors": [],
+  "run_finished": "2026-07-09T11:08:10"
 }

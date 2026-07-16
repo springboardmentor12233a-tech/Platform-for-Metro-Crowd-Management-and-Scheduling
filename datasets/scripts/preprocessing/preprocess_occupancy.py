@@ -35,9 +35,10 @@ def run() -> None:
     logger.info("loaded rows=%s cols=%s", len(df), df.shape[1])
 
     df = clean_column_names(df)
+    df = df.rename(columns={"lat": "latitude", "lon": "longitude"})
     df = remove_duplicates(df, log_record, subset=["station_id"])
     df = convert_numeric(df, ["station_id", "distance_from_start_km", "latitude", "longitude"], log_record)
-    df = convert_datetime(df, ["opening_date"], log_record)
+    df = convert_datetime(df, ["opening_date"], log_record, date_format="%d/%m/%Y")
     df = standardize_categories(df, ["station_name", "line", "station_layout"])
     df = handle_missing_values(
         df,
@@ -62,4 +63,3 @@ def run() -> None:
 
 if __name__ == "__main__":
     run()
-

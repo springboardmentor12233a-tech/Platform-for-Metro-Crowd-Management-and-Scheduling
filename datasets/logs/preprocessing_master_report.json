@@ -1,53 +1,53 @@
 {
-  "run_started": "2026-07-07T19:26:02",
-  "run_finished": "2026-07-07T19:26:51",
+  "run_started": "2026-07-09T11:08:01",
+  "run_finished": "2026-07-09T11:09:42",
   "processed_dir": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed",
   "logs_dir": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\logs",
   "results": {
     "ridership": {
       "status": "success",
-      "duration_seconds": 0.019
+      "duration_seconds": 0.101
     },
     "gps": {
       "status": "success",
-      "duration_seconds": 0.013
+      "duration_seconds": 0.079
     },
     "occupancy": {
       "status": "success",
-      "duration_seconds": 0.017
+      "duration_seconds": 0.03
     },
     "delay": {
       "status": "success",
-      "duration_seconds": 0.085
+      "duration_seconds": 0.231
     },
     "ticketing": {
       "status": "success",
-      "duration_seconds": 2.132
+      "duration_seconds": 5.204
     },
     "ac2020_entry_exit": {
       "status": "success",
-      "duration_seconds": 0.239
+      "duration_seconds": 0.993
     },
     "entry_exit": {
-      "status": "skipped",
-      "reason": "selected by --skip"
+      "status": "success",
+      "duration_seconds": 0.812
     },
     "stations": {
       "status": "success",
-      "duration_seconds": 0.124
+      "duration_seconds": 0.35
     },
     "trains": {
       "status": "success",
-      "duration_seconds": 0.51
+      "duration_seconds": 1.418
     },
     "schedules": {
       "status": "success",
-      "duration_seconds": 5.493
+      "duration_seconds": 12.806
     },
     "sensor": {
       "status": "success",
-      "duration_seconds": 40.439
+      "duration_seconds": 79.485
     }
   },
-  "duration_seconds": 49.071
+  "duration_seconds": 101.511
 }

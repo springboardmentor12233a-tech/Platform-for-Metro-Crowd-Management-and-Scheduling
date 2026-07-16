@@ -1,3 +1,3 @@
-2026-07-07 19:26:06 [INFO] loaded rows=417080 cols=8
-2026-07-07 19:26:10 [INFO] saved output=D:\Playground\Eat_Sleep_Code_Repeat\Projects\Platform-for-Metro-Crowd-Management-and-Scheduling\datasets\processed\schedules_preprocessed.csv
-2026-07-07 19:26:10 [INFO] summary_log=D:\Playground\Eat_Sleep_Code_Repeat\Projects\Platform-for-Metro-Crowd-Management-and-Scheduling\datasets\logs\schedules_summary.json
+2026-07-09 11:08:12 [INFO] loaded rows=417080 cols=8
+2026-07-09 11:08:23 [INFO] saved output=D:\Playground\Eat_Sleep_Code_Repeat\Projects\Platform-for-Metro-Crowd-Management-and-Scheduling\datasets\processed\schedules_preprocessed.csv
+2026-07-09 11:08:23 [INFO] summary_log=D:\Playground\Eat_Sleep_Code_Repeat\Projects\Platform-for-Metro-Crowd-Management-and-Scheduling\datasets\logs\schedules_summary.json

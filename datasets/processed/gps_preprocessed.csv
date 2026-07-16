@@ -1,0 +1,50 @@
+station_id,station_name,distance_from_start_km,line,opening_date,station_layout,latitude,longitude,coord_invalid,distance_from_start_km_outlier,opening_year
+1,Shaheed Sthal(First Station),0.0,Red Line,2019-03-08,Elevated,28.6706109,77.4155822,0,0,2019
+2,Hindon River,1.0,Red Line,2019-03-08,Elevated,28.878965,77.4154832,0,0,2019
+3,Arthala,2.5,Red Line,2019-03-08,Elevated,28.676999,77.3918919,0,0,2019
+4,Mohan Nagar,3.2,Red Line,2019-03-08,Elevated,28.60631905,77.10608185,0,0,2019
+5,Shyam Park,4.5,Red Line,2019-03-08,Elevated,28.6988072,28.6988072,1,0,2019
+6,Major Mohit Sharma,5.7,Red Line,2019-03-08,Elevated,28.6776112,77.3581426,0,0,2019
+7,Raj Bagh,6.9,Red Line,2019-03-08,Elevated,28.6408602,77.2094999,0,0,2019
+8,Shaheed Nagar,8.2,Red Line,2019-03-08,Elevated,28.5307795,77.2120573,0,0,2019
+9,Dilshad Garden,9.4,Red Line,2008-06-04,Elevated,28.67592,77.32142,0,0,2008
+10,Jhil Mil,10.3,Red Line,2008-06-04,Elevated,28.67579,77.31239,0,0,2008
+11,Mansarovar Park,11.4,Red Line,2008-06-04,Elevated,28.67544,77.30095,0,0,2008
+12,Shahdara,12.5,Red Line,2002-12-24,Elevated,28.67345,77.28962,0,0,2002
+13,Welcome [Conn: Pink],13.7,Red Line,2002-12-25,Elevated,28.6718,77.27756,0,0,2002
+14,Seelampur,14.8,Red Line,2002-12-25,Elevated,28.66989,77.2667,0,0,2002
+15,Shastri Park,16.4,Red Line,2002-12-25,Elevated,28.668,77.24994,0,0,2002
+16,"Kashmere Gate [Conn: Violet,Yellow]",18.5,Red Line,2002-12-24,Elevated,28.6675,77.22817,0,0,2002
+17,Tis Hazari,19.7,Red Line,2002-12-25,Elevated,28.66711,77.21653,0,0,2002
+18,Pul Bangash,20.6,Red Line,2003-10-03,Elevated,28.66636,77.20727,0,0,2003
+19,Pratap Nagar,21.4,Red Line,2003-10-03,Elevated,28.66662,77.19882,0,0,2003
+20,Shastri Nagar,23.1,Red Line,2003-10-03,Elevated,28.66999,77.18169,0,0,2003
+21,Inderlok [Conn: Green],24.3,Red Line,2003-10-03,Elevated,28.67319,77.16994,0,0,2003
+22,Kanhaiya Nagar,25.5,Red Line,2004-03-31,Elevated,28.68254,77.16459,0,0,2004
+23,Keshav Puram,26.2,Red Line,2004-03-31,Elevated,28.68894,77.1616,0,0,2004
+24,Netaji Subash Place [Conn: Pink],27.4,Red Line,2018-03-14,Elevated,28.69591,77.15226,0,0,2018
+25,Kohat Enclave,28.6,Red Line,2004-03-31,Elevated,28.6981,77.14024,0,0,2004
+26,Pitam Pura,29.6,Red Line,2004-03-31,Elevated,28.70317,77.13223,0,0,2004
+27,Rohini East,30.4,Red Line,2004-03-31,Elevated,28.7076,77.12591,0,0,2004
+28,Rohini West,31.7,Red Line,2004-03-31,Elevated,28.71483,77.11467,0,0,2004
+29,Rithala(Last Station),32.7,Red Line,2004-03-31,Elevated,28.72072,77.10713,0,0,2004
+30,Sultanpur,34.6,Yellow Line,2010-06-21,Elevated,28.49927,77.16153,0,0,2010
+31,Ghitorni,35.9,Yellow Line,2010-06-21,Elevated,28.49383,77.14922,0,0,2010
+32,Arjan Garh,38.6,Yellow Line,2010-06-21,Elevated,28.48076,77.12583,0,0,2010
+33,Guru Dronacharya,40.9,Yellow Line,2010-06-21,Elevated,28.48203,77.10232,0,0,2010
+34,Sikandarpur [Conn: Rapid],41.9,Yellow Line,2010-06-21,Elevated,28.48182,77.09235,0,0,2010
+35,Mg Road,43.1,Yellow Line,2010-06-21,Elevated,28.47957,77.08006,0,0,2010
+36,Iffco Chowk,44.2,Yellow Line,2010-06-21,Elevated,28.47209,77.07175,0,0,2010
+37,Huda City Centre,45.7,Yellow Line,2010-06-21,Elevated,28.45927,77.07268,0,0,2010
+38,New Ashok Nagar,40.4,Blue Line,2009-11-12,Elevated,28.58916,77.30204,0,0,2009
+39,Noida Sector 15,41.4,Blue Line,2009-11-12,Elevated,28.58512,77.31139,0,0,2009
+40,Noida Sector 16,42.5,Blue Line,2009-11-12,Elevated,28.57819,77.31757,0,0,2009
+41,Noida Sector 18,43.6,Blue Line,2009-11-12,Elevated,28.57081,77.32612,0,0,2009
+42,Botanical Garden [Conn: Magenta],44.7,Blue Line,2009-11-12,Elevated,28.56409,77.3342,0,0,2009
+43,Golf Course,45.9,Blue Line,2009-11-12,Elevated,28.56714,77.34598,0,0,2009
+44,Noida City Center,47.2,Blue Line,2009-11-12,Elevated,28.57466,77.35608,0,0,2009
+45,Noida Sector 34,48.1,Blue Line,2019-03-09,Elevated,28.4808629,77.0848883,0,0,2019
+46,Noida Sector 52 [Conn: Aqua],49.3,Blue Line,2019-03-09,Elevated,28.4808629,77.0848883,0,0,2019
+47,Noida Sector 61,50.5,Blue Line,2019-03-09,Elevated,28.4808629,77.0848883,0,0,2019
+48,Noida Sector 59,51.5,Blue Line,2019-03-09,Elevated,28.4808629,77.0848883,0,0,2019
+49,Noida Sector 62,52.7,Blue Line,2019-03-09,Elevated,28.4808629,77.0848883,0,0,2019

@@ -1,6 +1,6 @@
 {
   "dataset": "stations",
-  "run_started": "2026-07-07T19:26:04",
+  "run_started": "2026-07-09T11:08:08",
   "input_rows": 8990,
   "input_cols": 8,
   "output_rows": 8990,
@@ -24,5 +24,6 @@
   },
   "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\stations_preprocessed.csv",
   "warnings": [],
-  "run_finished": "2026-07-07T19:26:05"
+  "errors": [],
+  "run_finished": "2026-07-09T11:08:09"
 }

@@ -1,6 +1,6 @@
 {
   "dataset": "ticketing",
-  "run_started": "2026-07-07T19:26:02",
+  "run_started": "2026-07-09T11:08:01",
   "input_rows": 150000,
   "input_cols": 10,
   "output_rows": 150000,
@@ -27,5 +27,6 @@
   },
   "output_filename": "D:\\Playground\\Eat_Sleep_Code_Repeat\\Projects\\Platform-for-Metro-Crowd-Management-and-Scheduling\\datasets\\processed\\ticketing_preprocessed.csv",
   "warnings": [],
-  "run_finished": "2026-07-07T19:26:04"
+  "errors": [],
+  "run_finished": "2026-07-09T11:08:06"
 }

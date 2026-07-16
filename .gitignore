@@ -1,28 +1,115 @@
-# Python
-backend/venv/
-**/__pycache__/
-*.pyc
+# ---- Python / Backend ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
 
-# Node
-frontend/node_modules/
-
-# Environment
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
 .env
-.env.*
 
-# VS Code
-.vscode/
-
-# Logs
+# FastAPI / Uvicorn
 *.log
+*.pid
 
-# OS files
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ---- Node / Frontend ----
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+
+# Vite
+frontend/dist/
+frontend/.vite/
+
+# Build artifacts
+*.tsbuildinfo
+.next/
+out/
+.nuxt/
+.output/
+
+# ---- Environment Variables ----
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+# Note: .env.example files are committed intentionally
+
+# ---- IDEs & Editors ----
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
-# Large datasets
+desktop.ini
+
+# ---- Database ----
+*.sqlite3
+*.db
+*.db-journal
+migrations/versions/*.py
+
+# ---- Secrets & Keys ----
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+
+# ---- AI / ML (future milestones) ----
+*.pkl
+*.h5
+*.joblib
+*.pt
+*.pth
+models/saved/
+checkpoints/
+
+# ---- Jupyter (datasets work) ----
+.ipynb_checkpoints/
+*.ipynb
+
+# ---- Miscellaneous ----
+*.bak
+*.tmp
+*.temp
+coverage/
+reports/*.html
+.gemini/
+datasets/logs/
 datasets/raw/metro-sensordata.csv
 datasets/processed/sensor_preprocessed.csv
-
-# Or ignore all processed datasets if they are generated
-datasets/processed/
-datasets/raw/
