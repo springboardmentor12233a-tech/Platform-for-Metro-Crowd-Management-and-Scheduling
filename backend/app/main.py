@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth,operators,scheduling,predictions,monitoring
+from app.routers import auth,operators,scheduling,predictions,monitoring,reports
 app = FastAPI(
     title="MetroFlow API",
     description="AI Platform for Metro Crowd Management and Scheduling",
@@ -20,6 +20,7 @@ app.include_router(operators.router)
 app.include_router(scheduling.router)
 app.include_router(predictions.router)
 app.include_router(monitoring.router)
+app.include_router(reports.router)
 
 @app.get("/")
 def root():
