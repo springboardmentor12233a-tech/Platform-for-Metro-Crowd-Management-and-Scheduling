@@ -1,108 +1,86 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import os
 
 # -------------------------------
 # Load Dataset
 # -------------------------------
+dataset_path = "../data/MetroFlow_Dataset.xlsx"
 
-file_path = "data/MetroFlow_Dataset.xlsx"
+df = pd.read_excel(dataset_path)
 
-df = pd.read_excel(file_path)
+print("=" * 50)
+print("METROFLOW DATASET LOADED SUCCESSFULLY")
+print("=" * 50)
 
 # -------------------------------
-# Display first 5 rows
+# Basic Information
 # -------------------------------
-
-print("=" * 60)
-print("FIRST 5 ROWS")
-print("=" * 60)
-
+print("\nFirst 5 Rows")
 print(df.head())
 
-# -------------------------------
-# Dataset Shape
-# -------------------------------
-
-print("\n")
-print("=" * 60)
-print("DATASET SHAPE")
-print("=" * 60)
-
+print("\nDataset Shape")
 print(df.shape)
-# -------------------------------
-# Column Names
-# -------------------------------
 
-print("\n")
-print("=" * 60)
-print("COLUMN NAMES")
-print("=" * 60)
+print("\nColumn Names")
+print(df.columns.tolist())
 
-print(df.columns)
-# -------------------------------
-# Dataset Information
-# -------------------------------
-
-print("\n")
-print("=" * 60)
-print("DATASET INFORMATION")
-print("=" * 60)
-
+print("\nDataset Information")
 print(df.info())
-# -------------------------------
-# Statistical Summary
-# -------------------------------
 
-print("\n")
-print("=" * 60)
-print("STATISTICAL SUMMARY")
-print("=" * 60)
-
-print(df.describe())
-# -------------------------------
-# Missing Values
-# -------------------------------
-
-print("\n")
-print("=" * 60)
-print("MISSING VALUES")
-print("=" * 60)
-
+print("\nMissing Values")
 print(df.isnull().sum())
-# -------------------------------
-# Duplicate Rows
-# -------------------------------
 
-print("\n")
-print("=" * 60)
-print("DUPLICATE ROWS")
-print("=" * 60)
-
+print("\nDuplicate Rows")
 print(df.duplicated().sum())
+
+print("\nStatistical Summary")
+print(df.describe(include="all"))
+
 # -------------------------------
-# Data Types
+# Create outputs folder if missing
 # -------------------------------
+os.makedirs("../outputs", exist_ok=True)
 
-print("\n")
-print("=" * 60)
-print("DATA TYPES")
-print("=" * 60)
+# -------------------------------
+# Passenger Count Distribution
+# -------------------------------
+plt.figure(figsize=(8,5))
+df["Passenger_Count"].hist(bins=20)
 
-print(df.dtypes)
-import pandas as pd
+plt.title("Passenger Count Distribution")
+plt.xlabel("Passenger Count")
+plt.ylabel("Frequency")
 
-df = pd.read_excel("data/MetroFlow_Dataset.xlsx")
+plt.savefig("../outputs/passenger_distribution.png")
+plt.close()
 
-print("Days:")
-print(df["Day"].unique())
+# -------------------------------
+# Crowd Level Count
+# -------------------------------
+plt.figure(figsize=(6,5))
+df["Crowd_Level"].value_counts().plot(kind="bar")
 
-print("\nWeather:")
-print(df["Weather"].unique())
+plt.title("Crowd Level")
+plt.xlabel("Crowd")
+plt.ylabel("Count")
 
-print("\nStations:")
-print(df["Station"].unique())
+plt.savefig("../outputs/crowd_level.png")
+plt.close()
 
-print("\nFrom Stations:")
-print(df["From_Station"].unique())
+# -------------------------------
+# Station Passenger Count
+# -------------------------------
+plt.figure(figsize=(10,6))
 
-print("\nTo Stations:")
-print(df["To_Station"].unique())
+df.groupby("Station")["Passenger_Count"].mean().plot(kind="bar")
+
+plt.title("Average Passenger Count by Station")
+plt.xlabel("Station")
+plt.ylabel("Average Passenger Count")
+
+plt.savefig("../outputs/station_passenger.png")
+plt.close()
+
+print("\nEDA Completed Successfully!")
+print("Graphs saved inside outputs folder.")

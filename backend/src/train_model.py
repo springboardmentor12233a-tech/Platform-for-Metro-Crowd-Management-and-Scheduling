@@ -1,161 +1,129 @@
 import pandas as pd
+import os
+import joblib
 
-# Load preprocessed dataset
-df = pd.read_csv("outputs/preprocessed_data.csv")
-
-print("=" * 60)
-print("FEATURE SELECTION")
-print("=" * 60)
-
-# Select input features
-X = df.drop(
-    columns=[
-        "Crowd_Level",
-        "Congestion_Level",
-        "AI_Recommendation"
-    ]
-)
-
-# Select target
-y = df["Crowd_Level"]
-
-print("\nInput Features (X)")
-print(X.columns)
-
-print("\nTarget Column (y)")
-print(y.name)
-
-print("\nShape of X:", X.shape)
-print("Shape of y:", y.shape)
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
-# Split the dataset
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.metrics import accuracy_score, classification_report
+
+# ----------------------------------------
+# Load Dataset
+# ----------------------------------------
+dataset_path = "../data/MetroFlow_Dataset.xlsx"
+
+df = pd.read_excel(dataset_path)
+
+print("=" * 50)
+print("DATASET LOADED")
+print("=" * 50)
+
+# ----------------------------------------
+# Remove Duplicates
+# ----------------------------------------
+df = df.drop_duplicates()
+
+# ----------------------------------------
+# Handle Missing Values
+# ----------------------------------------
+df = df.ffill()
+
+# ----------------------------------------
+# Encode Categorical Columns
+# ----------------------------------------
+encoders = {}
+
+categorical_columns = df.select_dtypes(include="object").columns
+
+for column in categorical_columns:
+    encoder = LabelEncoder()
+    df[column] = encoder.fit_transform(df[column].astype(str))
+    encoders[column] = encoder
+
+# ----------------------------------------
+# Features & Target
+# ----------------------------------------
+# Important features only
+X = df[
+    [
+        "Passenger_Count",
+        "Occupancy_Percent",
+        "Delay_Minutes",
+        "Number_of_Trips",
+        "Train_Frequency_Per_Hour",
+        "Train_Speed_kmph"
+    ]
+]
+
+y = df["Crowd_Level"]
+# ----------------------------------------
+# Feature Scaling
+# ----------------------------------------
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Save Scaler
+os.makedirs("../models", exist_ok=True)
+joblib.dump(scaler, "../models/scaler.pkl")
+
+# ----------------------------------------
+# Train Test Split
+# ----------------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.20,
-    random_state=42,
-    stratify=y
-)
-
-print("\n")
-print("=" * 60)
-print("TRAIN TEST SPLIT")
-print("=" * 60)
-
-print("Training Features :", X_train.shape)
-print("Testing Features  :", X_test.shape)
-
-print("Training Labels   :", y_train.shape)
-print("Testing Labels    :", y_test.shape)
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-
-# Create models
-decision_tree = DecisionTreeClassifier(random_state=42)
-
-random_forest = RandomForestClassifier(
-    n_estimators=100,
     random_state=42
 )
 
-logistic = LogisticRegression(max_iter=1000)
+print("Training Shape :", X_train.shape)
+print("Testing Shape :", X_test.shape)
 
-knn = KNeighborsClassifier(n_neighbors=5)
-
-print("\nTraining Decision Tree...")
-decision_tree.fit(X_train, y_train)
-
-print("Training Random Forest...")
-random_forest.fit(X_train, y_train)
-
-print("Training Logistic Regression...")
-logistic.fit(X_train, y_train)
-
-print("Training KNN...")
-knn.fit(X_train, y_train)
-
-print("\nAll models trained successfully.")
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-import joblib
-import os
-
-# -------------------------------
-# Predictions
-# -------------------------------
-
-dt_pred = decision_tree.predict(X_test)
-rf_pred = random_forest.predict(X_test)
-lr_pred = logistic.predict(X_test)
-knn_pred = knn.predict(X_test)
-
-# -------------------------------
-# Accuracy
-# -------------------------------
-
-dt_acc = accuracy_score(y_test, dt_pred)
-rf_acc = accuracy_score(y_test, rf_pred)
-lr_acc = accuracy_score(y_test, lr_pred)
-knn_acc = accuracy_score(y_test, knn_pred)
-
-print("\n" + "="*60)
-print("MODEL ACCURACY")
-print("="*60)
-
-print(f"Decision Tree       : {dt_acc:.4f}")
-print(f"Random Forest      : {rf_acc:.4f}")
-print(f"Logistic Regression: {lr_acc:.4f}")
-print(f"KNN                : {knn_acc:.4f}")
-
-# -------------------------------
-# Best Model Selection
-# -------------------------------
-
+# ----------------------------------------
+# Models
+# ----------------------------------------
 models = {
-    "Decision Tree": (decision_tree, dt_acc),
-    "Random Forest": (random_forest, rf_acc),
-    "Logistic Regression": (logistic, lr_acc),
-    "KNN": (knn, knn_acc)
+    "Decision Tree": DecisionTreeClassifier(random_state=42),
+    "Random Forest": RandomForestClassifier(random_state=42),
+    "Logistic Regression": LogisticRegression(max_iter=1000)
 }
 
-best_model_name = max(models, key=lambda x: models[x][1])
-best_model = models[best_model_name][0]
-best_accuracy = models[best_model_name][1]
+best_model = None
+best_accuracy = 0
+best_name = ""
 
-print("\n" + "="*60)
-print("BEST MODEL")
-print("="*60)
+print("\nMODEL RESULTS")
+print("=" * 50)
 
-print("Model :", best_model_name)
-print("Accuracy :", round(best_accuracy * 100, 2), "%")
+for name, model in models.items():
 
-# -------------------------------
-# Classification Report
-# -------------------------------
+    model.fit(X_train, y_train)
 
-print("\nClassification Report\n")
+    predictions = model.predict(X_test)
 
-best_pred = best_model.predict(X_test)
+    accuracy = accuracy_score(y_test, predictions)
 
-print(classification_report(y_test, best_pred))
+    print(f"\n{name}")
+    print(f"Accuracy : {accuracy:.4f}")
 
-# -------------------------------
-# Confusion Matrix
-# -------------------------------
+    print(classification_report(y_test, predictions))
 
-print("Confusion Matrix\n")
+    if accuracy > best_accuracy:
+        best_accuracy = accuracy
+        best_model = model
+        best_name = name
 
-print(confusion_matrix(y_test, best_pred))
-
-# -------------------------------
+# ----------------------------------------
 # Save Best Model
-# -------------------------------
+# ----------------------------------------
+joblib.dump(best_model, "../models/crowd_model.pkl")
 
-os.makedirs("models", exist_ok=True)
-
-joblib.dump(best_model, "models/metro_model.pkl")
-
-print("\nBest model saved successfully!")
-print("Location : models/metro_model.pkl")
+print("=" * 50)
+print(f"BEST MODEL : {best_name}")
+print(f"BEST ACCURACY : {best_accuracy:.4f}")
+print("Model Saved Successfully")
+print("=" * 50)

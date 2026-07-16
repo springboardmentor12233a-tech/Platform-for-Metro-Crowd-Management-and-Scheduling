@@ -1,21 +1,35 @@
-function DashboardCard({ title, value }) {
-  return (
-    <div
-      style={{
-        width: "220px",
-        background: "#1565C0",
-        color: "white",
-        padding: "20px",
-        borderRadius: "15px",
-        textAlign: "center",
-        boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
-      }}
-    >
-      <h3>{title}</h3>
+function DashboardCard({title, value, color}) {
 
-      <h1>{value}</h1>
-    </div>
-  );
+    return (
+
+        <div className="col-md-4 mb-4">
+
+            <div
+                className="card shadow"
+                style={{
+                    borderLeft:`5px solid ${color}`
+                }}
+            >
+
+                <div className="card-body">
+
+                    <h5 className="card-title">
+                        {title}
+                    </h5>
+
+
+                    <h2>
+                        {value}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    );
+
 }
 
 export default DashboardCard;

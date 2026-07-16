@@ -1,116 +1,102 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-import joblib
 import os
+import joblib
 
-# ==============================
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+
+# ------------------------------------
 # Load Dataset
-# ==============================
+# ------------------------------------
+dataset_path = "../data/MetroFlow_Dataset.xlsx"
 
-file_path = "data/MetroFlow_Dataset.xlsx"
-df = pd.read_excel(file_path)
+df = pd.read_excel(dataset_path)
 
-print("=" * 60)
-print("DATA PREPROCESSING")
-print("=" * 60)
+print("=" * 50)
+print("DATASET LOADED SUCCESSFULLY")
+print("=" * 50)
 
-# ==============================
-# Remove Duplicate Rows
-# ==============================
-
+# ------------------------------------
+# Remove Duplicates
+# ------------------------------------
 duplicates = df.duplicated().sum()
-print(f"Duplicate Rows Before Removal : {duplicates}")
+print(f"Duplicate Rows : {duplicates}")
 
-df.drop_duplicates(inplace=True)
+df = df.drop_duplicates()
 
-duplicates = df.duplicated().sum()
-print(f"Duplicate Rows After Removal  : {duplicates}")
-
-# ==============================
-# Check Missing Values
-# ==============================
-
-print("\nMissing Values")
+# ------------------------------------
+# Handle Missing Values
+# ------------------------------------
+print("\nMissing Values Before:")
 print(df.isnull().sum())
 
-# ==============================
+df = df.ffill()
+
+print("\nMissing Values After:")
+print(df.isnull().sum())
+
+# ------------------------------------
 # Encode Categorical Columns
-# ==============================
+# ------------------------------------
+label_encoders = {}
 
-categorical_columns = [
-    "Date",
-    "Time",
-    "Day",
-    "Weather",
-    "Station",
-    "From_Station",
-    "To_Station",
-    "Crowd_Level",
-    "Congestion_Level",
-    "AI_Recommendation"
-]
-
-encoders = {}
+categorical_columns = df.select_dtypes(include="object").columns
 
 for column in categorical_columns:
     encoder = LabelEncoder()
-    df[column] = encoder.fit_transform(df[column])
+    df[column] = encoder.fit_transform(df[column].astype(str))
+    label_encoders[column] = encoder
 
-    encoders[column] = encoder
+print("\nCategorical Columns Encoded Successfully")
 
-print("\nCategorical columns encoded successfully.")
+# ------------------------------------
+# Features and Target
+# ------------------------------------
+X = df.drop("Crowd_Level", axis=1)
+y = df["Crowd_Level"]
 
-# ==============================
-# Scale Numerical Features
-# ==============================
+print("\nFeature Shape :", X.shape)
+print("Target Shape :", y.shape)
 
-numerical_columns = [
-    "Is_Holiday",
-    "Passenger_Entries",
-    "Passenger_Exits",
-    "Passenger_Count",
-    "Occupancy_Percent",
-    "Train_Speed_kmph",
-    "Number_of_Trips",
-    "Delay_Minutes",
-    "Peak_Hour",
-    "Train_Frequency_Per_Hour"
-]
-
+# ------------------------------------
+# Feature Scaling
+# ------------------------------------
 scaler = StandardScaler()
 
-df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
+X_scaled = scaler.fit_transform(X)
 
-print("Numerical columns scaled successfully.")
+# ------------------------------------
+# Train Test Split
+# ------------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled,
+    y,
+    test_size=0.2,
+    random_state=42
+)
 
-# ==============================
-# Create output folders if needed
-# ==============================
+print("\nTraining Data :", X_train.shape)
+print("Testing Data :", X_test.shape)
 
-os.makedirs("outputs", exist_ok=True)
-os.makedirs("models", exist_ok=True)
-
-# ==============================
-# Save Cleaned Dataset
-# ==============================
-
-df.to_csv("outputs/preprocessed_data.csv", index=False)
-
-# ==============================
+# ------------------------------------
 # Save Scaler
-# ==============================
+# ------------------------------------
+os.makedirs("../models", exist_ok=True)
 
-joblib.dump(scaler, "models/scaler.pkl")
+joblib.dump(scaler, "../models/scaler.pkl")
 
-# ==============================
-# Save Label Encoders
-# ==============================
+print("\nScaler Saved Successfully")
 
-joblib.dump(encoders, "models/label_encoders.pkl")
+# ------------------------------------
+# Save Processed Dataset
+# ------------------------------------
+processed = pd.DataFrame(X_scaled, columns=X.columns)
+processed["Crowd_Level"] = y.values
 
-print("\nPreprocessed dataset saved to outputs/preprocessed_data.csv")
-print("Scaler saved to models/scaler.pkl")
-print("Label encoders saved to models/label_encoders.pkl")
+os.makedirs("../outputs", exist_ok=True)
 
-print("\nFirst 5 Rows")
-print(df.head())
+processed.to_csv("../outputs/processed_dataset.csv", index=False)
+
+print("Processed Dataset Saved")
+
+print("\nPREPROCESSING COMPLETED SUCCESSFULLY")

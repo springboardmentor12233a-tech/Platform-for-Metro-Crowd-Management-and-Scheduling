@@ -1,120 +1,147 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { getMonitoring } from "../services/monitoring";
+import api from "../services/api";
 
 function Monitoring() {
 
-  const [stations, setStations] = useState([]);
+    const [monitor, setMonitor] = useState(null);
 
-  useEffect(() => {
-    loadStations();
-  }, []);
+    useEffect(() => {
 
-  const loadStations = async () => {
-    try {
-      const data = await getMonitoring();
-      setStations(data);
-    } catch (error) {
-      console.log(error);
+        api.get("/monitor")
+            .then((res) => {
+                setMonitor(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+    }, []);
+
+    if (!monitor) {
+        return (
+            <>
+                <Navbar />
+                <h2 style={{ textAlign: "center", marginTop: "50px" }}>
+                    Loading Monitoring Data...
+                </h2>
+            </>
+        );
     }
-  };
 
-  const getBadgeColor = (level) => {
-    if (level === "High") return "#D32F2F";
-    if (level === "Medium") return "#F9A825";
-    return "#2E7D32";
-  };
+    return (
+        <>
+            <Navbar />
 
-  return (
-    <>
-      <Navbar />
+            <div className="container mt-5">
 
-      <div
-        style={{
-          padding: "30px",
-          minHeight: "100vh",
-          background: "#eef4fb",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#1565C0",
-            marginBottom: "40px",
-          }}
-        >
-          🚉 Live Station Monitoring
-        </h1>
+                <h2 className="text-center mb-4">
+                    🚇 Real-Time Operational Monitoring
+                </h2>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))",
-            gap: "25px",
-          }}
-        >
-          {stations.map((station, index) => (
-            <div
-              key={index}
-              style={{
-                background: "white",
-                borderRadius: "15px",
-                padding: "20px",
-                boxShadow: "0 5px 15px rgba(0,0,0,.2)",
-              }}
-            >
-              <h2 style={{ color: "#1565C0" }}>
-                🚉 {station.station}
-              </h2>
+                <table className="table table-bordered table-striped table-hover shadow">
 
-              <p>
-                <strong>Passenger Count:</strong>{" "}
-                {station.passenger_count}
-              </p>
+                    <tbody>
 
-              <p>
-                <strong>Occupancy:</strong>{" "}
-                {station.occupancy}%
-              </p>
+                        <tr>
+                            <th>Date</th>
+                            <td>{monitor.Date}</td>
+                        </tr>
 
-              <div
-                style={{
-                  width: "100%",
-                  height: "15px",
-                  background: "#ddd",
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  marginTop: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${station.occupancy}%`,
-                    height: "100%",
-                    background: "#1565C0",
-                  }}
-                ></div>
-              </div>
+                        <tr>
+                            <th>Time</th>
+                            <td>{monitor.Time}</td>
+                        </tr>
 
-              <div
-                style={{
-                  marginTop: "20px",
-                  display: "inline-block",
-                  padding: "8px 18px",
-                  borderRadius: "20px",
-                  color: "white",
-                  background: getBadgeColor(station.crowd_level),
-                  fontWeight: "bold",
-                }}
-              >
-                {station.crowd_level} Crowd
-              </div>
+                        <tr>
+                            <th>Station</th>
+                            <td>{monitor.Station}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Passenger Count</th>
+                            <td>{monitor.Passenger_Count}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Passenger Entries</th>
+                            <td>{monitor.Passenger_Entries}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Passenger Exits</th>
+                            <td>{monitor.Passenger_Exits}</td>
+                        </tr>
+
+                        {/* Occupancy Progress Bar */}
+                        <tr>
+                            <th>Occupancy</th>
+
+                            <td>
+
+                                <div className="progress" style={{ height: "25px" }}>
+
+                                    <div
+                                        className="progress-bar bg-success"
+                                        role="progressbar"
+                                        style={{
+                                            width: `${monitor.Occupancy_Percent}%`
+                                        }}
+                                    >
+                                        {monitor.Occupancy_Percent}%
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {/* Crowd Level Badge */}
+                        <tr>
+                            <th>Crowd Level</th>
+
+                            <td>
+
+                                {monitor.Crowd_Level === "High" && (
+                                    <span className="badge bg-danger fs-6">
+                                        High
+                                    </span>
+                                )}
+
+                                {monitor.Crowd_Level === "Medium" && (
+                                    <span className="badge bg-warning text-dark fs-6">
+                                        Medium
+                                    </span>
+                                )}
+
+                                {monitor.Crowd_Level === "Low" && (
+                                    <span className="badge bg-success fs-6">
+                                        Low
+                                    </span>
+                                )}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <th>Delay</th>
+                            <td>{monitor.Delay_Minutes} Minutes</td>
+                        </tr>
+
+                        <tr>
+                            <th>Trips</th>
+                            <td>{monitor.Trips}</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
             </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
+        </>
+    );
 }
 
 export default Monitoring;

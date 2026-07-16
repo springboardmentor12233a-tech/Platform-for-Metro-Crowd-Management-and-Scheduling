@@ -1,91 +1,39 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { FaTrain } from "react-icons/fa";
 
 function Navbar() {
-  return (
-    <nav className="navbar">
 
-      <div className="logo">
-        🚇 AI MetroFlow
+  return (
+
+    <nav className="navbar-custom">
+
+      <div className="navbar-logo">
+        <FaTrain />
+        <span style={{ marginLeft: "8px" }}>MetroFlow</span>
       </div>
 
-      <div className="nav-links">
+      <div>
 
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Home
-        </NavLink>
+        <Link to="/">Home</Link>
 
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Dashboard
-        </NavLink>
+        <Link to="/dashboard">Dashboard</Link>
 
-        <NavLink
-          to="/prediction"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Prediction
-        </NavLink>
+        <Link to="/prediction">Prediction</Link>
 
-        <NavLink
-          to="/monitoring"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Monitoring
-        </NavLink>
+        <Link to="/schedule">Schedule</Link>
 
-        <NavLink
-          to="/analytics"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Analytics
-        </NavLink>
+        <Link to="/monitor">Monitoring</Link>
 
-        <NavLink
-          to="/reports"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Reports
-        </NavLink>
+        <Link to="/forecast">Forecast</Link>
 
-        <NavLink
-          to="/alerts"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Alerts
-        </NavLink>
-
-        <NavLink
-          to="/schedule"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Schedule
-        </NavLink>
+        <Link to="/report">Reports</Link>
 
       </div>
 
     </nav>
+
   );
+
 }
 
 export default Navbar;

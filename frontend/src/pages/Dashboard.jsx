@@ -1,214 +1,346 @@
 import { useEffect, useState } from "react";
+
 import Navbar from "../components/Navbar";
-import DashboardCard from "../components/DashboardCard";
-import { Link } from "react-router-dom";
-import { getDashboard } from "../services/dashboard";
+import api from "../services/api";
+import Charts from "../components/Charts";
+
+import {
+    FaUsers,
+    FaTrain,
+    FaClock,
+    FaChartLine,
+    FaDownload
+} from "react-icons/fa";
+
 
 function Dashboard() {
-  const [dashboard, setDashboard] = useState({
-    stations: 0,
-    passengers: 0,
-    predictions: 0,
-    peak_hour: "",
-  });
 
-  useEffect(() => {
+
+    const [data, setData] = useState(null);
+
+
+    useEffect(() => {
+
+    const loadDashboard = () => {
+
+        api.get("/dashboard")
+
+            .then(res => {
+
+                console.log("Dashboard Data:", res.data);
+
+                setData(res.data);
+
+            })
+
+            .catch(err => {
+
+                console.log("Dashboard Error:", err);
+
+            });
+
+    };
+
+    // Load immediately
     loadDashboard();
-  }, []);
 
-  const loadDashboard = async () => {
-    try {
-      const data = await getDashboard();
-      setDashboard(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    // Refresh every 5 seconds
+    const interval = setInterval(loadDashboard, 5000);
 
-  return (
-    <>
-      <Navbar />
+    // Cleanup when leaving page
+    return () => clearInterval(interval);
 
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#f4f8fc",
-          padding: "30px",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#1565C0",
-            marginBottom: "10px",
-          }}
-        >
-          🚇 AI MetroFlow Dashboard
-        </h1>
+}, []);
 
-        <p
-          style={{
-            textAlign: "center",
-            color: "gray",
-            marginBottom: "40px",
-          }}
-        >
-          AI Powered Metro Crowd Management & Scheduling Platform
-        </p>
+    if (!data)
 
-        {/* Dashboard Cards */}
+    return (
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-            gap: "20px",
-          }}
-        >
-          <DashboardCard
-            title="🚉 Total Stations"
-            value={dashboard.stations}
-          />
+        <>
 
-          <DashboardCard
-            title="👥 Today's Passengers"
-            value={dashboard.passengers}
-          />
+        <Navbar/>
 
-          <DashboardCard
-            title="📈 Predictions"
-            value={dashboard.predictions}
-          />
+        <h2 className="page-title">
+            Loading Dashboard...
+        </h2>
 
-          <DashboardCard
-            title="⏰ Peak Hour"
-            value={dashboard.peak_hour}
-          />
+        </>
+
+    );
+
+
+
+    return (
+
+        <>
+
+
+        <Navbar/>
+
+
+        <div className="container mt-5">
+
+
+            <h1 className="page-title">
+                🚇 MetroFlow Dashboard
+            </h1>
+            
+
+
+
+            {/* METRIC CARDS */}
+
+            <div className="row">
+
+
+
+                {/* Passenger Count */}
+
+                <div className="col-md-4 mb-4">
+
+                    <div className="metric-card">
+
+                        <FaUsers className="metric-icon"/>
+
+                        <div className="metric-title">
+                            Passenger Count
+                        </div>
+
+
+                        <div className="metric-value">
+
+                            {data.Current_Status.Passenger_Count}
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+
+
+                {/* Crowd Level */}
+
+                <div className="col-md-4 mb-4">
+
+                    <div className="metric-card">
+
+                        <FaTrain className="metric-icon"/>
+
+
+                        <div className="metric-title">
+                            Crowd Level
+                        </div>
+
+
+                        <div
+                        className={
+                            "metric-value " +
+                            data.Current_Status.Crowd_Level.toLowerCase()
+                        }
+                        >
+
+                        {data.Current_Status.Crowd_Level}
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+
+
+                {/* Forecast */}
+
+                <div className="col-md-4 mb-4">
+
+                    <div className="metric-card">
+
+                        <FaChartLine className="metric-icon"/>
+
+
+                        <div className="metric-title">
+                            Predicted Passengers
+                        </div>
+
+
+                        <div className="metric-value">
+
+                            {data.Forecast.Predicted_Passenger_Count}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                {/* Station */}
+
+                <div className="col-md-4 mb-4">
+
+                    <div className="metric-card">
+
+
+                        <div className="metric-title">
+                            Current Station
+                        </div>
+
+
+                        <div className="metric-value">
+
+                            {data.Current_Status.Station}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+                {/* Delay */}
+
+                <div className="col-md-4 mb-4">
+
+
+                    <div className="metric-card">
+
+
+                        <FaClock className="metric-icon"/>
+
+
+                        <div className="metric-title">
+                            Delay
+                        </div>
+
+
+                        <div className="metric-value">
+
+                            {data.Current_Status.Delay_Minutes} min
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                {/* Total */}
+
+                <div className="col-md-4 mb-4">
+
+
+                    <div className="metric-card">
+
+
+                        <div className="metric-title">
+                            Total Passengers
+                        </div>
+
+
+                        <div className="metric-value">
+
+                            {data.Traffic_Report.Total_Passengers}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            {/* ANALYTICS SECTION */}
+
+            <div className="mt-5">
+
+                <h2 className="page-title">
+
+                    📊 Advanced Analytics
+
+                </h2>
+
+
+                <Charts data={data}/>
+
+
+            </div>
+
+
+
+
+
+
+            {/* DOWNLOAD REPORT */}
+
+            <div className="text-center mt-5 mb-5">
+
+
+                <button
+
+                className="btn btn-success btn-lg"
+
+                onClick={() =>
+                    window.open(
+                        "http://127.0.0.1:5000/report",
+                        "_blank"
+                    )
+                }
+
+                >
+
+                <FaDownload/>
+
+                &nbsp;
+
+                Download Report
+
+                </button>
+
+
+            </div>
+
+
+
+
         </div>
 
-        {/* Quick Actions */}
 
-        <div
-          style={{
-            marginTop: "50px",
-          }}
-        >
-          <h2 style={{ color: "#1565C0" }}>Quick Actions</h2>
+        </>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-              gap: "20px",
-              marginTop: "20px",
-            }}
-          >
-            <Link to="/prediction">
-              <button>🚆 Crowd Prediction</button>
-            </Link>
+    );
 
-            <Link to="/monitoring">
-              <button>🚉 Monitoring</button>
-            </Link>
-
-            <Link to="/analytics">
-              <button>📊 Analytics</button>
-            </Link>
-
-            <Link to="/reports">
-              <button>📑 Reports</button>
-            </Link>
-
-            <Link to="/alerts">
-              <button>🚨 Alerts</button>
-            </Link>
-
-            <Link to="/schedule">
-              <button>🗓 Schedule</button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "25px",
-            marginTop: "50px",
-          }}
-        >
-          {/* AI Recommendation */}
-
-          <div
-            style={{
-              background: "white",
-              padding: "25px",
-              borderRadius: "15px",
-              boxShadow: "0 5px 15px rgba(0,0,0,.15)",
-            }}
-          >
-            <h2 style={{ color: "#1565C0" }}>
-              🤖 AI Recommendation
-            </h2>
-
-            <ul style={{ lineHeight: "2" }}>
-              <li>Increase train frequency during peak hours.</li>
-              <li>Deploy additional staff at Airport Station.</li>
-              <li>Open extra ticket counters.</li>
-              <li>Broadcast crowd announcements.</li>
-            </ul>
-          </div>
-
-          {/* System Status */}
-
-          <div
-            style={{
-              background: "white",
-              padding: "25px",
-              borderRadius: "15px",
-              boxShadow: "0 5px 15px rgba(0,0,0,.15)",
-            }}
-          >
-            <h2 style={{ color: "#1565C0" }}>
-              📌 System Status
-            </h2>
-
-            <p>✅ AI Prediction Model : Active</p>
-            <p>✅ Metro Monitoring : Running</p>
-            <p>✅ Analytics Service : Connected</p>
-            <p>✅ Alert System : Active</p>
-            <p>✅ Schedule Optimization : Ready</p>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-
-        <div
-          style={{
-            marginTop: "40px",
-            background: "white",
-            padding: "25px",
-            borderRadius: "15px",
-            boxShadow: "0 5px 15px rgba(0,0,0,.15)",
-          }}
-        >
-          <h2 style={{ color: "#1565C0" }}>
-            📜 Recent Activity
-          </h2>
-
-          <ul style={{ lineHeight: "2" }}>
-            <li>Prediction generated successfully.</li>
-            <li>Monitoring data updated.</li>
-            <li>Analytics refreshed.</li>
-            <li>Schedule recommendations generated.</li>
-            <li>Reports synchronized.</li>
-          </ul>
-        </div>
-      </div>
-    </>
-  );
 }
+
 
 export default Dashboard;
