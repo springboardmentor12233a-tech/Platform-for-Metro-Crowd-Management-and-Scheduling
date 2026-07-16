@@ -136,15 +136,11 @@ function PredictionForm() {
       </form>
 
       <br/>
-
-      <h2>
-
-        Crowd Level : {result}
-
-      </h2>
-      <h3>
-       AI Recommendation : {recommendation}
-    </h3>
+    <ResultCard
+    result={result}
+    recommendation={recommendation}
+/>
+      
 
     </div>
 

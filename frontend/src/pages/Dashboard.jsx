@@ -5,12 +5,11 @@ import { Link } from "react-router-dom";
 import { getDashboard } from "../services/dashboard";
 
 function Dashboard() {
-
   const [dashboard, setDashboard] = useState({
     stations: 0,
     passengers: 0,
     predictions: 0,
-    peak_hour: ""
+    peak_hour: "",
   });
 
   useEffect(() => {
@@ -33,7 +32,7 @@ function Dashboard() {
       <div
         style={{
           minHeight: "100vh",
-          background: "rgba(255,255,255,0.92)",
+          background: "#f4f8fc",
           padding: "30px",
         }}
       >
@@ -41,40 +40,48 @@ function Dashboard() {
           style={{
             textAlign: "center",
             color: "#1565C0",
-            marginBottom: "40px",
+            marginBottom: "10px",
           }}
         >
           🚇 AI MetroFlow Dashboard
         </h1>
 
+        <p
+          style={{
+            textAlign: "center",
+            color: "gray",
+            marginBottom: "40px",
+          }}
+        >
+          AI Powered Metro Crowd Management & Scheduling Platform
+        </p>
+
         {/* Dashboard Cards */}
 
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-around",
-            flexWrap: "wrap",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
             gap: "20px",
-            marginBottom: "50px",
           }}
         >
           <DashboardCard
-            title="Total Stations"
+            title="🚉 Total Stations"
             value={dashboard.stations}
           />
 
           <DashboardCard
-            title="Today's Passengers"
+            title="👥 Today's Passengers"
             value={dashboard.passengers}
           />
 
           <DashboardCard
-            title="Predictions Made"
+            title="📈 Predictions"
             value={dashboard.predictions}
           />
 
           <DashboardCard
-            title="Peak Hour"
+            title="⏰ Peak Hour"
             value={dashboard.peak_hour}
           />
         </div>
@@ -83,85 +90,120 @@ function Dashboard() {
 
         <div
           style={{
-            textAlign: "center",
-            marginBottom: "60px",
+            marginTop: "50px",
           }}
         >
-          <h2>Quick Actions</h2>
+          <h2 style={{ color: "#1565C0" }}>Quick Actions</h2>
 
-          <br />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
+              gap: "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Link to="/prediction">
+              <button>🚆 Crowd Prediction</button>
+            </Link>
 
-          <Link to="/prediction">
-            <button style={{ width: "250px" }}>
-              Crowd Prediction
-            </button>
-          </Link>
+            <Link to="/monitoring">
+              <button>🚉 Monitoring</button>
+            </Link>
 
-          <br /><br />
+            <Link to="/analytics">
+              <button>📊 Analytics</button>
+            </Link>
 
-          <Link to="/analytics">
-            <button style={{ width: "250px" }}>
-              Analytics
-            </button>
-          </Link>
+            <Link to="/reports">
+              <button>📑 Reports</button>
+            </Link>
 
-          <br /><br />
+            <Link to="/alerts">
+              <button>🚨 Alerts</button>
+            </Link>
 
-          <Link to="/monitoring">
-            <button style={{ width: "250px" }}>
-              Monitoring
-            </button>
-          </Link>
-
-          <br /><br />
-
-          <Link to="/reports">
-            <button style={{ width: "250px" }}>
-              Reports
-            </button>
-          </Link>
-
-          <br /><br />
-
-          <Link to="/alerts">
-            <button style={{ width: "250px" }}>
-              Alerts
-            </button>
-          </Link>
-
-          <br /><br />
-
-          <Link to="/schedule">
-            <button style={{ width: "250px" }}>
-              Schedule
-            </button>
-          </Link>
+            <Link to="/schedule">
+              <button>🗓 Schedule</button>
+            </Link>
+          </div>
         </div>
 
-        {/* AI Recommendation */}
+        {/* Bottom Section */}
 
         <div
           style={{
-            background: "#F4F8FF",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "25px",
+            marginTop: "50px",
+          }}
+        >
+          {/* AI Recommendation */}
+
+          <div
+            style={{
+              background: "white",
+              padding: "25px",
+              borderRadius: "15px",
+              boxShadow: "0 5px 15px rgba(0,0,0,.15)",
+            }}
+          >
+            <h2 style={{ color: "#1565C0" }}>
+              🤖 AI Recommendation
+            </h2>
+
+            <ul style={{ lineHeight: "2" }}>
+              <li>Increase train frequency during peak hours.</li>
+              <li>Deploy additional staff at Airport Station.</li>
+              <li>Open extra ticket counters.</li>
+              <li>Broadcast crowd announcements.</li>
+            </ul>
+          </div>
+
+          {/* System Status */}
+
+          <div
+            style={{
+              background: "white",
+              padding: "25px",
+              borderRadius: "15px",
+              boxShadow: "0 5px 15px rgba(0,0,0,.15)",
+            }}
+          >
+            <h2 style={{ color: "#1565C0" }}>
+              📌 System Status
+            </h2>
+
+            <p>✅ AI Prediction Model : Active</p>
+            <p>✅ Metro Monitoring : Running</p>
+            <p>✅ Analytics Service : Connected</p>
+            <p>✅ Alert System : Active</p>
+            <p>✅ Schedule Optimization : Ready</p>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+
+        <div
+          style={{
+            marginTop: "40px",
+            background: "white",
             padding: "25px",
             borderRadius: "15px",
-            boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+            boxShadow: "0 5px 15px rgba(0,0,0,.15)",
           }}
         >
           <h2 style={{ color: "#1565C0" }}>
-            🤖 AI Recommendation
+            📜 Recent Activity
           </h2>
 
-          <ul
-            style={{
-              fontSize: "18px",
-              lineHeight: "2",
-            }}
-          >
-            <li>Increase train frequency during peak hours.</li>
-            <li>Deploy additional staff at Airport Station.</li>
-            <li>Open extra ticket counters.</li>
-            <li>Broadcast passenger announcements.</li>
+          <ul style={{ lineHeight: "2" }}>
+            <li>Prediction generated successfully.</li>
+            <li>Monitoring data updated.</li>
+            <li>Analytics refreshed.</li>
+            <li>Schedule recommendations generated.</li>
+            <li>Reports synchronized.</li>
           </ul>
         </div>
       </div>

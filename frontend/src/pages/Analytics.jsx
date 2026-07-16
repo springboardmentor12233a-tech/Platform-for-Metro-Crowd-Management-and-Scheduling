@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import { getAnalytics } from "../services/analytics";
 
 import {
   Chart as ChartJS,
@@ -6,127 +8,176 @@ import {
   LinearScale,
   BarElement,
   ArcElement,
-  PointElement,
-  LineElement,
-  Title,
   Tooltip,
-  Legend
+  Legend,
+  Title,
 } from "chart.js";
 
-import { Bar, Pie, Line } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   ArcElement,
-  PointElement,
-  LineElement,
-  Title,
   Tooltip,
-  Legend
+  Legend,
+  Title
 );
 
 function Analytics() {
+  const [chartData, setChartData] = useState({
+    labels: [],
+    values: [],
+  });
 
+  useEffect(() => {
+    loadAnalytics();
+  }, []);
+
+  const loadAnalytics = async () => {
+    try {
+      const data = await getAnalytics();
+      setChartData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Professional color palette
+  const colors = [
+    "#1565C0",
+    "#2E7D32",
+    "#EF6C00",
+    "#8E24AA",
+    "#D32F2F",
+    "#00838F",
+    "#F9A825",
+    "#5E35B1",
+    "#3949AB",
+    "#00897B",
+  ];
+
+  // Bar Chart Data
   const barData = {
-    labels: [
-      "Airport",
-      "Central",
-      "University",
-      "Market",
-      "Tech Park"
-    ],
+    labels: chartData.labels,
     datasets: [
       {
-        label: "Passenger Count",
-        data: [4800,6200,3100,5200,4500],
-        backgroundColor: [
-          "#1565C0",
-          "#42A5F5",
-          "#66BB6A",
-          "#FFA726",
-          "#AB47BC"
-        ]
-      }
-    ]
-  };
-
-  const pieData = {
-    labels:["Low","Medium","High"],
-    datasets:[
-      {
-        data:[25,45,30],
-        backgroundColor:[
-          "#66BB6A",
-          "#FFA726",
-          "#EF5350"
-        ]
-      }
-    ]
-  };
-
-  const lineData = {
-    labels:[
-      "6AM",
-      "8AM",
-      "10AM",
-      "12PM",
-      "2PM",
-      "4PM",
-      "6PM"
+        label: "Average Passenger Count",
+        data: chartData.values,
+        backgroundColor: colors,
+        borderColor: "#0D47A1",
+        borderWidth: 1,
+        borderRadius: 8,
+      },
     ],
-    datasets:[
+  };
+
+  // Pie Chart Data
+  const pieData = {
+    labels: chartData.labels,
+    datasets: [
       {
-        label:"Passenger Trend",
-        data:[1200,5800,4200,3500,4000,6200,7100],
-        borderColor:"#1565C0",
-        fill:false
-      }
-    ]
+        data: chartData.values,
+        backgroundColor: colors,
+        borderColor: "#FFFFFF",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Common Chart Options
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "MetroFlow Analytics",
+        font: {
+          size: 18,
+        },
+      },
+    },
   };
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <div
         style={{
-          padding:"30px",
-          background:"#F4F8FF",
-          minHeight:"100vh"
+          padding: "30px",
+          minHeight: "100vh",
+          background: "#eef4fb",
         }}
       >
-
-        <h1 style={{color:"#1565C0"}}>
-          📊 Analytics Dashboard
+        <h1
+          style={{
+            textAlign: "center",
+            color: "#1565C0",
+            marginBottom: "40px",
+          }}
+        >
+          📊 MetroFlow Analytics Dashboard
         </h1>
 
-        <div style={{marginTop:"40px"}}>
-          <h2>Passenger Count by Station</h2>
-          <Bar data={barData}/>
+        {/* Bar Chart */}
+
+        <div
+          style={{
+            background: "white",
+            padding: "25px",
+            borderRadius: "15px",
+            marginBottom: "40px",
+            boxShadow: "0px 5px 15px rgba(0,0,0,.2)",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              color: "#1565C0",
+            }}
+          >
+            Passenger Count by Station
+          </h2>
+
+          <Bar data={barData} options={options} />
         </div>
 
-        <br/><br/>
+        {/* Pie Chart */}
 
-        <div style={{width:"400px",margin:"auto"}}>
-          <h2 style={{textAlign:"center"}}>
+        <div
+          style={{
+            background: "white",
+            padding: "25px",
+            borderRadius: "15px",
+            boxShadow: "0px 5px 15px rgba(0,0,0,.2)",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              color: "#1565C0",
+            }}
+          >
             Crowd Distribution
           </h2>
-          <Pie data={pieData}/>
+
+          <div
+            style={{
+              width: "450px",
+              margin: "auto",
+            }}
+          >
+            <Pie data={pieData} options={options} />
+          </div>
         </div>
-
-        <br/><br/>
-
-        <div>
-          <h2>Hourly Passenger Trend</h2>
-          <Line data={lineData}/>
-        </div>
-
       </div>
     </>
   );
-
 }
 
 export default Analytics;

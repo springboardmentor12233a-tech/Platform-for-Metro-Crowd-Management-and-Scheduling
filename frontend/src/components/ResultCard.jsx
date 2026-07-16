@@ -2,27 +2,48 @@ function ResultCard({ result, recommendation }) {
 
   if (!result) return null;
 
+  const actions = [
+    "Deploy Extra Staff",
+    "Increase Train Frequency",
+    "Broadcast Passenger Announcements",
+    "Open Extra Ticket Counters"
+  ];
+
   return (
-    <div
-      style={{
-        marginTop: "30px",
-        padding: "20px",
-        border: "2px solid #1E3A8A",
-        borderRadius: "10px",
-        background: "#F3F8FF",
-        width: "350px",
-        margin: "30px auto"
-      }}
-    >
-      <h2>Prediction Result</h2>
+    <div className="result-card">
+
+      <h2>🎯 Prediction Result</h2>
 
       <h3>Crowd Level</h3>
-      <h1>{result}</h1>
+
+      <h1 className="crowd-level">
+        {result}
+      </h1>
 
       <hr />
 
-      <h3>AI Recommendation</h3>
+      <h3>🤖 AI Recommendation</h3>
+
       <p>{recommendation}</p>
+
+      <hr />
+
+      <h3>Suggested Actions</h3>
+
+      <ul>
+        {actions.map((action, index) => (
+          <li key={index}>✅ {action}</li>
+        ))}
+      </ul>
+
+      <hr />
+
+      <h3>Status</h3>
+
+      <p style={{ color: "green", fontWeight: "bold" }}>
+        🟢 Prediction Generated Successfully
+      </p>
+
     </div>
   );
 }
