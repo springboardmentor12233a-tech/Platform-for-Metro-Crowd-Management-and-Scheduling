@@ -1,32 +1,122 @@
-import { Link } from "react-router-dom";
-import { FaTrain } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
 
+  const navigate = useNavigate();
+
+  const role = localStorage.getItem("role");
+  const name = localStorage.getItem("name");
+
+  const logout = () => {
+
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("role");
+    localStorage.removeItem("name");
+    localStorage.removeItem("username");
+
+    navigate("/");
+
+  };
+
   return (
 
-    <nav className="navbar-custom">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
 
-      <div className="navbar-logo">
-        <FaTrain />
-        <span style={{ marginLeft: "8px" }}>MetroFlow</span>
-      </div>
+      <div className="container">
 
-      <div>
+        <Link className="navbar-brand fw-bold" to="/dashboard">
+          🚇 MetroFlow
+        </Link>
 
-        <Link to="/">Home</Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
-        <Link to="/dashboard">Dashboard</Link>
+        <div
+          className="collapse navbar-collapse"
+          id="navbarNav"
+        >
 
-        <Link to="/prediction">Prediction</Link>
+          <ul className="navbar-nav ms-auto align-items-center">
 
-        <Link to="/schedule">Schedule</Link>
+            {/* Dashboard */}
+            <li className="nav-item">
+              <Link className="nav-link" to="/dashboard">
+                Dashboard
+              </Link>
+            </li>
 
-        <Link to="/monitor">Monitoring</Link>
+            {/* Admin Only */}
+            {role === "admin" && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/prediction">
+                  Prediction
+                </Link>
+              </li>
+            )}
 
-        <Link to="/forecast">Forecast</Link>
+            {/* Everyone */}
+            <li className="nav-item">
+              <Link className="nav-link" to="/schedule">
+                Schedule
+              </Link>
+            </li>
 
-        <Link to="/report">Reports</Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/forecast">
+                Forecast
+              </Link>
+            </li>
+
+            {/* Admin Only */}
+            {role === "admin" && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/monitoring">
+                    Monitoring
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to="/report">
+                    Report
+                  </Link>
+                </li>
+              </>
+            )}
+
+            {/* Welcome Message */}
+            <li className="nav-item ms-3">
+              <span className="nav-link text-warning fw-bold">
+                👋 Welcome {name}
+              </span>
+            </li>
+
+            {/* Role Badge */}
+            <li className="nav-item">
+              <span className="badge bg-info text-dark me-3">
+                {role === "admin" ? "Admin" : "User"}
+              </span>
+            </li>
+
+            {/* Logout */}
+            <li className="nav-item">
+              <button
+                className="btn btn-danger"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </li>
+
+          </ul>
+
+        </div>
 
       </div>
 

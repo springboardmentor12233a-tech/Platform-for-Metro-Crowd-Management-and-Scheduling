@@ -1,147 +1,296 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import api from "../services/api";
 
+import {
+  FaMapMarkerAlt,
+  FaUsers,
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaClock,
+  FaTrain,
+  FaCalendarAlt
+} from "react-icons/fa";
+
 function Monitoring() {
+  const [monitor, setMonitor] = useState(null);
 
-    const [monitor, setMonitor] = useState(null);
+  useEffect(() => {
+    const loadMonitoring = () => {
+      api
+        .get("/monitor")
+        .then((res) => {
+          console.log("Monitoring:", res.data);
+          setMonitor(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
 
-    useEffect(() => {
+    // Load immediately
+    loadMonitoring();
 
-        api.get("/monitor")
-            .then((res) => {
-                setMonitor(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+    // Refresh every 5 seconds
+    const interval = setInterval(loadMonitoring, 5000);
 
-    }, []);
+    return () => clearInterval(interval);
+  }, []);
 
-    if (!monitor) {
-        return (
-            <>
-                <Navbar />
-                <h2 style={{ textAlign: "center", marginTop: "50px" }}>
-                    Loading Monitoring Data...
-                </h2>
-            </>
-        );
-    }
-
+  if (!monitor) {
     return (
-        <>
-            <Navbar />
+      <>
+        <Navbar />
 
-            <div className="container mt-5">
+        <div className="container text-center mt-5">
+          <div className="spinner-border text-primary"></div>
 
-                <h2 className="text-center mb-4">
-                    🚇 Real-Time Operational Monitoring
-                </h2>
+          <h3 className="mt-3">
+            Loading Monitoring Data...
+          </h3>
+        </div>
 
-                <table className="table table-bordered table-striped table-hover shadow">
+        <Footer />
+      </>
+    );
+  }
 
-                    <tbody>
+  return (
+    <>
+      <Navbar />
 
-                        <tr>
-                            <th>Date</th>
-                            <td>{monitor.Date}</td>
-                        </tr>
+      <div className="container mt-5">
 
-                        <tr>
-                            <th>Time</th>
-                            <td>{monitor.Time}</td>
-                        </tr>
+        <h1 className="text-center">
+          🚇 Real-Time Metro Monitoring
+        </h1>
 
-                        <tr>
-                            <th>Station</th>
-                            <td>{monitor.Station}</td>
-                        </tr>
+        <p className="text-center text-muted">
+          Live operational status of the metro system
+        </p>
 
-                        <tr>
-                            <th>Passenger Count</th>
-                            <td>{monitor.Passenger_Count}</td>
-                        </tr>
+        <hr />
 
-                        <tr>
-                            <th>Passenger Entries</th>
-                            <td>{monitor.Passenger_Entries}</td>
-                        </tr>
+        <div className="row">
 
-                        <tr>
-                            <th>Passenger Exits</th>
-                            <td>{monitor.Passenger_Exits}</td>
-                        </tr>
+          {/* Date */}
 
-                        {/* Occupancy Progress Bar */}
-                        <tr>
-                            <th>Occupancy</th>
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
 
-                            <td>
+              <FaCalendarAlt
+                size={35}
+                className="text-primary mx-auto"
+              />
 
-                                <div className="progress" style={{ height: "25px" }}>
+              <h5 className="mt-3">
+                Date
+              </h5>
 
-                                    <div
-                                        className="progress-bar bg-success"
-                                        role="progressbar"
-                                        style={{
-                                            width: `${monitor.Occupancy_Percent}%`
-                                        }}
-                                    >
-                                        {monitor.Occupancy_Percent}%
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                        {/* Crowd Level Badge */}
-                        <tr>
-                            <th>Crowd Level</th>
-
-                            <td>
-
-                                {monitor.Crowd_Level === "High" && (
-                                    <span className="badge bg-danger fs-6">
-                                        High
-                                    </span>
-                                )}
-
-                                {monitor.Crowd_Level === "Medium" && (
-                                    <span className="badge bg-warning text-dark fs-6">
-                                        Medium
-                                    </span>
-                                )}
-
-                                {monitor.Crowd_Level === "Low" && (
-                                    <span className="badge bg-success fs-6">
-                                        Low
-                                    </span>
-                                )}
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-                            <th>Delay</th>
-                            <td>{monitor.Delay_Minutes} Minutes</td>
-                        </tr>
-
-                        <tr>
-                            <th>Trips</th>
-                            <td>{monitor.Trips}</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
+              <h4>{monitor.Date}</h4>
 
             </div>
-        </>
-    );
+          </div>
+
+          {/* Time */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaClock
+                size={35}
+                className="text-success mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Time
+              </h5>
+
+              <h4>{monitor.Time}</h4>
+
+            </div>
+          </div>
+
+          {/* Station */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaMapMarkerAlt
+                size={35}
+                className="text-danger mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Station
+              </h5>
+
+              <h4>{monitor.Station}</h4>
+
+            </div>
+          </div>
+
+          {/* Passenger Count */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaUsers
+                size={35}
+                className="text-info mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Passenger Count
+              </h5>
+
+              <h2>{monitor.Passenger_Count}</h2>
+
+            </div>
+          </div>
+
+          {/* Entries */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaSignInAlt
+                size={35}
+                className="text-success mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Passenger Entries
+              </h5>
+
+              <h2>{monitor.Passenger_Entries}</h2>
+
+            </div>
+          </div>
+
+          {/* Exits */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaSignOutAlt
+                size={35}
+                className="text-warning mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Passenger Exits
+              </h5>
+
+              <h2>{monitor.Passenger_Exits}</h2>
+
+            </div>
+          </div>
+
+          {/* Delay */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaClock
+                size={35}
+                className="text-danger mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Delay
+              </h5>
+
+              <h2>{monitor.Delay_Minutes} min</h2>
+
+            </div>
+          </div>
+
+          {/* Trips */}
+
+          <div className="col-md-3 mb-4">
+            <div className="card shadow text-center p-3 h-100">
+
+              <FaTrain
+                size={35}
+                className="text-primary mx-auto"
+              />
+
+              <h5 className="mt-3">
+                Trips
+              </h5>
+
+              <h2>{monitor.Trips}</h2>
+
+            </div>
+          </div>
+
+        </div>
+
+        {/* Occupancy */}
+
+        <div className="card shadow mt-4 p-4">
+
+          <h3>
+            Occupancy Percentage
+          </h3>
+
+          <div
+            className="progress"
+            style={{ height: "30px" }}
+          >
+
+            <div
+              className="progress-bar bg-success"
+              style={{
+                width: `${monitor.Occupancy_Percent}%`
+              }}
+            >
+              {monitor.Occupancy_Percent}%
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Crowd Level */}
+
+        <div className="card shadow mt-4 p-4">
+
+          <h3>
+            Crowd Status
+          </h3>
+
+          <h2 className="text-center mt-3">
+
+            {monitor.Crowd_Level === "High" && (
+              <span className="badge bg-danger fs-3">
+                HIGH
+              </span>
+            )}
+
+            {monitor.Crowd_Level === "Medium" && (
+              <span className="badge bg-warning text-dark fs-3">
+                MEDIUM
+              </span>
+            )}
+
+            {monitor.Crowd_Level === "Low" && (
+              <span className="badge bg-success fs-3">
+                LOW
+              </span>
+            )}
+
+          </h2>
+
+        </div>
+
+      </div>
+
+      <Footer />
+    </>
+  );
 }
 
 export default Monitoring;

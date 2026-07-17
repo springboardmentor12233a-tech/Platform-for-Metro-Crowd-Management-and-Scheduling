@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import api from "../services/api";
-
+import Footer from "../components/Footer";
 function Prediction() {
   const [formData, setFormData] = useState({
     Passenger_Count: "",
@@ -123,32 +123,52 @@ setResult(response.data);
           </button>
 
         </form>
-
         {result && (
 
-          <div className="card shadow mt-5 p-4">
+  <div className="card shadow mt-5 p-4">
 
-            <h3>Prediction Result</h3>
+    <h2 className="text-center mb-4">
+      🤖 AI Prediction Result
+    </h2>
 
-            <h4>
-              Crowd Level :
-              <span className="text-danger">
-                {" "}
-                {result.Crowd_Level}
-              </span>
-            </h4>
+    <hr />
 
-            <h5>
-              Recommendation :
-            </h5>
+    <h4>
+      Crowd Level :
+      {" "}
 
-            <p>{result.Recommendation}</p>
+      <span
+        className={
+          result.Crowd_Level === "High"
+            ? "badge bg-danger fs-6"
+            : result.Crowd_Level === "Medium"
+            ? "badge bg-warning text-dark fs-6"
+            : "badge bg-success fs-6"
+        }
+      >
+        {result.Crowd_Level}
+      </span>
 
-          </div>
+    </h4>
 
-        )}
+    <br />
+
+    <h4>Recommendation</h4>
+
+    <div className="alert alert-info">
+      {result.Recommendation}
+    </div>
+
+    <div className="alert alert-success">
+      ✅ Prediction completed successfully.
+    </div>
+
+  </div>
+
+)}
 
       </div>
+      <Footer />
     </>
   );
 }
