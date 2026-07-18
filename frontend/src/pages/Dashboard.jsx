@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link} from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import api from "../api/axios";
 
@@ -127,6 +127,9 @@ function Dashboard() {
               {profile.full_name} <span className="text-slate-500">({profile.role})</span>
             </span>
           )}
+          <Link to="/reports" className="bg-slate-700 hover:bg-slate-600 text-sm px-3 py-1.5 rounded">
+  Reports
+</Link>
           <button
             onClick={handleLogout}
             className="bg-slate-700 hover:bg-slate-600 text-sm px-3 py-1.5 rounded"
