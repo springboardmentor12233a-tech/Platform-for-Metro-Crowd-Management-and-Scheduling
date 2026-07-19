@@ -79,6 +79,16 @@ Full write-up: see `MetroFlow_Milestone1_Documentation.docx`
 
 Full write-up: see `MetroFlow_Milestone2_Documentation.docx`
 
+## Milestone 3 — Status: Complete
+
+- [x] Notification and alert workflows (persisted Alert model — create, list, resolve)
+- [x] Emergency announcement system (network-wide or station-scoped broadcasts)
+- [x] Real-time schedule update features (live delay/status push to existing schedules)
+- [x] Congestion heatmap (station × hour demand grid, colour-coded, with hover tooltips)
+- [x] AI insights and recommendations (rule-based capacity, scheduling, resource allocation, and line-balance insights)
+
+Full write-up: see `MetroFlow_Milestone3_Documentation.docx`
+
 ## Data Analysis Notebooks
 
 | Notebook | Dataset | Summary |
@@ -102,6 +112,7 @@ Full write-up: see `MetroFlow_Milestone2_Documentation.docx`
 | GET | `/scheduling/schedules` | List/filter schedules | Authenticated |
 | GET | `/scheduling/schedules/{id}` | Get a schedule | Authenticated |
 | PATCH | `/scheduling/schedules/{id}/adjust-frequency` | Adjust train frequency based on live density | Admin only |
+| PATCH | `/scheduling/schedules/{id}/live-update` | Push a live delay/status update to a schedule | Admin only |
 | GET | `/predictions/crowd` | Predict passenger demand for a station/hour | Authenticated |
 | GET | `/monitoring/status` | Live station status + overcrowding alerts | Authenticated |
 | GET | `/reports/traffic-summary` | Full traffic analysis report | Authenticated |
@@ -109,9 +120,16 @@ Full write-up: see `MetroFlow_Milestone2_Documentation.docx`
 | GET | `/reports/peak-hours` | Peak hour analysis | Authenticated |
 | GET | `/reports/demand-by-line` | Demand comparison by line | Authenticated |
 | GET | `/reports/weekday-vs-weekend` | Weekday vs weekend comparison | Authenticated |
+| GET | `/reports/congestion-heatmap` | Station × hour congestion heatmap data | Authenticated |
+| GET | `/reports/ai-insights` | Rule-based AI insights and recommendations | Authenticated |
+| POST | `/alerts/` | Create an alert | Admin only |
+| GET | `/alerts/` | List alerts (active by default, filterable by type) | Authenticated |
+| PATCH | `/alerts/{id}/resolve` | Resolve/deactivate an alert | Admin only |
+| POST | `/alerts/emergency` | Broadcast an emergency announcement | Admin only |
 
-## Upcoming (Milestone 3)
+## Upcoming (Milestone 4)
 
-- Alert and notification system expansion (delay notifications, emergency announcements)
-- Deeper analytics dashboard features
-- Continued integration between scheduling and AI prediction (auto-triggered frequency adjustment)
+- Application testing and workflow validation
+- UI responsiveness and system optimization
+- Deployment via Docker and cloud environment
+- Final project documentation and presentation
