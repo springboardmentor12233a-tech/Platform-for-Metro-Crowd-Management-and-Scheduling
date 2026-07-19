@@ -49,3 +49,39 @@ def get_traffic_summary(top_n: int = 5):
         "weekday_vs_weekend": get_weekday_vs_weekend(),
         "total_records_analyzed": len(_df),
     }
+
+def get_congestion_heatmap(top_n_stations: int = 12):
+    """
+    Returns a station x hour grid of average passenger demand,
+    limited to the busiest N stations for readability.
+    """
+    busiest = (
+        _df.groupby("Station_Name")["Passengers"]
+        .mean()
+        .sort_values(ascending=False)
+        .head(top_n_stations)
+        .index.tolist()
+    )
+
+    subset = _df[_df["Station_Name"].isin(busiest)]
+
+    pivot = (
+        subset.groupby(["Station_Name", "Hour"])["Passengers"]
+        .mean()
+        .round(1)
+        .reset_index()
+    )
+
+    stations = sorted(busiest, key=lambda s: -subset[subset["Station_Name"] == s]["Passengers"].mean())
+    hours = sorted(_df["Hour"].unique().tolist())
+
+    grid = []
+    for station in stations:
+        row = {"station": station, "values": []}
+        for hour in hours:
+            match = pivot[(pivot["Station_Name"] == station) & (pivot["Hour"] == hour)]
+            value = float(match["Passengers"].iloc[0]) if not match.empty else 0
+            row["values"].append({"hour": int(hour), "passengers": value})
+        grid.append(row)
+
+    return {"stations": stations, "hours": hours, "grid": grid}

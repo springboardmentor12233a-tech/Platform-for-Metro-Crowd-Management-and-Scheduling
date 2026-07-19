@@ -33,3 +33,7 @@ def demand_by_line(user=Depends(get_current_user)):
 @router.get("/weekday-vs-weekend")
 def weekday_vs_weekend(user=Depends(get_current_user)):
     return traffic_reports.get_weekday_vs_weekend()
+
+@router.get("/congestion-heatmap")
+def congestion_heatmap(top_n: int = Query(12, ge=3, le=20), user=Depends(get_current_user)):
+    return traffic_reports.get_congestion_heatmap(top_n_stations=top_n)

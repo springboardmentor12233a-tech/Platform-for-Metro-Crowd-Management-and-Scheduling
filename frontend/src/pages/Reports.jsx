@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from "recharts";
 import api from "../api/axios";
+import CongestionHeatmap from "../components/CongestionHeatmap";
 
 function Reports() {
   const [summary, setSummary] = useState(null);
@@ -79,6 +80,13 @@ function Reports() {
             </ResponsiveContainer>
           </div>
         </section>
+
+<section>
+  <h2 className="text-lg font-semibold mb-3">Congestion Heatmap (Station × Hour)</h2>
+  <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+    <CongestionHeatmap />
+  </div>
+</section>
 
         <section>
           <h2 className="text-lg font-semibold mb-3">Average Demand by Hour of Day</h2>
