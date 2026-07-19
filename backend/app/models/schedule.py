@@ -35,6 +35,8 @@ class Schedule(Base):
     arrival_time = Column(String, nullable=False)
     frequency_minutes = Column(Integer, nullable=False)  # headway/gap between trains
     period = Column(Enum(PeriodType), default=PeriodType.off_peak)
+    delay_minutes = Column(Integer, default=0)  # live delay pushed by operators
+    status_note = Column(String, nullable=True)  # e.g. "Running late due to signal fault"
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

@@ -4,7 +4,7 @@ from typing import List
 
 from app.database.db import get_db
 from app.models.schedule import Train, Schedule
-from app.models.schemas import TrainCreate, TrainResponse, ScheduleCreate, ScheduleResponse
+from app.models.schemas import TrainCreate, TrainResponse, ScheduleCreate, ScheduleResponse,ScheduleUpdatePush
 from app.services.dependencies import get_current_user, require_admin
 
 router = APIRouter(prefix="/scheduling", tags=["Scheduling"])
@@ -96,6 +96,30 @@ def adjust_frequency(
     else:
         schedule.frequency_minutes = 8
         schedule.period = "off_peak"
+
+    db.commit()
+    db.refresh(schedule)
+    return schedule
+
+# ---------- Real-Time Schedule Updates ----------
+
+@router.patch("/schedules/{schedule_id}/live-update", response_model=ScheduleResponse)
+def push_schedule_update(
+    schedule_id: int,
+    update: ScheduleUpdatePush,
+    db: Session = Depends(get_db),
+    admin=Depends(require_admin),
+):
+    """
+    Push a real-time delay/status update to an existing schedule.
+    This lets operators reflect live disruptions without changing the base schedule.
+    """
+    schedule = db.query(Schedule).filter(Schedule.id == schedule_id).first()
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+    schedule.delay_minutes = update.delay_minutes
+    schedule.status_note = update.status_note
 
     db.commit()
     db.refresh(schedule)

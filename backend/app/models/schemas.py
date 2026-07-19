@@ -59,10 +59,12 @@ class ScheduleResponse(BaseModel):
     arrival_time: str
     frequency_minutes: int
     period: str
+    delay_minutes: int = 0
+    status_note: Optional[str] = None
 
     class Config:
         from_attributes = True
-
+        
 class AlertCreate(BaseModel):
     alert_type: str  # "overcrowding" | "delay" | "emergency" | "maintenance"
     severity: str = "medium"  # "low" | "medium" | "high" | "critical"
@@ -80,3 +82,7 @@ class AlertResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ScheduleUpdatePush(BaseModel):
+    delay_minutes: int
+    status_note: Optional[str] = None
