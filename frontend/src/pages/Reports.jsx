@@ -6,18 +6,25 @@ import CongestionHeatmap from "../components/CongestionHeatmap";
 
 function Reports() {
   const [summary, setSummary] = useState(null);
+  const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/reports/traffic-summary", { params: { top_n: 8 } })
-      .then((res) => setSummary(res.data))
-      .catch((err) => {
-        console.error(err);
-        if (err.response?.status === 401) navigate("/login");
-      })
-      .finally(() => setLoading(false));
-  }, [navigate]);
+  Promise.all([
+    api.get("/reports/traffic-summary", { params: { top_n: 8 } }),
+    api.get("/reports/ai-insights", { params: { top_n: 5 } }),
+  ])
+    .then(([summaryRes, insightsRes]) => {
+      setSummary(summaryRes.data);
+      setInsights(insightsRes.data.insights);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.response?.status === 401) navigate("/login");
+    })
+    .finally(() => setLoading(false));
+}, [navigate]);
 
   if (loading) {
     return (
@@ -65,6 +72,22 @@ function Reports() {
             <p className="text-slate-500 text-xs mt-1">passengers per station-hour</p>
           </div>
         </div>
+
+<section>
+  <h2 className="text-lg font-semibold mb-3">AI Insights & Recommendations</h2>
+  <div className="space-y-2">
+    {insights.map((insight, i) => (
+      <div key={i} className="bg-slate-800 rounded-lg p-4 border border-slate-700 flex gap-3">
+        <span className="text-lg">
+          {insight.type === "capacity_warning" ? "⚠️" :
+           insight.type === "scheduling_recommendation" ? "📅" :
+           insight.type === "resource_allocation" ? "📊" : "🔍"}
+        </span>
+        <p className="text-sm text-slate-300">{insight.message}</p>
+      </div>
+    ))}
+  </div>
+</section>
 
         <section>
           <h2 className="text-lg font-semibold mb-3">Busiest Stations (Average Demand)</h2>

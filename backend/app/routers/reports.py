@@ -37,3 +37,7 @@ def weekday_vs_weekend(user=Depends(get_current_user)):
 @router.get("/congestion-heatmap")
 def congestion_heatmap(top_n: int = Query(12, ge=3, le=20), user=Depends(get_current_user)):
     return traffic_reports.get_congestion_heatmap(top_n_stations=top_n)
+
+@router.get("/ai-insights")
+def ai_insights(top_n: int = Query(5, ge=1, le=15), user=Depends(get_current_user)):
+    return traffic_reports.get_ai_insights(top_n_stations=top_n)
