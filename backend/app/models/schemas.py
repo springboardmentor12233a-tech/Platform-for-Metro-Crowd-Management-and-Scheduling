@@ -62,3 +62,21 @@ class ScheduleResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AlertCreate(BaseModel):
+    alert_type: str  # "overcrowding" | "delay" | "emergency" | "maintenance"
+    severity: str = "medium"  # "low" | "medium" | "high" | "critical"
+    station: Optional[str] = None
+    message: str
+
+class AlertResponse(BaseModel):
+    id: int
+    alert_type: str
+    severity: str
+    station: Optional[str]
+    message: str
+    created_by: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
