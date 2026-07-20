@@ -3,16 +3,37 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 
 from app.database import engine, Base, get_db
-from app import models
-from app import schemas
-from app import auth
+from app import models, schemas, auth
 
+from app.routers.prediction import router as prediction_router
+from app.routers.forecast import router as forecast_router
+from app.routers.schedule import router as schedule_router
+from app.routers.frequency import router as frequency_router
+from app.routers.monitoring import router as monitoring_router
+from app.routers.report import router as report_router
+from fastapi.middleware.cors import CORSMiddleware
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Metro Crowd Monitoring API"
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# Register routers
+app.include_router(prediction_router)
+app.include_router(forecast_router)
+app.include_router(schedule_router)
+app.include_router(frequency_router)
+app.include_router(monitoring_router)
+app.include_router(report_router)
 
 # ---------------- HOME ----------------
 
