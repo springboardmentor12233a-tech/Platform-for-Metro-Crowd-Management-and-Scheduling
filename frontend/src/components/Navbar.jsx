@@ -51,25 +51,38 @@ function Navbar() {
               </Link>
             </li>
 
-            {/* Admin Only */}
-            {role === "admin" && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/prediction">
-                  Prediction
-                </Link>
-              </li>
-            )}
+            {/* Prediction */}
+            <li className="nav-item">
+              <Link className="nav-link" to="/prediction">
+                Prediction
+              </Link>
+            </li>
 
-            {/* Everyone */}
+            {/* Schedule */}
             <li className="nav-item">
               <Link className="nav-link" to="/schedule">
                 Schedule
               </Link>
             </li>
 
+            {/* Forecast */}
             <li className="nav-item">
               <Link className="nav-link" to="/forecast">
                 Forecast
+              </Link>
+            </li>
+
+            {/* Announcement */}
+            <li className="nav-item">
+              <Link className="nav-link" to="/announcement">
+                Announcement
+              </Link>
+            </li>
+
+            {/* Notifications */}
+            <li className="nav-item">
+              <Link className="nav-link" to="/notifications">
+                Notifications
               </Link>
             </li>
 
@@ -87,17 +100,29 @@ function Navbar() {
                     Report
                   </Link>
                 </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to="/analytics">
+                    Analytics
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to="/heatmap">
+                    Heatmap
+                  </Link>
+                </li>
               </>
             )}
 
-            {/* Welcome Message */}
+            {/* Welcome */}
             <li className="nav-item ms-3">
               <span className="nav-link text-warning fw-bold">
                 👋 Welcome {name}
               </span>
             </li>
 
-            {/* Role Badge */}
+            {/* Role */}
             <li className="nav-item">
               <span className="badge bg-info text-dark me-3">
                 {role === "admin" ? "Admin" : "User"}

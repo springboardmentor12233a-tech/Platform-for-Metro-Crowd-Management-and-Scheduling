@@ -12,23 +12,45 @@ import {
   FaDownload,
   FaPercentage,
   FaRobot,
-  FaMapMarkerAlt
+  FaMapMarkerAlt,
+  FaBell
 } from "react-icons/fa";
 
 function Dashboard() {
+
   const [data, setData] = useState(null);
+  const [alert, setAlert] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
+
     const loadDashboard = () => {
-      api
-        .get("/dashboard")
+
+      api.get("/dashboard")
         .then((res) => {
-          console.log("Dashboard:", res.data);
+
           setData(res.data);
+          setLastUpdated(new Date().toLocaleTimeString());
+
         })
         .catch((err) => {
+
           console.log(err);
+
         });
+
+      api.get("/alerts")
+        .then((res) => {
+
+          setAlert(res.data);
+
+        })
+        .catch((err) => {
+
+          console.log(err);
+
+        });
+
     };
 
     loadDashboard();
@@ -36,28 +58,38 @@ function Dashboard() {
     const interval = setInterval(loadDashboard, 5000);
 
     return () => clearInterval(interval);
+
   }, []);
 
   if (!data) {
+
     return (
+
       <>
         <Navbar />
 
         <div className="container mt-5 text-center">
+
           <div className="spinner-border text-primary"></div>
 
           <h3 className="mt-3">
             Loading Dashboard...
           </h3>
+
         </div>
 
         <Footer />
+
       </>
+
     );
+
   }
 
   return (
+
     <>
+
       <Navbar />
 
       <div className="container mt-5">
@@ -71,17 +103,38 @@ function Dashboard() {
         </p>
 
         <p className="text-center">
-          <strong>Last Updated :</strong>{" "}
-          {new Date().toLocaleTimeString()}
+          <strong>Last Updated :</strong> {lastUpdated}
         </p>
 
         <hr />
+
+        {/* Live Alert */}
+
+        {alert && (
+
+          <div
+            className={`alert ${
+              alert.Priority === "High"
+                ? "alert-danger"
+                : alert.Priority === "Medium"
+                ? "alert-warning"
+                : "alert-success"
+            }`}
+          >
+
+            <FaBell /> <strong>{alert.Priority} Alert :</strong>{" "}
+            {alert.Alert}
+
+          </div>
+
+        )}
 
         <div className="row">
 
           {/* Passenger Count */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaUsers
@@ -98,11 +151,13 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
           {/* Crowd */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaTrain
@@ -131,11 +186,13 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
           {/* Forecast */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaChartLine
@@ -152,11 +209,13 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
           {/* Station */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaMapMarkerAlt
@@ -173,11 +232,13 @@ function Dashboard() {
               </h4>
 
             </div>
+
           </div>
 
           {/* Delay */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaClock
@@ -194,11 +255,13 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
           {/* Occupancy */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaPercentage
@@ -215,11 +278,13 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
           {/* Recommendation */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaRobot
@@ -231,16 +296,18 @@ function Dashboard() {
                 AI Recommendation
               </h5>
 
-              <h5>
+              <h6>
                 {data.Forecast.Recommendation || "Normal Operation"}
-              </h5>
+              </h6>
 
             </div>
+
           </div>
 
           {/* Total */}
 
           <div className="col-md-3 mb-4">
+
             <div className="card shadow text-center p-3 h-100">
 
               <FaUsers
@@ -257,9 +324,12 @@ function Dashboard() {
               </h2>
 
             </div>
+
           </div>
 
         </div>
+
+        {/* Charts */}
 
         <div className="mt-5">
 
@@ -268,13 +338,14 @@ function Dashboard() {
           </h2>
 
           <p className="text-center text-muted">
-            Passenger statistics, forecasting insights and operational
-            monitoring analytics.
+            Passenger statistics, forecasting insights and operational monitoring analytics.
           </p>
 
           <Charts data={data} />
 
         </div>
+
+        {/* Download Report */}
 
         <div className="text-center mt-5 mb-5">
 
@@ -287,6 +358,7 @@ function Dashboard() {
               )
             }
           >
+
             <FaDownload />
 
             {" "}Download Traffic Report
@@ -298,8 +370,11 @@ function Dashboard() {
       </div>
 
       <Footer />
+
     </>
+
   );
+
 }
 
 export default Dashboard;

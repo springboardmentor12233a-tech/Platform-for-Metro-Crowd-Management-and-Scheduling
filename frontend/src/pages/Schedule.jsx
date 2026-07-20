@@ -6,7 +6,8 @@ import {
   FaTrain,
   FaUsers,
   FaExclamationTriangle,
-  FaSearch
+  FaSearch,
+  FaSyncAlt
 } from "react-icons/fa";
 
 function Schedule() {
@@ -14,30 +15,41 @@ function Schedule() {
   const [schedule, setSchedule] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
 
-    fetch("http://127.0.0.1:5000/schedule")
-      .then((response) => response.json())
-      .then((data) => {
+    const loadSchedule = () => {
 
-        setSchedule(data);
-        setLoading(false);
+      fetch("http://127.0.0.1:5000/schedule")
+        .then((response) => response.json())
+        .then((data) => {
 
-      })
-      .catch((error) => {
+          setSchedule(data);
+          setLoading(false);
+          setLastUpdated(new Date().toLocaleTimeString());
 
-        console.error(error);
-        setLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+        });
 
-      });
+    };
+
+    // Initial Load
+    loadSchedule();
+
+    // Auto Refresh Every 5 Seconds
+    const interval = setInterval(loadSchedule, 5000);
+
+    return () => clearInterval(interval);
 
   }, []);
 
   if (loading) {
 
     return (
-
       <>
         <Navbar />
 
@@ -52,27 +64,29 @@ function Schedule() {
         </div>
 
         <Footer />
-
       </>
-
     );
 
   }
 
-  const filteredSchedule = schedule.filter((item) =>
-    item.Station.toLowerCase().includes(search.toLowerCase())
-  );
+ const filteredSchedule = schedule.filter((item) =>
+  item.Station &&
+  item.Station.toLowerCase().includes(search.toLowerCase())
+);
 
   const highCrowd = schedule.filter(
     (item) => item.Crowd_Level === "High"
   ).length;
 
-  const avgPassengers = (
-    schedule.reduce(
-      (sum, item) => sum + item.Passenger_Count,
-      0
-    ) / schedule.length
-  ).toFixed(0);
+  const avgPassengers =
+    schedule.length > 0
+      ? (
+          schedule.reduce(
+            (sum, item) => sum + item.Passenger_Count,
+            0
+          ) / schedule.length
+        ).toFixed(0)
+      : 0;
 
   return (
     <>
@@ -87,6 +101,16 @@ function Schedule() {
         <p className="text-center text-muted">
           AI-Based Train Frequency Recommendation
         </p>
+
+        <div className="text-center mb-4">
+
+          <span className="badge bg-success fs-6">
+
+            <FaSyncAlt /> Last Updated : {lastUpdated}
+
+          </span>
+
+        </div>
 
         <hr />
 
@@ -227,9 +251,7 @@ function Schedule() {
 
                   </td>
 
-                  <td>
-                    {item.Recommended_Frequency}
-                  </td>
+                  <td>{item.Recommended_Frequency}</td>
 
                 </tr>
 
