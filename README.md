@@ -1,6 +1,6 @@
 # MetroFlow — Soham_Parab Branch
 
-AI-powered metro crowd management and scheduling platform. This branch contains my individual contribution to the MetroFlow project: backend API, frontend dashboard, AI prediction model, and data analysis notebooks.
+AI-powered metro crowd management and scheduling platform. This branch contains my individual contribution to the MetroFlow project: backend API, frontend dashboard, AI prediction model, automated tests, Docker deployment, and data analysis notebooks.
 
 ## Project Structure
 ## Tech Stack
@@ -11,11 +11,30 @@ AI-powered metro crowd management and scheduling platform. This branch contains 
 | Database | PostgreSQL |
 | Frontend | React (Vite), Tailwind CSS, Axios, React Router, Recharts |
 | AI / ML | scikit-learn (Random Forest), joblib, Pandas, NumPy |
+| Testing | pytest, httpx, isolated SQLite test database |
+| Deployment | Docker, Docker Compose |
 | Data Analysis | Jupyter Notebook, Matplotlib, Seaborn |
 
 ## Getting Started
 
-### Backend Setup
+### Option A — Run with Docker (recommended, fastest)
+
+From the repo root, with Docker Desktop running:
+```bash
+docker compose up --build
+```
+
+Once all three containers are up, create the database tables (first run only):
+```bash
+docker exec -it metroflow-backend python -m app.create_tables
+```
+
+- Frontend: `http://localhost:5173`
+- Backend docs: `http://localhost:8000/docs`
+
+### Option B — Run natively
+
+#### Backend Setup
 
 ```bash
 cd backend
@@ -36,7 +55,7 @@ uvicorn app.main:app --reload
 
 API runs at `http://127.0.0.1:8000`. Interactive docs available at `http://127.0.0.1:8000/docs`.
 
-### Frontend Setup
+#### Frontend Setup
 
 ```bash
 cd frontend
@@ -46,7 +65,7 @@ npm run dev
 
 App runs at `http://localhost:5173`. Requires the backend to be running for login, dashboard, and reports functionality.
 
-### Notebooks Setup
+#### Notebooks Setup
 
 ```bash
 cd notebooks
@@ -55,6 +74,16 @@ python -m venv venv
 pip install jupyter pandas numpy matplotlib seaborn scikit-learn openpyxl joblib
 jupyter notebook
 ```
+
+### Running Tests
+
+```bash
+cd backend
+.\venv\Scripts\Activate
+pytest tests/ -v
+```
+
+Runs 16 automated tests against an isolated SQLite test database (does not touch your real PostgreSQL data).
 
 ## Milestone 1 — Status: Complete
 
@@ -88,6 +117,16 @@ Full write-up: see `MetroFlow_Milestone2_Documentation.docx`
 - [x] AI insights and recommendations (rule-based capacity, scheduling, resource allocation, and line-balance insights)
 
 Full write-up: see `MetroFlow_Milestone3_Documentation.docx`
+
+## Milestone 4 — Status: Complete
+
+- [x] Automated backend testing (16 pytest tests — auth, scheduling, alerts) against an isolated test database
+- [x] Manual frontend workflow validation (login, dashboard, reports, live mode, logout)
+- [x] UI responsiveness fixes (mobile-tested across Login, Dashboard, Reports)
+- [x] Full Docker containerization (backend, frontend, PostgreSQL via docker-compose) — verified working end-to-end
+- [x] Final documentation for all four milestones
+
+Full write-up: see `MetroFlow_Milestone4_Documentation.docx`
 
 ## Data Analysis Notebooks
 
@@ -127,9 +166,6 @@ Full write-up: see `MetroFlow_Milestone3_Documentation.docx`
 | PATCH | `/alerts/{id}/resolve` | Resolve/deactivate an alert | Admin only |
 | POST | `/alerts/emergency` | Broadcast an emergency announcement | Admin only |
 
-## Upcoming (Milestone 4)
+## Project Status
 
-- Application testing and workflow validation
-- UI responsiveness and system optimization
-- Deployment via Docker and cloud environment
-- Final project documentation and presentation
+All four milestones are complete. MetroFlow is a fully functional, tested, and containerized AI-powered metro crowd management and scheduling platform, covering authentication and role-based access, train scheduling with rule-based frequency adjustment, AI-based crowd demand prediction, real-time monitoring with overcrowding alerts, emergency notifications, traffic analytics with a congestion heatmap and AI-generated recommendations, an automated test suite, and a Docker-based deployment.
