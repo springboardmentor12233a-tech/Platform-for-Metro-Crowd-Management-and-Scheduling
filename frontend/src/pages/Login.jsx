@@ -31,7 +31,7 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="bg-slate-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
+      <div className="bg-slate-800 p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm mx-4">
         <h1 className="text-2xl font-bold text-white mb-1">MetroFlow</h1>
         <p className="text-slate-400 mb-6">Sign in to your operator account</p>
 

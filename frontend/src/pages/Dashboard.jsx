@@ -116,7 +116,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-slate-700">
         <div>
           <h1 className="text-xl font-bold">MetroFlow</h1>
           <p className="text-slate-400 text-sm">Crowd Monitoring Dashboard</p>
