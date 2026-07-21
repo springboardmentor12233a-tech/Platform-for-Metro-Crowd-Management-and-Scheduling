@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Charts from "../components/Charts";
 import api from "../services/api";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   FaUsers,
@@ -22,10 +25,13 @@ function Dashboard() {
   const [alert, setAlert] = useState(null);
   const [lastUpdated, setLastUpdated] = useState("");
 
+  const previousAlert = useRef("");
+
   useEffect(() => {
 
     const loadDashboard = () => {
 
+      // Dashboard Data
       api.get("/dashboard")
         .then((res) => {
 
@@ -39,10 +45,35 @@ function Dashboard() {
 
         });
 
+      // Alerts
       api.get("/alerts")
         .then((res) => {
 
           setAlert(res.data);
+
+          if (previousAlert.current !== res.data.Alert) {
+
+            previousAlert.current = res.data.Alert;
+
+            if (res.data.Priority === "High") {
+
+              toast.error(res.data.Alert);
+
+            }
+
+            else if (res.data.Priority === "Medium") {
+
+              toast.warning(res.data.Alert);
+
+            }
+
+            else {
+
+              toast.success(res.data.Alert);
+
+            }
+
+          }
 
         })
         .catch((err) => {
@@ -64,7 +95,6 @@ function Dashboard() {
   if (!data) {
 
     return (
-
       <>
         <Navbar />
 
@@ -79,9 +109,7 @@ function Dashboard() {
         </div>
 
         <Footer />
-
       </>
-
     );
 
   }
@@ -89,6 +117,13 @@ function Dashboard() {
   return (
 
     <>
+
+      {/* Toast Notification */}
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        newestOnTop
+      />
 
       <Navbar />
 
@@ -108,7 +143,7 @@ function Dashboard() {
 
         <hr />
 
-        {/* Live Alert */}
+        {/* Live Metro Alert */}
 
         {alert && (
 
@@ -119,11 +154,35 @@ function Dashboard() {
                 : alert.Priority === "Medium"
                 ? "alert-warning"
                 : "alert-success"
-            }`}
+            } shadow`}
           >
 
-            <FaBell /> <strong>{alert.Priority} Alert :</strong>{" "}
-            {alert.Alert}
+            <h5>
+              <FaBell /> MetroFlow Live Alert
+            </h5>
+
+            <hr />
+
+            <p>
+              <strong>Station :</strong> {alert.Station}
+            </p>
+
+            <p>
+              <strong>Crowd Level :</strong> {alert.Crowd_Level}
+            </p>
+
+            <p>
+              <strong>Priority :</strong> {alert.Priority}
+            </p>
+
+            <p>
+              <strong>Alert :</strong> {alert.Alert}
+            </p>
+
+            <p>
+              <strong>AI Recommendation :</strong>{" "}
+              {data.Forecast.Recommendation || "Normal Operation"}
+            </p>
 
           </div>
 
@@ -154,7 +213,7 @@ function Dashboard() {
 
           </div>
 
-          {/* Crowd */}
+          {/* Crowd Level */}
 
           <div className="col-md-3 mb-4">
 
@@ -281,7 +340,7 @@ function Dashboard() {
 
           </div>
 
-          {/* Recommendation */}
+          {/* AI Recommendation */}
 
           <div className="col-md-3 mb-4">
 
@@ -304,7 +363,7 @@ function Dashboard() {
 
           </div>
 
-          {/* Total */}
+          {/* Total Passengers */}
 
           <div className="col-md-3 mb-4">
 

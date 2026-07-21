@@ -9,23 +9,41 @@ function Notifications() {
 
   useEffect(() => {
 
-    api.get("/notifications")
-      .then((res) => {
+    const loadNotifications = () => {
 
-        setNotifications(res.data);
+      api.get("/notifications")
 
-      })
-      .catch((err) => {
+        .then((res) => {
 
-        console.log(err);
+          setNotifications(res.data);
 
-      });
+          localStorage.setItem(
+            "notifications",
+            JSON.stringify(res.data)
+          );
+
+        })
+
+        .catch((err) => {
+
+          console.log(err);
+
+        });
+
+    };
+
+    loadNotifications();
+
+    const interval = setInterval(loadNotifications, 5000);
+
+    return () => clearInterval(interval);
 
   }, []);
 
   return (
 
     <>
+
       <Navbar />
 
       <div className="container mt-5">
@@ -34,7 +52,17 @@ function Notifications() {
           🔔 MetroFlow Notifications
         </h1>
 
-        {
+        <p className="text-center text-muted">
+          Live notification updates every 5 seconds
+        </p>
+
+        {notifications.length === 0 ? (
+
+          <div className="alert alert-secondary text-center">
+            No Notifications Available
+          </div>
+
+        ) : (
 
           notifications.map((item, index) => (
 
@@ -49,7 +77,7 @@ function Notifications() {
 
           ))
 
-        }
+        )}
 
       </div>
 

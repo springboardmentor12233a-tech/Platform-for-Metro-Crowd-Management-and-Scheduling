@@ -1,103 +1,3 @@
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// import Login from "./pages/Login";
-// import Home from "./pages/Home";
-// import Dashboard from "./pages/Dashboard";
-// import Prediction from "./pages/Prediction";
-// import Schedule from "./pages/Schedule";
-// import Monitoring from "./pages/Monitoring";
-// import Forecast from "./pages/Forecast";
-// import Report from "./pages/Report";
-// import Register from "./pages/Register";
-// import ProtectedRoute from "./components/ProtectedRoute";
-// import AdminRoute from "./components/AdminRoute";
-// import Notifications from "./pages/Notifications";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-
-//         {/* Login Page */}
-//         <Route path="/" element={<Login />} />
-
-//         {/* Home */}
-//         <Route
-//           path="/home"
-//           element={
-//             <ProtectedRoute>
-//               <Home />
-//             </ProtectedRoute>
-//           }
-//         />
-
-//         {/* Dashboard */}
-//         <Route
-//           path="/dashboard"
-//           element={
-//             <ProtectedRoute>
-//               <Dashboard />
-//             </ProtectedRoute>
-//           }
-//         />
-
-//         {/* Prediction */}
-//         <Route
-//           path="/prediction"
-//           element={
-//             <ProtectedRoute>
-//               <Prediction />
-//             </ProtectedRoute>
-//           }
-//         />
-
-//         {/* Schedule */}
-//         <Route
-//           path="/schedule"
-//           element={
-//             <ProtectedRoute>
-//               <Schedule />
-//             </ProtectedRoute>
-//           }
-//         />
-
-//         {/* Monitoring */}
-//         <Route
-//   path="/monitoring"
-//   element={
-//     <AdminRoute>
-//       <Monitoring />
-//     </AdminRoute>
-//   }
-// />
-
-//         {/* Forecast */}
-//         <Route
-//           path="/forecast"
-//           element={
-//             <ProtectedRoute>
-//               <Forecast />
-//             </ProtectedRoute>
-//           }
-//         />
-
-//         {/* Report */}
-//         <Route
-//   path="/report"
-//   element={
-//     <AdminRoute>
-//       <Report />
-//     </AdminRoute>
-//   }
-// />
-// <Route path="/register" element={<Register />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -110,16 +10,21 @@ import Monitoring from "./pages/Monitoring";
 import Forecast from "./pages/Forecast";
 import Report from "./pages/Report";
 import Notifications from "./pages/Notifications";
-
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
 import Announcement from "./pages/Announcement";
 import Analytics from "./pages/Analytics";
 import Heatmap from "./pages/Heatmap";
+import ScheduleUpdate from "./pages/ScheduleUpdate";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <BrowserRouter>
+
       <Routes>
 
         {/* Login */}
@@ -127,15 +32,7 @@ function App() {
 
         {/* Register */}
         <Route path="/register" element={<Register />} />
-        {/* Analytics */}
-        <Route
-  path="/analytics"
-  element={
-    <AdminRoute>
-      <Analytics />
-    </AdminRoute>
-  }
-/>
+
         {/* Home */}
         <Route
           path="/home"
@@ -196,7 +93,38 @@ function App() {
           }
         />
 
-        {/* Admin Only */}
+        {/* Announcement */}
+        <Route
+          path="/announcement"
+          element={
+            <ProtectedRoute>
+              <Announcement />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Heatmap */}
+        <Route
+          path="/heatmap"
+          element={
+            <ProtectedRoute>
+              <Heatmap />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Live Schedule Update */}
+        <Route
+          path="/schedule-update"
+          element={
+            <ProtectedRoute>
+              <ScheduleUpdate />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Routes */}
+
         <Route
           path="/monitoring"
           element={
@@ -214,23 +142,31 @@ function App() {
             </AdminRoute>
           }
         />
+
         <Route
-  path="/announcement"
-  element={
-    <ProtectedRoute>
-      <Announcement />
-    </ProtectedRoute>
-  }
-/><Route
-  path="/heatmap"
-  element={
-    <ProtectedRoute>
-      <Heatmap />
-    </ProtectedRoute>
-  }
-/>
+          path="/analytics"
+          element={
+            <AdminRoute>
+              <Analytics />
+            </AdminRoute>
+          }
+        />
 
       </Routes>
+
+      {/* Toast Notifications */}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
+
     </BrowserRouter>
   );
 }
