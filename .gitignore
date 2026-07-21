@@ -88,3 +88,5 @@ venv/
 
 # Jupyter
 .ipynb_checkpoints/
+
+*.pkl
