@@ -1,35 +1,58 @@
-import axios from "axios";
+import api from "./axios";
 
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
+// ===============================
+// Dashboard
+// ===============================
 
 export const getDashboardSummary = async () => {
-  const response = await API.get("/dashboard/summary");
+  const response = await api.get("/dashboard/summary");
   return response.data;
 };
 
 export const getBusiestStations = async () => {
-  const response = await API.get("/dashboard/busiest-stations");
+  const response = await api.get("/dashboard/busiest-stations");
   return response.data;
 };
 
 export const getPassengerTrend = async () => {
-  const response = await API.get("/dashboard/passenger-trend");
+  const response = await api.get("/dashboard/passenger-trend");
   return response.data;
 };
 
 export const getTicketDistribution = async () => {
-  const response = await API.get("/dashboard/ticket-distribution");
+  const response = await api.get("/dashboard/ticket-distribution");
   return response.data;
 };
 
 export const getRevenueAnalysis = async () => {
-  const response = await API.get("/dashboard/revenue-analysis");
+  const response = await api.get("/dashboard/revenue-analysis");
   return response.data;
 };
 
 export const getTopRoutes = async () => {
-  const response = await API.get("/dashboard/top-routes");
+  const response = await api.get("/dashboard/top-routes");
+  return response.data;
+};
+
+// ===============================
+// Live Dashboard
+// ===============================
+
+export const getLiveDashboard = async () => {
+  const response = await api.get("/live-dashboard/");
+  return response.data;
+};
+
+// ===============================
+// Crowd Monitoring
+// ===============================
+
+export const getLiveCrowdMonitoring = async () => {
+  const response = await api.get("/crowd-monitoring/live");
+  return response.data;
+};
+
+export const getNetworkSummary = async () => {
+  const response = await api.get("/crowd-monitoring/summary");
   return response.data;
 };

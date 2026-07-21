@@ -77,3 +77,14 @@ coverage/
 
 *.tmp
 *.temp
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/

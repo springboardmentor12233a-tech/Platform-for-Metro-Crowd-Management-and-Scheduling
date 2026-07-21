@@ -7,6 +7,11 @@ import TicketDistributionChart from "../../components/dashboard/TicketDistributi
 import RevenueChart from "../../components/dashboard/RevenueChart";
 import TopRoutesTable from "../../components/dashboard/TopRoutesTable";
 import DashboardHeader from "../../components/dashboard/DashboardHeader";
+import MetroStatusCard from "../../components/dashboard/MetroStatusCard";
+import AIOperationsCenter from "../../components/dashboard/AIOperationsCenter";
+import CongestionHeatmap from "../../components/dashboard/CongestionHeatmap";
+import PassengerForecast from "../../components/dashboard/PassengerForecast";
+import NetworkHealthAnalytics from "../../components/dashboard/NetworkHealthAnalytics";
 import {
   Users,
   TrainFront,
@@ -23,6 +28,7 @@ import {
   getTicketDistribution,
   getRevenueAnalysis,
   getTopRoutes,
+  getLiveDashboard
 } from "../../api/dashboardApi";
 
 function Dashboard() {
@@ -40,28 +46,41 @@ function Dashboard() {
   const [ticketData, setTicketData] = useState([]);
   const [revenueData, setRevenueData] = useState([]);
   const [topRoutes, setTopRoutes] = useState([]);
+  const [liveDashboard, setLiveDashboard] = useState(null);
+  const [latestPrediction, setLatestPrediction] = useState(null);
+  const [recentAlerts, setRecentAlerts] = useState([]);
+  const [recentHistory, setRecentHistory] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  useEffect(() => {
+ useEffect(() => {
+  loadDashboard();
+
+  const interval = setInterval(() => {
     loadDashboard();
-  }, []);
+  }, 30000);
+
+  return () => clearInterval(interval);
+}, []);
 
   const loadDashboard = async () => {
     try {
-      const [
-        summaryData,
-        stationsData,
-        trend,
-        tickets,
-        revenue,
-        routes,
-      ] = await Promise.all([
-        getDashboardSummary(),
-        getBusiestStations(),
-        getPassengerTrend(),
-        getTicketDistribution(),
-        getRevenueAnalysis(),
-        getTopRoutes(),
-      ]);
+     const [
+  summaryData,
+  stationsData,
+  trend,
+  tickets,
+  revenue,
+  routes,
+  liveData,
+] = await Promise.all([
+  getDashboardSummary(),
+  getBusiestStations(),
+  getPassengerTrend(),
+  getTicketDistribution(),
+  getRevenueAnalysis(),
+  getTopRoutes(),
+  getLiveDashboard(),
+]);
 
       setSummary(summaryData);
       setBusiestStations(stationsData);
@@ -69,6 +88,11 @@ function Dashboard() {
       setTicketData(tickets);
       setRevenueData(revenue);
       setTopRoutes(routes);
+      setLiveDashboard(liveData);
+setLatestPrediction(liveData.latest_prediction);
+setRecentAlerts(liveData.alerts);
+setRecentHistory(liveData.recent_history);
+setLastUpdated(new Date());
     } catch (error) {
       console.error(error);
     } finally {
@@ -92,6 +116,232 @@ function Dashboard() {
     <Layout>
 
       <DashboardHeader />
+<div
+  className="
+    mb-7
+    rounded-2xl
+    border
+    border-green-200
+    bg-green-50
+    px-6
+    py-4
+    flex
+    flex-wrap
+    items-center
+    justify-between
+    gap-4
+  "
+>
+
+  <div className="flex items-center gap-3">
+
+    <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+
+    <span className="font-semibold text-green-700">
+      Metro Operations Live
+    </span>
+
+  </div>
+
+  <div className="text-slate-600 text-sm">
+
+    Last Updated :
+    {" "}
+    <strong>
+      {lastUpdated.toLocaleTimeString()}
+    </strong>
+
+  </div>
+
+  <div
+    className="
+      rounded-full
+      bg-indigo-100
+      px-4
+      py-2
+      text-indigo-700
+      font-semibold
+    "
+  >
+    Auto Refresh : 30 sec
+  </div>
+
+</div>
+
+{/* ===================== LIVE OPERATIONS ===================== */}
+
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-7 mb-8">
+
+  {/* Latest Prediction */}
+
+  <div className="dashboard-card rounded-3xl p-7">
+
+    <div className="flex items-center justify-between">
+
+      <h2 className="text-2xl font-bold">
+        🤖 Latest AI Prediction
+      </h2>
+
+      <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
+        LIVE
+      </span>
+
+    </div>
+
+    {latestPrediction ? (
+
+      <div className="mt-6 space-y-3">
+
+        <p>
+          <strong>From:</strong> {latestPrediction.from_station}
+        </p>
+
+        <p>
+          <strong>To:</strong> {latestPrediction.to_station}
+        </p>
+
+        <p>
+          <strong>Passengers:</strong>{" "}
+          {latestPrediction.predicted_passengers}
+        </p>
+
+        <p>
+          <strong>Ticket:</strong>{" "}
+          {latestPrediction.ticket_type}
+        </p>
+
+      </div>
+
+    ) : (
+
+      <p className="mt-6 text-slate-500">
+        No prediction available.
+      </p>
+
+    )}
+
+  </div>
+
+  {/* Active Alerts */}
+
+  <div className="dashboard-card rounded-3xl p-7">
+
+    <h2 className="text-2xl font-bold">
+      🚨 Active Alerts
+    </h2>
+
+    <div className="mt-6 space-y-4">
+
+      {recentAlerts.length === 0 ? (
+
+        <p className="text-slate-500">
+          No active alerts.
+        </p>
+
+      ) : (
+
+        recentAlerts.map((alert) => (
+
+          <div
+  key={alert.id ?? `${alert.station}-${alert.severity}`}
+  className={`
+    rounded-xl
+    border
+    p-4
+    ${
+      alert.severity === "Critical"
+        ? "bg-red-50 border-red-300"
+        : alert.severity === "Warning"
+        ? "bg-yellow-50 border-yellow-300"
+        : "bg-green-50 border-green-300"
+    }
+  `}
+>
+
+  <div className="flex justify-between items-center">
+
+    <h3 className="font-bold">
+      {alert.station}
+    </h3>
+
+    <span
+      className={`
+        px-3
+        py-1
+        rounded-full
+        text-xs
+        font-bold
+        ${
+          alert.severity === "Critical"
+            ? "bg-red-500 text-white"
+            : alert.severity === "Warning"
+            ? "bg-yellow-500 text-white"
+            : "bg-green-500 text-white"
+        }
+      `}
+    >
+      {alert.severity}
+    </span>
+
+  </div>
+
+  <p className="mt-3 text-slate-700">
+    {alert.message}
+  </p>
+
+</div>
+
+        ))
+
+      )}
+
+    </div>
+
+  </div>
+
+  {/* Recent Predictions */}
+
+  <div className="dashboard-card rounded-3xl p-7">
+
+    <h2 className="text-2xl font-bold">
+      📜 Recent Predictions
+    </h2>
+
+    <div className="mt-6 space-y-3">
+
+      {recentHistory.length === 0 ? (
+
+        <p className="text-slate-500">
+          No recent predictions.
+        </p>
+
+      ) : (
+
+        recentHistory.map((item) => (
+
+          <div
+            key={item.id ?? `${item.from_station}-${item.to_station}`}
+            className="flex justify-between border-b pb-2"
+          >
+            <span>
+              {item.from_station}
+            </span>
+
+            <span className="font-semibold text-indigo-600">
+              {item.predicted_passengers}
+            </span>
+
+          </div>
+
+        ))
+
+      )}
+
+    </div>
+
+  </div>
+
+</div>
 
 {/* ===================== KPI CARDS ===================== */}
 
@@ -140,6 +390,84 @@ function Dashboard() {
     lineColor="#F59E0B"
     growth="15.7%"
   />
+
+</div>
+<AIOperationsCenter
+  summary={summary}
+  busiestStations={busiestStations}
+  recentAlerts={recentAlerts}
+  latestPrediction={latestPrediction}
+  lastUpdated={lastUpdated}
+/>
+
+<div className="mt-8">
+  <CongestionHeatmap
+    busiestStations={busiestStations}
+  />
+</div>
+
+<div className="mt-8">
+  <PassengerForecast
+    latestPrediction={latestPrediction}
+  />
+</div>
+
+<div className="mt-8">
+  <NetworkHealthAnalytics
+    summary={summary}
+    recentAlerts={recentAlerts}
+    lastUpdated={lastUpdated}
+  />
+</div>
+
+
+
+{/* ===================== Metro Status ===================== */}
+
+<div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8 mb-8">
+
+  <MetroStatusCard />
+
+  <div className="dashboard-card rounded-3xl p-7">
+
+    <h2 className="text-2xl font-bold mb-5">
+      🚨 Live AI Alerts
+    </h2>
+
+    {recentAlerts.length === 0 ? (
+
+      <p className="text-slate-500">
+        No active alerts.
+      </p>
+
+    ) : (
+
+      <div className="space-y-4">
+
+        {recentAlerts.map((alert) => (
+
+          <div
+            key={alert.id ?? `${alert.station}-${alert.message}`}
+            className="rounded-xl border border-red-200 bg-red-50 p-4"
+          >
+
+            <h3 className="font-bold">
+              {alert.station}
+            </h3>
+
+            <p className="text-red-600 mt-2">
+              {alert.message}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    )}
+
+  </div>
 
 </div>
 
@@ -210,7 +538,11 @@ function Dashboard() {
       return (
 
         <div
-          key={index}
+          key={
+            station.station_id ??
+            station.station ??
+            `${station.station}-${index}`
+          }
           className="
           group
           rounded-3xl

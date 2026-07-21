@@ -6,30 +6,31 @@ function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-50">
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-50">
+      {/* Sidebar */}
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
 
+      {/* Main Content */}
       <main
         className={`
-          flex-1
+          min-h-screen
           transition-all
           duration-300
           ease-in-out
-          overflow-x-hidden
           ${collapsed ? "ml-[90px]" : "ml-[280px]"}
         `}
       >
+        {/* Top Navigation */}
         <Navbar />
 
-        <div className="px-10 py-8">
+        {/* Page Content */}
+        <div className="px-8 py-6">
           {children}
         </div>
       </main>
-
     </div>
   );
 }

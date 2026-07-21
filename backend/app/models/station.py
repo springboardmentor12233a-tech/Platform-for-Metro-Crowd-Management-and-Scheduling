@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float
 
-from app.database.database import Base
+from app.database import Base
 
 
 class Station(Base):

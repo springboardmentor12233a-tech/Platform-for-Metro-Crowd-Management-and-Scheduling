@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Time
 
-from app.database.database import Base
+from app.database import Base
 
 
 class TrainSchedule(Base):

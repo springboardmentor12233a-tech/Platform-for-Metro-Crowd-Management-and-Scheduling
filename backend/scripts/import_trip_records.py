@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from app.database.database import SessionLocal
+from app.database import SessionLocal
 from app.models.trip_record import TripRecord
 
 CSV_PATH = "../datasets/raw/delhi_metro_updated.csv"

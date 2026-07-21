@@ -2,3 +2,10 @@ from . import auth
 from . import station
 from . import passenger_flow
 from . import dashboard
+from . import prediction
+from . import forecast
+from . import history
+from . import schedule
+from . import prediction_history
+from . import alert
+from . import live_dashboard
