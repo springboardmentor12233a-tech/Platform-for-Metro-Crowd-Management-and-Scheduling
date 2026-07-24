@@ -77,3 +77,24 @@ Generate:
             "priority": crowd_level,
             "recommendation": "Increase train frequency."
         }
+def generate_notification(station, passenger_count, crowd_level, delay):
+
+    prompt = f"""
+    You are an AI Metro Control System.
+
+    Station: {station}
+    Passenger Count: {passenger_count}
+    Crowd Level: {crowd_level}
+    Delay: {delay} minutes
+
+    Generate a short passenger notification.
+
+    Response should be only one sentence.
+    """
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    return response.text

@@ -3,7 +3,11 @@ from flask_cors import CORS
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
-from gemini_service import generate_alert
+from gemini_service import (
+    generate_alert,
+    generate_notification
+)
+from chatbot_service import metro_chat
 
 app = Flask(__name__)
 CORS(app)
@@ -765,51 +769,100 @@ def all_data():
 @app.route("/notifications")
 def notifications():
 
-    latest = pd.read_excel("../data/MetroFlow_Dataset.xlsx").iloc[-1]
+    latest = df.iloc[-1]
 
-    alerts = []
-
+    station = str(latest["Station"])
     passenger = int(latest["Passenger_Count"])
-    crowd = latest["Crowd_Level"]
+    crowd = str(latest["Crowd_Level"])
     delay = int(latest["Delay_Minutes"])
-    station = latest["Station"]
 
-    if crowd == "High":
-        alerts.append({
-            "type": "danger",
-            "message": f"High crowd detected at {station}. Increase train frequency."
-        })
+    try:
 
-    elif crowd == "Medium":
-        alerts.append({
-            "type": "warning",
-            "message": f"Moderate crowd at {station}. Monitor passenger flow."
-        })
+        message = generate_notification(
+            station,
+            passenger,
+            crowd,
+            delay
+        )
 
-    else:
-        alerts.append({
-            "type": "success",
-            "message": f"Passenger flow is normal at {station}."
-        })
+    except Exception:
 
-    if delay > 5:
-        alerts.append({
-            "type": "warning",
-            "message": f"Train delay of {delay} minutes detected."
-        })
+        if crowd == "High":
 
-    if passenger > 700:
-        alerts.append({
-            "type": "info",
-            "message": "Passenger demand is increasing."
-        })
+            message = (
+                f"Heavy crowd detected at {station}. "
+                "Additional trains are being arranged."
+            )
 
-    alerts.append({
-        "type": "primary",
-        "message": "MetroFlow system is running normally."
+        elif crowd == "Medium":
+
+            message = (
+                f"Moderate crowd at {station}. "
+                "Please cooperate with station staff."
+            )
+
+        else:
+
+            message = (
+                f"Metro services at {station} are operating normally."
+            )
+
+    return jsonify({
+
+        "Station": station,
+
+        "Passenger_Count": passenger,
+
+        "Crowd_Level": crowd,
+
+        "Delay": delay,
+
+        "Notification": message
+
     })
+# -------------------------------------------------
+# AI METRO CHATBOT API
+# -------------------------------------------------
 
-    return jsonify(alerts)
+@app.route("/chat", methods=["GET", "POST"])
+def chat():
+
+    if request.method == "GET":
+        return jsonify({
+            "message": "Chat API is working. Use POST to send questions."
+        })
+
+    data = request.json
+    question = data.get("question", "")
+
+    # remaining code...
+    try:
+
+        data = request.json
+
+        question = data.get("question", "")
+
+        latest = df.iloc[-1]
+
+        metro_data = {
+
+            "Station": str(latest["Station"]),
+            "Passenger_Count": int(latest["Passenger_Count"]),
+            "Crowd_Level": str(latest["Crowd_Level"]),
+            "Delay_Minutes": int(latest["Delay_Minutes"]),
+            "Occupancy_Percent": float(latest["Occupancy_Percent"])
+
+        }
+
+        answer = metro_chat(question, metro_data)
+
+        return jsonify(answer)
+
+    except Exception as e:
+
+        return jsonify({
+            "reply": str(e)
+        })
 if __name__ == "__main__":
 
     app.run(debug=True)
