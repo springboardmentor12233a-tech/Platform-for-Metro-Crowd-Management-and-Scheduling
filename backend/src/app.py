@@ -3,6 +3,7 @@ from flask_cors import CORS
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
+from gemini_service import generate_alert
 
 app = Flask(__name__)
 CORS(app)
@@ -533,45 +534,59 @@ def dashboard():
 # -------------------------------------------------
 # ALERTS API
 # -------------------------------------------------
-
 @app.route("/alerts")
 def alerts():
 
-    latest = df.iloc[-1]
+    latest = df.sample(1).iloc[0]   # Random row each request
 
-    crowd = str(latest["Crowd_Level"])
+    station = str(latest["Station"])
+    passenger_count = int(latest["Passenger_Count"])
+    crowd_level = str(latest["Crowd_Level"])
+    delay = int(latest["Delay_Minutes"])
 
-    if crowd == "High":
+    # Rest of your existing code...
+    try:
 
-        priority = "High"
+        ai = generate_alert(
+            station,
+            passenger_count,
+            crowd_level,
+            delay
+        )
 
-        alert = "Heavy crowd detected! Increase train frequency immediately."
+        return jsonify({
 
-    elif crowd == "Medium":
+            "Station": station,
+            "Passenger_Count": passenger_count,
+            "Crowd_Level": crowd_level,
+            "Delay": delay,
 
-        priority = "Medium"
+            "Alert": ai["alert"],
+            "Priority": ai["priority"],
+            "Recommendation": ai["recommendation"]
 
-        alert = "Moderate crowd detected. Increase monitoring."
+        })
 
-    else:
+    except Exception:
 
-        priority = "Low"
+        # Fallback when Gemini quota finishes
 
-        alert = "Metro services are operating normally."
+        return jsonify({
 
-    return jsonify({
+            "Station": station,
+            "Passenger_Count": passenger_count,
+            "Crowd_Level": crowd_level,
+            "Delay": delay,
 
-        "Station": str(latest["Station"]),
+            "Alert":
+            f"High crowd detected at {station}. Immediate action required.",
 
-        "Crowd_Level": crowd,
+            "Priority": "High",
 
-        "Priority": priority,
+            "Recommendation":
+            "Increase train frequency and deploy additional staff."
 
-        "Alert": alert
-
-    })
-
-
+        })
 # -------------------------------------------------
 # EMERGENCY ANNOUNCEMENT API
 # -------------------------------------------------
