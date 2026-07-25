@@ -46,3 +46,11 @@ if __name__ == "__main__":
     )
 
     print(result)
+    print("From Stations:")
+print(from_station_encoder.classes_)
+
+print("\nTo Stations:")
+print(to_station_encoder.classes_)
+
+print("\nTicket Types:")
+print(ticket_encoder.classes_)

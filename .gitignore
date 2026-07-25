@@ -24,3 +24,4 @@ frontend/node_modules/
 .DS_Store
 Thumbs.db
 backend/app/ml/crowd_model.pkl
+backend/app/ml/*.pkl

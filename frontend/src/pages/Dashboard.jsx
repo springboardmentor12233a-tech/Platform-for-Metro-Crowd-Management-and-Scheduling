@@ -3,8 +3,11 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import DashboardCard from "../components/DashboardCard";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   const [summary, setSummary] = useState({
     total_stations: 0,
     high_demand: 0,
@@ -12,16 +15,16 @@ function Dashboard() {
     low_demand: 0,
   });
 
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch dashboard summary
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         const response = await api.get(
           "/reports/traffic-analysis?day_type=Weekday"
         );
-
-        console.log("API Response:", response.data);
 
         if (response.data && response.data.summary) {
           setSummary(response.data.summary);
@@ -35,6 +38,20 @@ function Dashboard() {
 
     fetchDashboardData();
   }, []);
+
+  // Fetch logged-in user
+  useEffect(() => {
+    api
+      .get("/me")
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error("User Error:", err));
+  }, []);
+
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <>
@@ -51,7 +68,41 @@ function Dashboard() {
             minHeight: "100vh",
           }}
         >
-          <h1>Dashboard</h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <div>
+              <h1>Dashboard</h1>
+
+              {user && (
+                <>
+                  <h3>Welcome, {user.name}</h3>
+                  <p>Email: {user.email}</p>
+                  <p>Role: {user.role}</p>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={logout}
+              style={{
+                padding: "10px 20px",
+                background: "#E53935",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
+          </div>
+
           {loading ? (
             <h2>Loading...</h2>
           ) : (

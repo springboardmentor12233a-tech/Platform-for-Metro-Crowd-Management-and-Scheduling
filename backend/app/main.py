@@ -4,11 +4,12 @@ from sqlalchemy import func, desc
 
 from app.database import engine, Base, get_db
 from app import models, schemas, auth
-
+from fastapi.security import OAuth2PasswordRequestForm
 from app.routers.prediction import router as prediction_router
 from app.routers.forecast import router as forecast_router
 from app.routers.schedule import router as schedule_router
 from app.routers.frequency import router as frequency_router
+from app.routers.history import router as history_router
 from app.routers.monitoring import router as monitoring_router
 from app.routers.report import router as report_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,8 +21,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -34,6 +35,7 @@ app.include_router(schedule_router)
 app.include_router(frequency_router)
 app.include_router(monitoring_router)
 app.include_router(report_router)
+app.include_router(history_router)
 
 # ---------------- HOME ----------------
 
@@ -82,14 +84,16 @@ def register(
 
 # ---------------- LOGIN ----------------
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 @app.post("/login")
 def login(
-    user: schemas.UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
     db_user = db.query(models.User).filter(
-        models.User.email == user.email
+        models.User.email == form_data.username
     ).first()
 
     if not db_user:
@@ -99,7 +103,7 @@ def login(
         )
 
     if not auth.verify_password(
-        user.password,
+        form_data.password,
         db_user.password
     ):
         raise HTTPException(
@@ -125,7 +129,10 @@ def login(
 @app.post("/crowd")
 def add_crowd(
     crowd: schemas.CrowdCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(
+    auth.require_role(["Admin", "Operator"])
+)
 ):
 
     new_data = models.CrowdData(
@@ -166,7 +173,10 @@ def get_crowd(
 def update_crowd(
     id: int,
     crowd: schemas.CrowdCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(
+        auth.require_role(["Admin", "Operator"])
+    )
 ):
 
     data = db.query(models.CrowdData).filter(
@@ -195,10 +205,12 @@ def update_crowd(
 
 @app.delete("/crowd/{id}")
 def delete_crowd(
-    id: int,
-    db: Session = Depends(get_db)
+id: int,
+db: Session = Depends(get_db),
+    current_user: models.User = Depends(
+    auth.require_role(["Admin"])
+    )
 ):
-
     data = db.query(models.CrowdData).filter(
         models.CrowdData.id == id
     ).first()
@@ -288,4 +300,14 @@ def station_list(
 
     return {
         "stations": [station[0] for station in stations]
+    }
+@app.get("/me")
+def get_me(
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "role": current_user.role
     }

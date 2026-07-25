@@ -1,4 +1,14 @@
+import { Link } from "react-router-dom";
+
 function Sidebar() {
+  const linkStyle = {
+    display: "block",
+    color: "white",
+    textDecoration: "none",
+    margin: "18px 0",
+    fontSize: "18px",
+  };
+
   return (
     <div
       style={{
@@ -13,19 +23,36 @@ function Sidebar() {
 
       <hr />
 
-      <p>🏠 Dashboard</p>
+      <Link to="/" style={linkStyle}>
+        🏠 Dashboard
+      </Link>
 
-      <p>📊 Crowd Prediction</p>
+      <Link to="/prediction" style={linkStyle}>
+        📊 Crowd Prediction
+      </Link>
 
-      <p>🚉 Demand Forecast</p>
+      <Link to="/forecast" style={linkStyle}>
+        🚉 Demand Forecast
+      </Link>
 
-      <p>🚆 Train Schedule</p>
+      <Link to="/schedule" style={linkStyle}>
+        🚆 Train Schedule
+      </Link>
 
-      <p>🚄 Frequency Adjustment</p>
+      <Link to="/frequency" style={linkStyle}>
+        🚄 Frequency Adjustment
+      </Link>
 
-      <p>📡 Live Monitoring</p>
+      <Link to="/monitoring" style={linkStyle}>
+        📡 Live Monitoring
+      </Link>
 
-      <p>📈 Traffic Reports</p>
+      <Link to="/reports" style={linkStyle}>
+        📈 Traffic Reports
+      </Link>
+      <Link to="/history" style={linkStyle}>
+        🕘 Prediction History
+      </Link>
     </div>
   );
 }

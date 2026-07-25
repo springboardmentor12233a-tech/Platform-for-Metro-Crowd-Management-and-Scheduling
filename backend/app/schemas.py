@@ -55,3 +55,24 @@ class CrowdResponse(BaseModel):
 
     class Config:
         from_attributes = True
+# ---------------- Prediction History ----------------
+
+class PredictionHistoryCreate(BaseModel):
+    station_name: str
+    passenger_count: int
+    predicted_crowd: str
+    prediction_type: str | None = None
+    predicted_by: str | None = None
+
+
+class PredictionHistoryResponse(BaseModel):
+    id: int
+    station_name: str
+    passenger_count: int
+    predicted_crowd: str
+    prediction_type: str | None = None
+    predicted_by: str | None = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
