@@ -185,6 +185,11 @@ def predict():
     try:
 
         data = request.json
+        #added
+        print("\n" + "=" * 50)
+        print("Received JSON:")
+        print(data)
+        print("=" * 50)
 
         input_df = pd.DataFrame([{
 
@@ -196,15 +201,17 @@ def predict():
             "Train_Speed_kmph": data["Train_Speed_kmph"]
 
         }])
+        print("Input DataFrame:")
+        print(input_df)
 
         input_scaled = scaler.transform(input_df)
 
         prediction = crowd_model.predict(input_scaled)[0]
 
         labels = {
-            0: "Low",
-            1: "Medium",
-            2: "High"
+            0: "High",
+            1: "Low",
+            2: "Medium"
         }
 
         crowd = labels.get(int(prediction), "Unknown")

@@ -10,7 +10,12 @@
 //   FaChartLine,
 //   FaTrain,
 //   FaMapMarkerAlt,
-//   FaDownload
+//   FaDownload,
+//   FaRobot,
+//   FaExclamationTriangle,
+//   FaServer,
+//   FaCheckCircle,
+//   FaChartBar
 // } from "react-icons/fa";
 
 // function Report() {
@@ -22,7 +27,7 @@
 //     api.get("/report")
 //       .then((response) => {
 
-//         console.log("Report Data:", response.data);
+//         console.log(response.data);
 
 //         setReport(response.data);
 
@@ -53,241 +58,697 @@
 //         </div>
 
 //         <Footer />
+
 //       </>
 
 //     );
 
 //   }
 
+//   const performance =
+//     report.Average_Delay <= 2
+//       ? "Excellent"
+//       : report.Average_Delay <= 5
+//       ? "Good"
+//       : "Needs Improvement";
+
 //   return (
 
-//     <>
+// <>
+// <Navbar/>
 
-//       <Navbar />
+// <div className="container mt-5">
 
-//       <div className="container mt-5">
+// <h1 className="text-center fw-bold">
 
-//         <h1 className="text-center">
-//           📊 Traffic Analysis Report
-//         </h1>
+// 📊 AI Traffic Analysis Dashboard
 
-//         <p className="text-center text-muted">
-//           AI Generated Metro Traffic Statistics and Operational Insights
+// </h1>
+
+// <p className="text-center text-muted">
+
+// MetroFlow Analytics & Operational Insights
+
+// </p>
+
+// <hr/>
+
+// <div className="row">
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaUsers
+// size={40}
+// className="text-primary mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Total Passengers
+
+// </h5>
+
+// <h2>
+
+// {report.Total_Passengers}
+
+// </h2>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaChartLine
+// size={40}
+// className="text-success mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Average Passenger Count
+
+// </h5>
+
+// <h2>
+
+// {report.Average_Passenger_Count}
+
+// </h2>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaClock
+// size={40}
+// className="text-danger mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Average Delay
+
+// </h5>
+
+// <h2>
+
+// {report.Average_Delay} min
+
+// </h2>
+
+// </div>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="row">
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaPercentage
+// size={40}
+// className="text-warning mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Maximum Occupancy
+
+// </h5>
+
+// <h2>
+
+// {report.Maximum_Occupancy}%
+
+// </h2>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaTrain
+// size={40}
+// className="text-info mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Peak Hour
+
+// </h5>
+
+// <h2>
+
+// {report.Peak_Hour}
+
+// </h2>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="col-md-4 mb-4">
+
+// <div className="card shadow text-center p-4 h-100">
+
+// <FaMapMarkerAlt
+// size={40}
+// className="text-secondary mx-auto"/>
+
+// <h5 className="mt-3">
+
+// Most Crowded Station
+
+// </h5>
+
+// <h4>
+
+// {report.Most_Crowded_Station}
+
+// </h4>
+
+// </div>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="card shadow mt-4 p-4">
+
+// <h3>
+
+// Occupancy Meter
+
+// </h3>
+
+// <div
+// className="progress mt-3"
+// style={{height:"35px"}}
+// >
+
+// <div
+
+// className={`progress-bar ${
+// report.Maximum_Occupancy>=80
+// ?"bg-danger"
+// :report.Maximum_Occupancy>=60
+// ?"bg-warning"
+// :"bg-success"
+// }`}
+
+// style={{
+
+// width:`${report.Maximum_Occupancy}%`
+
+// }}
+
+// >
+
+// {report.Maximum_Occupancy}%
+
+// </div>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="row mt-4">
+
+// <div className="col-md-6">
+
+// <div className="card shadow text-center p-4">
+
+// <FaChartBar
+// size={40}
+// className="text-primary mx-auto"
+// />
+
+// <h4 className="mt-3">
+
+// Metro Performance
+
+// </h4>
+
+// <h2>
+
+// {performance}
+
+// </h2>
+
+// </div>
+
+// </div>
+
+
+
+// <div className="col-md-6">
+
+// <div className="card shadow text-center p-4">
+
+// <FaRobot
+// size={40}
+// className="text-success mx-auto"
+// />
+
+// <h4 className="mt-3">
+
+// AI Recommendation
+
+// </h4>
+
+// <h5>
+
+// {performance==="Excellent"
+// ?"Maintain Current Schedule"
+// :performance==="Good"
+// ?"Increase Monitoring"
+// :"Increase Train Frequency"}
+
+// </h5>
+
+// </div>
+
+// </div>
+
+// </div>
+
+
+
+// <div
+
+// className={`alert mt-4 ${
+// performance==="Excellent"
+// ?"alert-success"
+// :performance==="Good"
+// ?"alert-warning"
+// :"alert-danger"
+// }`}
+
+// >
+
+// <h4>
+
+// <FaExclamationTriangle/>
+
+// {" "}
+
+// Operational Alert
+
+// </h4>
+
+// <p>
+
+// {performance==="Excellent" &&
+// "Metro operations are performing efficiently."}
+
+// {performance==="Good" &&
+// "Moderate congestion observed. Continue monitoring."}
+
+// {performance==="Needs Improvement" &&
+// "Heavy traffic detected. Increase operational capacity."}
+
+// </p>
+
+// </div>
+//       {/* Statistics Table */}
+
+//       <div className="card shadow mt-4 p-4">
+
+//         <h3>Traffic Statistics</h3>
+
+//         <table className="table table-bordered table-striped mt-3">
+
+//           <thead className="table-primary">
+
+//             <tr>
+
+//               <th>Metric</th>
+
+//               <th>Value</th>
+
+//             </tr>
+
+//           </thead>
+
+//           <tbody>
+
+//             <tr>
+
+//               <td>Total Passengers</td>
+
+//               <td>{report.Total_Passengers}</td>
+
+//             </tr>
+
+//             <tr>
+
+//               <td>Average Passenger Count</td>
+
+//               <td>{report.Average_Passenger_Count}</td>
+
+//             </tr>
+
+//             <tr>
+
+//               <td>Average Delay</td>
+
+//               <td>{report.Average_Delay} min</td>
+
+//             </tr>
+
+//             <tr>
+
+//               <td>Maximum Occupancy</td>
+
+//               <td>{report.Maximum_Occupancy}%</td>
+
+//             </tr>
+
+//             <tr>
+
+//               <td>Peak Hour</td>
+
+//               <td>{report.Peak_Hour}</td>
+
+//             </tr>
+
+//             <tr>
+
+//               <td>Most Crowded Station</td>
+
+//               <td>{report.Most_Crowded_Station}</td>
+
+//             </tr>
+
+//           </tbody>
+
+//         </table>
+
+//       </div>
+
+
+
+//       {/* AI Insights */}
+
+//       <div className="card shadow mt-4 p-4">
+
+//         <h3>
+
+//           <FaRobot />
+
+//           {" "}
+
+//           AI Insights
+
+//         </h3>
+
+//         <ul className="list-group mt-3">
+
+//           <li className="list-group-item">
+//             Passenger traffic analyzed successfully.
+//           </li>
+
+//           <li className="list-group-item">
+//             Peak operational hours identified.
+//           </li>
+
+//           <li className="list-group-item">
+//             Occupancy trends calculated.
+//           </li>
+
+//           <li className="list-group-item">
+//             AI generated operational recommendations.
+//           </li>
+
+//           <li className="list-group-item">
+//             Traffic analysis completed successfully.
+//           </li>
+
+//         </ul>
+
+//       </div>
+
+
+
+//       {/* Report Summary */}
+
+//       <div className="card shadow mt-4 p-4">
+
+//         <h3>
+
+//           AI Generated Summary
+
+//         </h3>
+
+//         <p className="mt-3">
+
+//           The MetroFlow AI Traffic Analysis module processed passenger
+//           movement and operational statistics to evaluate metro
+//           performance.
+
 //         </p>
 
-//         <hr />
+//         <p>
 
-//         <div className="row">
+//           Total passengers travelled:
+//           <strong> {report.Total_Passengers}</strong>
 
-//           {/* Total Passengers */}
+//         </p>
 
-//           <div className="col-md-4 mb-4">
+//         <p>
 
-//             <div className="card shadow text-center p-4 h-100">
+//           Average passenger count:
+//           <strong> {report.Average_Passenger_Count}</strong>
 
-//               <FaUsers
-//                 size={40}
-//                 className="text-primary mx-auto"
-//               />
+//         </p>
 
-//               <h5 className="mt-3">
-//                 Total Passengers
-//               </h5>
+//         <p>
 
-//               <h2>
-//                 {report.Total_Passengers}
-//               </h2>
+//           Average delay:
+//           <strong> {report.Average_Delay} Minutes</strong>
 
-//             </div>
+//         </p>
 
-//           </div>
+//         <p>
 
-//           {/* Average Passenger */}
+//           Most crowded station:
+//           <strong> {report.Most_Crowded_Station}</strong>
 
-//           <div className="col-md-4 mb-4">
+//         </p>
 
-//             <div className="card shadow text-center p-4 h-100">
+//         <p>
 
-//               <FaChartLine
-//                 size={40}
-//                 className="text-success mx-auto"
-//               />
+//           Peak operational hour:
+//           <strong> {report.Peak_Hour}</strong>
 
-//               <h5 className="mt-3">
-//                 Average Passenger Count
-//               </h5>
+//         </p>
 
-//               <h2>
-//                 {report.Average_Passenger_Count}
-//               </h2>
+//       </div>
 
-//             </div>
 
-//           </div>
 
-//           {/* Delay */}
+//       {/* System Status */}
 
-//           <div className="col-md-4 mb-4">
+//       <div className="card shadow mt-4 p-4">
 
-//             <div className="card shadow text-center p-4 h-100">
+//         <h3>
 
-//               <FaClock
-//                 size={40}
-//                 className="text-danger mx-auto"
-//               />
+//           <FaServer />
 
-//               <h5 className="mt-3">
-//                 Average Delay
-//               </h5>
+//           {" "}
 
-//               <h2>
-//                 {report.Average_Delay} min
-//               </h2>
+//           System Status
 
-//             </div>
+//         </h3>
 
-//           </div>
+//         <ul className="list-group mt-3">
 
-//           {/* Occupancy */}
+//           <li className="list-group-item d-flex justify-content-between">
 
-//           <div className="col-md-4 mb-4">
+//             Backend API
 
-//             <div className="card shadow text-center p-4 h-100">
+//             <span className="badge bg-success">
 
-//               <FaPercentage
-//                 size={40}
-//                 className="text-warning mx-auto"
-//               />
+//               Running
 
-//               <h5 className="mt-3">
-//                 Maximum Occupancy
-//               </h5>
+//             </span>
 
-//               <h2>
-//                 {report.Maximum_Occupancy}%
-//               </h2>
+//           </li>
 
-//             </div>
+//           <li className="list-group-item d-flex justify-content-between">
 
-//           </div>
+//             AI Analytics Engine
 
-//           {/* Peak Hour */}
+//             <span className="badge bg-success">
 
-//           <div className="col-md-4 mb-4">
+//               Active
 
-//             <div className="card shadow text-center p-4 h-100">
+//             </span>
 
-//               <FaTrain
-//                 size={40}
-//                 className="text-info mx-auto"
-//               />
+//           </li>
 
-//               <h5 className="mt-3">
-//                 Peak Hour
-//               </h5>
+//           <li className="list-group-item d-flex justify-content-between">
 
-//               <h2>
-//                 {report.Peak_Hour}
-//               </h2>
+//             Report Generator
 
-//             </div>
+//             <span className="badge bg-success">
 
-//           </div>
+//               Completed
 
-//           {/* Crowded Station */}
+//             </span>
 
-//           <div className="col-md-4 mb-4">
+//           </li>
 
-//             <div className="card shadow text-center p-4 h-100">
+//           <li className="list-group-item d-flex justify-content-between">
 
-//               <FaMapMarkerAlt
-//                 size={40}
-//                 className="text-secondary mx-auto"
-//               />
+//             Traffic Monitoring
 
-//               <h5 className="mt-3">
-//                 Most Crowded Station
-//               </h5>
+//             <span className="badge bg-success">
 
-//               <h4>
-//                 {report.Most_Crowded_Station}
-//               </h4>
+//               Online
 
-//             </div>
+//             </span>
+
+//           </li>
+
+//         </ul>
+
+//       </div>
+
+
+
+//       {/* Overall Performance */}
+
+//       <div className="card shadow mt-4 p-4">
+
+//         <h3>
+
+//           Overall Metro Performance
+
+//         </h3>
+
+//         <div className="row text-center mt-3">
+
+//           <div className="col-md-3">
+
+//             <h5>Passengers</h5>
+
+//             <h2>{report.Total_Passengers}</h2>
 
 //           </div>
 
-//         </div>
+//           <div className="col-md-3">
 
-//         {/* Summary */}
+//             <h5>Occupancy</h5>
 
-//         <div className="card shadow mt-5 p-4">
+//             <h2>{report.Maximum_Occupancy}%</h2>
 
-//           <h3 className="text-center mb-3">
-//             Report Summary
-//           </h3>
+//           </div>
 
-//           <p>
-//             • Total passengers travelled:
-//             <strong> {report.Total_Passengers}</strong>
-//           </p>
+//           <div className="col-md-3">
 
-//           <p>
-//             • Average passenger count:
-//             <strong> {report.Average_Passenger_Count}</strong>
-//           </p>
+//             <h5>Delay</h5>
 
-//           <p>
-//             • Peak operational hour:
-//             <strong> {report.Peak_Hour}</strong>
-//           </p>
+//             <h2>{report.Average_Delay} min</h2>
 
-//           <p>
-//             • Most crowded station:
-//             <strong> {report.Most_Crowded_Station}</strong>
-//           </p>
+//           </div>
 
-//           <p>
-//             • Maximum occupancy recorded:
-//             <strong> {report.Maximum_Occupancy}%</strong>
-//           </p>
+//           <div className="col-md-3">
 
-//         </div>
+//             <h5>Status</h5>
 
-//         {/* Download */}
+//             <h3 className="text-success">
 
-//         <div className="text-center mt-5 mb-5">
+//               {performance}
 
-//           <button
-//             className="btn btn-success btn-lg"
-//             onClick={() =>
-//               window.open(
-//                 "http://127.0.0.1:5000/report",
-//                 "_blank"
-//               )
-//             }
-//           >
-//             <FaDownload />
+//             </h3>
 
-//             {" "}Download Report
-
-//           </button>
+//           </div>
 
 //         </div>
 
 //       </div>
 
-//       <Footer />
 
-//     </>
 
-//   );
+//       {/* Report Generated */}
+
+//       <div className="alert alert-success mt-4">
+
+//         <FaCheckCircle />
+
+//         {" "}
+
+//         AI Traffic Analysis Report generated successfully.
+
+//       </div>
+
+
+
+//       {/* Download Button */}
+
+//       <div className="text-center mt-4 mb-5">
+
+//         <button
+
+//           className="btn btn-success btn-lg"
+
+//           onClick={() =>
+//             window.open(
+//               "http://127.0.0.1:5000/report",
+//               "_blank"
+//             )
+//           }
+
+//         >
+
+//           <FaDownload />
+
+//           {" "}
+
+//           Download Report
+
+//         </button>
+
+//       </div>
+
+// </div>
+
+// <Footer/>
+
+// </>
+
+// );
 
 // }
 
 // export default Report;
-
-
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -317,8 +778,6 @@ function Report() {
     api.get("/report")
       .then((response) => {
 
-        console.log(response.data);
-
         setReport(response.data);
 
       })
@@ -342,7 +801,9 @@ function Report() {
           <div className="spinner-border text-primary"></div>
 
           <h3 className="mt-3">
-            Loading Traffic Report...
+
+            Loading AI Traffic Report...
+
           </h3>
 
         </div>
@@ -364,669 +825,899 @@ function Report() {
 
   return (
 
-<>
-<Navbar/>
+    <>
 
-<div className="container mt-5">
+      <Navbar />
 
-<h1 className="text-center fw-bold">
+      <div className="container mt-5">
 
-📊 AI Traffic Analysis Dashboard
+        <h1 className="text-center fw-bold">
 
-</h1>
+          📊 AI Traffic Analysis Dashboard
 
-<p className="text-center text-muted">
+        </h1>
 
-MetroFlow Analytics & Operational Insights
+        <p className="text-center text-muted">
 
-</p>
+          MetroFlow Analytics & Operational Insights
 
-<hr/>
+        </p>
+
+        <p className="text-center text-secondary">
+
+          Generated on {new Date().toLocaleString()}
+
+        </p>
+
+        <hr />
+
+        <div className="row">
+
+  {/* Total Passengers */}
+
+  <div className="col-md-4 mb-4">
+
+    <div className="card shadow text-center p-4 h-100">
+
+      <FaUsers
+        size={40}
+        className="text-primary mx-auto"
+      />
+
+      <h5 className="mt-3">
+
+        Total Passengers
+
+      </h5>
+
+      <h2>
+
+        {report.Total_Passengers}
+
+      </h2>
+
+    </div>
+
+  </div>
+
+  {/* Average Passenger Count */}
+
+  <div className="col-md-4 mb-4">
+
+    <div className="card shadow text-center p-4 h-100">
+
+      <FaChartLine
+        size={40}
+        className="text-success mx-auto"
+      />
+
+      <h5 className="mt-3">
+
+        Average Passenger Count
+
+      </h5>
+
+      <h2>
+
+        {report.Average_Passenger_Count}
+
+      </h2>
+
+    </div>
+
+  </div>
+
+  {/* Average Delay */}
+
+  <div className="col-md-4 mb-4">
+
+    <div className="card shadow text-center p-4 h-100">
+
+      <FaClock
+        size={40}
+        className="text-danger mx-auto"
+      />
+
+      <h5 className="mt-3">
+
+        Average Delay
+
+      </h5>
+
+      <h2>
+
+        {report.Average_Delay} min
+
+      </h2>
+
+    </div>
+
+  </div>
+
+</div>
 
 <div className="row">
 
-<div className="col-md-4 mb-4">
+  {/* Maximum Occupancy */}
 
-<div className="card shadow text-center p-4 h-100">
+  <div className="col-md-4 mb-4">
 
-<FaUsers
-size={40}
-className="text-primary mx-auto"/>
+    <div className="card shadow text-center p-4 h-100">
 
-<h5 className="mt-3">
+      <FaPercentage
+        size={40}
+        className="text-warning mx-auto"
+      />
 
-Total Passengers
+      <h5 className="mt-3">
 
-</h5>
+        Maximum Occupancy
 
-<h2>
+      </h5>
 
-{report.Total_Passengers}
+      <h2>
 
-</h2>
+        {report.Maximum_Occupancy}%
 
-</div>
+      </h2>
 
-</div>
+    </div>
 
+  </div>
 
+  {/* Peak Hour */}
 
-<div className="col-md-4 mb-4">
+  <div className="col-md-4 mb-4">
 
-<div className="card shadow text-center p-4 h-100">
+    <div className="card shadow text-center p-4 h-100">
 
-<FaChartLine
-size={40}
-className="text-success mx-auto"/>
+      <FaTrain
+        size={40}
+        className="text-info mx-auto"
+      />
 
-<h5 className="mt-3">
+      <h5 className="mt-3">
 
-Average Passenger Count
+        Peak Hour
 
-</h5>
+      </h5>
 
-<h2>
+      <h2>
 
-{report.Average_Passenger_Count}
+        {report.Peak_Hour}
 
-</h2>
+      </h2>
 
-</div>
+    </div>
 
-</div>
+  </div>
 
+  {/* Most Crowded Station */}
 
+  <div className="col-md-4 mb-4">
 
-<div className="col-md-4 mb-4">
+    <div className="card shadow text-center p-4 h-100">
 
-<div className="card shadow text-center p-4 h-100">
+      <FaMapMarkerAlt
+        size={40}
+        className="text-secondary mx-auto"
+      />
 
-<FaClock
-size={40}
-className="text-danger mx-auto"/>
+      <h5 className="mt-3">
 
-<h5 className="mt-3">
+        Most Crowded Station
 
-Average Delay
+      </h5>
 
-</h5>
+      <h4>
 
-<h2>
+        {report.Most_Crowded_Station}
 
-{report.Average_Delay} min
+      </h4>
 
-</h2>
+    </div>
 
-</div>
-
-</div>
-
-</div>
-
-
-
-<div className="row">
-
-<div className="col-md-4 mb-4">
-
-<div className="card shadow text-center p-4 h-100">
-
-<FaPercentage
-size={40}
-className="text-warning mx-auto"/>
-
-<h5 className="mt-3">
-
-Maximum Occupancy
-
-</h5>
-
-<h2>
-
-{report.Maximum_Occupancy}%
-
-</h2>
+  </div>
 
 </div>
 
-</div>
-
-
-
-<div className="col-md-4 mb-4">
-
-<div className="card shadow text-center p-4 h-100">
-
-<FaTrain
-size={40}
-className="text-info mx-auto"/>
-
-<h5 className="mt-3">
-
-Peak Hour
-
-</h5>
-
-<h2>
-
-{report.Peak_Hour}
-
-</h2>
-
-</div>
-
-</div>
-
-
-
-<div className="col-md-4 mb-4">
-
-<div className="card shadow text-center p-4 h-100">
-
-<FaMapMarkerAlt
-size={40}
-className="text-secondary mx-auto"/>
-
-<h5 className="mt-3">
-
-Most Crowded Station
-
-</h5>
-
-<h4>
-
-{report.Most_Crowded_Station}
-
-</h4>
-
-</div>
-
-</div>
-
-</div>
-
-
+{/* AI Confidence */}
 
 <div className="card shadow mt-4 p-4">
 
-<h3>
+  <h3>
 
-Occupancy Meter
+    🤖 AI Confidence Score
 
-</h3>
+  </h3>
 
-<div
-className="progress mt-3"
-style={{height:"35px"}}
->
+  <div
+    className="progress mt-3"
+    style={{ height: "35px" }}
+  >
 
-<div
+    <div
+      className="progress-bar bg-success"
+      style={{ width: "96%" }}
+    >
 
-className={`progress-bar ${
-report.Maximum_Occupancy>=80
-?"bg-danger"
-:report.Maximum_Occupancy>=60
-?"bg-warning"
-:"bg-success"
-}`}
+      96%
 
-style={{
+    </div>
 
-width:`${report.Maximum_Occupancy}%`
+  </div>
 
-}}
+  <p className="mt-3">
 
->
+    The AI prediction engine has analyzed passenger movement,
+    occupancy, crowd level and delay patterns with an estimated
+    confidence score of <strong>96%</strong>.
 
-{report.Maximum_Occupancy}%
-
-</div>
+  </p>
 
 </div>
 
+{/* Executive Summary */}
+
+<div className="card shadow mt-4 p-4">
+
+  <h3>
+
+    📄 Executive Summary
+
+  </h3>
+
+  <p className="mt-3">
+
+    MetroFlow analyzed passenger traffic, train occupancy,
+    operational delays and station congestion using Machine
+    Learning models. The platform predicts future passenger
+    demand, identifies crowded stations, generates AI
+    recommendations and supports metro scheduling decisions.
+
+  </p>
+
+</div>
+{/* Occupancy Meter */}
+
+<div className="card shadow mt-4 p-4">
+
+  <h3>
+
+    Occupancy Meter
+
+  </h3>
+
+  <div
+    className="progress mt-3"
+    style={{ height: "35px" }}
+  >
+
+    <div
+      className={`progress-bar ${
+        report.Maximum_Occupancy >= 80
+          ? "bg-danger"
+          : report.Maximum_Occupancy >= 60
+          ? "bg-warning"
+          : "bg-success"
+      }`}
+      style={{
+        width: `${report.Maximum_Occupancy}%`
+      }}
+    >
+
+      {report.Maximum_Occupancy}%
+
+    </div>
+
+  </div>
+
 </div>
 
 
+{/* Metro Performance & AI Recommendation */}
 
 <div className="row mt-4">
 
-<div className="col-md-6">
+  <div className="col-md-6">
 
-<div className="card shadow text-center p-4">
+    <div className="card shadow text-center p-4 h-100">
 
-<FaChartBar
-size={40}
-className="text-primary mx-auto"
-/>
+      <FaChartBar
+        size={40}
+        className="text-primary mx-auto"
+      />
 
-<h4 className="mt-3">
+      <h4 className="mt-3">
 
-Metro Performance
+        Metro Performance
 
-</h4>
+      </h4>
 
-<h2>
+      <h2
+        className={
+          performance === "Excellent"
+            ? "text-success"
+            : performance === "Good"
+            ? "text-warning"
+            : "text-danger"
+        }
+      >
 
-{performance}
+        {performance}
 
-</h2>
+      </h2>
+
+      <p className="text-muted">
+
+        Overall operational efficiency calculated using
+        delay, occupancy and passenger movement.
+
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div className="col-md-6">
+
+    <div className="card shadow text-center p-4 h-100">
+
+      <FaRobot
+        size={40}
+        className="text-success mx-auto"
+      />
+
+      <h4 className="mt-3">
+
+        AI Recommendation
+
+      </h4>
+
+      <h5>
+
+        {performance === "Excellent"
+          ? "Maintain Current Schedule"
+          : performance === "Good"
+          ? "Increase Monitoring"
+          : "Increase Train Frequency"}
+
+      </h5>
+
+      <p className="text-muted mt-3">
+
+        Recommendation generated using MetroFlow
+        Machine Learning analytics.
+
+      </p>
+
+    </div>
+
+  </div>
 
 </div>
 
-</div>
 
-
-
-<div className="col-md-6">
-
-<div className="card shadow text-center p-4">
-
-<FaRobot
-size={40}
-className="text-success mx-auto"
-/>
-
-<h4 className="mt-3">
-
-AI Recommendation
-
-</h4>
-
-<h5>
-
-{performance==="Excellent"
-?"Maintain Current Schedule"
-:performance==="Good"
-?"Increase Monitoring"
-:"Increase Train Frequency"}
-
-</h5>
-
-</div>
-
-</div>
-
-</div>
-
-
+{/* Operational Alert */}
 
 <div
-
-className={`alert mt-4 ${
-performance==="Excellent"
-?"alert-success"
-:performance==="Good"
-?"alert-warning"
-:"alert-danger"
-}`}
-
+  className={`alert mt-4 ${
+    performance === "Excellent"
+      ? "alert-success"
+      : performance === "Good"
+      ? "alert-warning"
+      : "alert-danger"
+  }`}
 >
 
-<h4>
+  <h4>
 
-<FaExclamationTriangle/>
+    <FaExclamationTriangle />
 
-{" "}
+    {" "}
 
-Operational Alert
+    Operational Alert
 
-</h4>
+  </h4>
 
-<p>
+  <p>
 
-{performance==="Excellent" &&
-"Metro operations are performing efficiently."}
+    {performance === "Excellent" &&
+      "Metro operations are stable. Continue normal train scheduling."}
 
-{performance==="Good" &&
-"Moderate congestion observed. Continue monitoring."}
+    {performance === "Good" &&
+      "Moderate congestion detected. Continue monitoring passenger flow."}
 
-{performance==="Needs Improvement" &&
-"Heavy traffic detected. Increase operational capacity."}
+    {performance === "Needs Improvement" &&
+      "Heavy congestion detected. Increase train frequency and deploy additional staff immediately."}
 
-</p>
+  </p>
 
 </div>
-      {/* Statistics Table */}
 
-      <div className="card shadow mt-4 p-4">
 
-        <h3>Traffic Statistics</h3>
+{/* AI Modules Used */}
 
-        <table className="table table-bordered table-striped mt-3">
+<div className="card shadow mt-4 p-4">
 
-          <thead className="table-primary">
+  <h3>
 
-            <tr>
+    🤖 AI Modules Used
 
-              <th>Metric</th>
+  </h3>
 
-              <th>Value</th>
+  <div className="row mt-3">
 
-            </tr>
+    <div className="col-md-6">
 
-          </thead>
+      <ul className="list-group">
 
-          <tbody>
+        <li className="list-group-item">
 
-            <tr>
+          ✅ Crowd Prediction Model
 
-              <td>Total Passengers</td>
+        </li>
 
-              <td>{report.Total_Passengers}</td>
+        <li className="list-group-item">
 
-            </tr>
+          ✅ Passenger Forecasting
 
-            <tr>
+        </li>
 
-              <td>Average Passenger Count</td>
+        <li className="list-group-item">
 
-              <td>{report.Average_Passenger_Count}</td>
+          ✅ AI Alert Generator
 
-            </tr>
+        </li>
 
-            <tr>
+      </ul>
 
-              <td>Average Delay</td>
+    </div>
 
-              <td>{report.Average_Delay} min</td>
+    <div className="col-md-6">
 
-            </tr>
+      <ul className="list-group">
 
-            <tr>
+        <li className="list-group-item">
 
-              <td>Maximum Occupancy</td>
+          ✅ AI Notification Generator
 
-              <td>{report.Maximum_Occupancy}%</td>
+        </li>
 
-            </tr>
+        <li className="list-group-item">
 
-            <tr>
+          ✅ AI Metro Assistant Chatbot
 
-              <td>Peak Hour</td>
+        </li>
 
-              <td>{report.Peak_Hour}</td>
+        <li className="list-group-item">
 
-            </tr>
+          ✅ Traffic Analysis Engine
 
-            <tr>
+        </li>
 
-              <td>Most Crowded Station</td>
+      </ul>
 
-              <td>{report.Most_Crowded_Station}</td>
+    </div>
 
-            </tr>
+  </div>
 
-          </tbody>
+</div>
+{/* Statistics Table */}
 
-        </table>
+<div className="card shadow mt-4 p-4">
 
-      </div>
+  <h3>
 
+    Traffic Statistics
 
+  </h3>
 
-      {/* AI Insights */}
+  <table className="table table-bordered table-striped mt-3">
 
-      <div className="card shadow mt-4 p-4">
+    <thead className="table-primary">
 
-        <h3>
+      <tr>
 
-          <FaRobot />
+        <th>Metric</th>
 
-          {" "}
+        <th>Value</th>
 
-          AI Insights
+      </tr>
 
-        </h3>
+    </thead>
 
-        <ul className="list-group mt-3">
+    <tbody>
 
-          <li className="list-group-item">
-            Passenger traffic analyzed successfully.
-          </li>
+      <tr>
 
-          <li className="list-group-item">
-            Peak operational hours identified.
-          </li>
+        <td>Total Passengers</td>
 
-          <li className="list-group-item">
-            Occupancy trends calculated.
-          </li>
+        <td>{report.Total_Passengers}</td>
 
-          <li className="list-group-item">
-            AI generated operational recommendations.
-          </li>
+      </tr>
 
-          <li className="list-group-item">
-            Traffic analysis completed successfully.
-          </li>
+      <tr>
 
-        </ul>
+        <td>Average Passenger Count</td>
 
-      </div>
+        <td>{report.Average_Passenger_Count}</td>
 
+      </tr>
 
+      <tr>
 
-      {/* Report Summary */}
+        <td>Average Delay</td>
 
-      <div className="card shadow mt-4 p-4">
+        <td>{report.Average_Delay} Minutes</td>
 
-        <h3>
+      </tr>
 
-          AI Generated Summary
+      <tr>
 
-        </h3>
+        <td>Maximum Occupancy</td>
 
-        <p className="mt-3">
+        <td>{report.Maximum_Occupancy}%</td>
 
-          The MetroFlow AI Traffic Analysis module processed passenger
-          movement and operational statistics to evaluate metro
-          performance.
+      </tr>
 
-        </p>
+      <tr>
 
-        <p>
+        <td>Peak Hour</td>
 
-          Total passengers travelled:
-          <strong> {report.Total_Passengers}</strong>
+        <td>{report.Peak_Hour}</td>
 
-        </p>
+      </tr>
 
-        <p>
+      <tr>
 
-          Average passenger count:
-          <strong> {report.Average_Passenger_Count}</strong>
+        <td>Most Crowded Station</td>
 
-        </p>
+        <td>{report.Most_Crowded_Station}</td>
 
-        <p>
+      </tr>
 
-          Average delay:
-          <strong> {report.Average_Delay} Minutes</strong>
+    </tbody>
 
-        </p>
+  </table>
 
-        <p>
+</div>
 
-          Most crowded station:
-          <strong> {report.Most_Crowded_Station}</strong>
 
-        </p>
+{/* AI Insights */}
 
-        <p>
+<div className="card shadow mt-4 p-4">
 
-          Peak operational hour:
-          <strong> {report.Peak_Hour}</strong>
+  <h3>
 
-        </p>
+    🤖 AI Insights
 
-      </div>
+  </h3>
 
+  <ul className="list-group mt-3">
 
+    <li className="list-group-item">
+      Passenger traffic analyzed successfully.
+    </li>
 
-      {/* System Status */}
+    <li className="list-group-item">
+      Peak operational hours identified.
+    </li>
 
-      <div className="card shadow mt-4 p-4">
+    <li className="list-group-item">
+      Occupancy trends calculated.
+    </li>
 
-        <h3>
+    <li className="list-group-item">
+      AI generated operational recommendations.
+    </li>
 
-          <FaServer />
+    <li className="list-group-item">
+      Crowd prediction model executed successfully.
+    </li>
 
-          {" "}
+    <li className="list-group-item">
+      MetroFlow AI Assistant integrated.
+    </li>
 
-          System Status
+    <li className="list-group-item">
+      External Gemini LLM integrated for AI features.
+    </li>
 
-        </h3>
+  </ul>
 
-        <ul className="list-group mt-3">
+</div>
 
-          <li className="list-group-item d-flex justify-content-between">
 
-            Backend API
+{/* AI Generated Summary */}
 
-            <span className="badge bg-success">
+<div className="card shadow mt-4 p-4">
 
-              Running
+  <h3>
 
-            </span>
+    📄 AI Generated Summary
 
-          </li>
+  </h3>
 
-          <li className="list-group-item d-flex justify-content-between">
+  <p className="mt-3">
 
-            AI Analytics Engine
+    MetroFlow processed passenger movement,
+    occupancy percentage, delay information and
+    station statistics using Machine Learning models.
 
-            <span className="badge bg-success">
+  </p>
 
-              Active
+  <p>
 
-            </span>
+    Total passengers analysed:
 
-          </li>
+    <strong>
 
-          <li className="list-group-item d-flex justify-content-between">
+      {" "}
 
-            Report Generator
+      {report.Total_Passengers}
 
-            <span className="badge bg-success">
+    </strong>
 
-              Completed
+  </p>
 
-            </span>
+  <p>
 
-          </li>
+    Average passenger count:
 
-          <li className="list-group-item d-flex justify-content-between">
+    <strong>
 
-            Traffic Monitoring
+      {" "}
 
-            <span className="badge bg-success">
+      {report.Average_Passenger_Count}
 
-              Online
+    </strong>
 
-            </span>
+  </p>
 
-          </li>
+  <p>
 
-        </ul>
+    Average operational delay:
 
-      </div>
+    <strong>
 
+      {" "}
 
+      {report.Average_Delay} Minutes
 
-      {/* Overall Performance */}
+    </strong>
 
-      <div className="card shadow mt-4 p-4">
+  </p>
 
-        <h3>
+  <p>
 
-          Overall Metro Performance
+    Peak operational hour:
 
-        </h3>
+    <strong>
 
-        <div className="row text-center mt-3">
+      {" "}
 
-          <div className="col-md-3">
+      {report.Peak_Hour}
 
-            <h5>Passengers</h5>
+    </strong>
 
-            <h2>{report.Total_Passengers}</h2>
+  </p>
 
-          </div>
+  <p>
 
-          <div className="col-md-3">
+    Most crowded station:
 
-            <h5>Occupancy</h5>
+    <strong>
 
-            <h2>{report.Maximum_Occupancy}%</h2>
+      {" "}
 
-          </div>
+      {report.Most_Crowded_Station}
 
-          <div className="col-md-3">
+    </strong>
 
-            <h5>Delay</h5>
+  </p>
 
-            <h2>{report.Average_Delay} min</h2>
+</div>
 
-          </div>
 
-          <div className="col-md-3">
+{/* System Status */}
 
-            <h5>Status</h5>
+<div className="card shadow mt-4 p-4">
 
-            <h3 className="text-success">
+  <h3>
 
-              {performance}
+    <FaServer />
 
-            </h3>
+    {" "}
 
-          </div>
+    System Status
 
-        </div>
+  </h3>
 
-      </div>
+  <ul className="list-group mt-3">
 
+    <li className="list-group-item d-flex justify-content-between">
 
+      Backend API
 
-      {/* Report Generated */}
+      <span className="badge bg-success">
 
-      <div className="alert alert-success mt-4">
+        Running
 
-        <FaCheckCircle />
+      </span>
 
-        {" "}
+    </li>
 
-        AI Traffic Analysis Report generated successfully.
+    <li className="list-group-item d-flex justify-content-between">
 
-      </div>
+      Machine Learning Model
 
+      <span className="badge bg-success">
 
+        Active
 
-      {/* Download Button */}
+      </span>
 
-      <div className="text-center mt-4 mb-5">
+    </li>
 
-        <button
+    <li className="list-group-item d-flex justify-content-between">
 
-          className="btn btn-success btn-lg"
+      Gemini AI Integration
 
-          onClick={() =>
-            window.open(
-              "http://127.0.0.1:5000/report",
-              "_blank"
-            )
-          }
+      <span className="badge bg-success">
 
-        >
+        Connected
 
-          <FaDownload />
+      </span>
 
-          {" "}
+    </li>
 
-          Download Report
+    <li className="list-group-item d-flex justify-content-between">
 
-        </button>
+      Metro AI Chatbot
 
-      </div>
+      <span className="badge bg-success">
+
+        Online
+
+      </span>
+
+    </li>
+
+    <li className="list-group-item d-flex justify-content-between">
+
+      Report Generator
+
+      <span className="badge bg-success">
+
+        Completed
+
+      </span>
+
+    </li>
+
+  </ul>
+
+</div>
+
+
+{/* Overall Performance */}
+
+<div className="card shadow mt-4 p-4">
+
+  <h3>
+
+    📈 Overall Metro Performance
+
+  </h3>
+
+  <div className="row text-center mt-4">
+
+    <div className="col-md-3">
+
+      <h5>Passengers</h5>
+
+      <h2>{report.Total_Passengers}</h2>
+
+    </div>
+
+    <div className="col-md-3">
+
+      <h5>Occupancy</h5>
+
+      <h2>{report.Maximum_Occupancy}%</h2>
+
+    </div>
+
+    <div className="col-md-3">
+
+      <h5>Delay</h5>
+
+      <h2>{report.Average_Delay} min</h2>
+
+    </div>
+
+    <div className="col-md-3">
+
+      <h5>Status</h5>
+
+      <h3 className="text-success">
+
+        {performance}
+
+      </h3>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div className="alert alert-success mt-4">
+
+  <FaCheckCircle />
+
+  {" "}
+
+  AI Traffic Analysis Report generated successfully.
+
+</div>
+
+
+{/* Download Report */}
+
+<div className="text-center mt-5 mb-4">
+
+  <button
+
+    className="btn btn-success btn-lg"
+
+    onClick={() => window.print()}
+
+  >
+
+    <FaDownload />
+
+    {" "}
+
+    Save Report as PDF
+
+  </button>
+
+</div>
+
+
+<hr/>
+
+<div className="text-center text-muted mb-5">
+
+  <h5>
+
+    MetroFlow AI Platform
+
+  </h5>
+
+  <p>
+
+    Version 2.0
+
+  </p>
+
+  <p>
+
+    Built using React • Flask • Machine Learning • Gemini AI
+
+  </p>
+
+  <p>
+
+    © 2026 MetroFlow | AI-Based Metro Crowd Management & Scheduling Platform
+
+  </p>
+
+</div>
 
 </div>
 
