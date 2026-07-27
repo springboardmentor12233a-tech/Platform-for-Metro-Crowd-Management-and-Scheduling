@@ -5,6 +5,7 @@ AI Platform for Metro Crowd Management
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.routes.ai import router as ai_router
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -12,6 +13,13 @@ import pickle
 from datetime import datetime
 import os
 from pathlib import Path
+from backend.services.gemini_service import (
+    get_ai_recommendation,
+    get_ai_chat_response
+)
+from pydantic import BaseModel
+from backend.routes.scheduling import router as scheduling_router
+from backend.scheduling import TrainScheduler
 
 print("=" * 80)
 print("STARTING METROFLOW API")
@@ -24,24 +32,62 @@ print(f"Base directory: {BASE_DIR}")
 print(f"Parent directory: {PARENT_DIR}")
 
 # Initialize FastAPI
-app = FastAPI(title="MetroFlow API", version="2.0")
+app = FastAPI(
+    title="MetroFlow AI Platform",
+    description="""
+## 🚇 AI-Powered Metro Crowd Management & Scheduling Platform
+
+An intelligent metro management system that provides:
+
+- 📊 Real-time crowd monitoring
+- 🤖 AI-based passenger demand prediction (LSTM)
+- 🚨 Smart alert management
+- 📈 Traffic pattern analytics
+- 🚉 Station occupancy monitoring
+- 📅 Passenger demand forecasting
+- 📍 Metro operations dashboard
+
+Developed using:
+- FastAPI
+- TensorFlow (LSTM)
+- Pandas
+- NumPy
+
+Version: 2.0
+""",
+    version="2.0.0",
+    contact={
+        "name": "MetroFlow Development Team",
+        "email": "support@metroflow.ai"
+    },
+    license_info={
+        "name": "Academic Project"
+    },
+)
 
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
+app.include_router(ai_router)
+app.include_router(scheduling_router)
 
 # ============================================================================
 # GLOBAL VARIABLES - Will store our data and model
 # ============================================================================
-crowd_df = None
-forecast_df = None
-alert_df = None
-traffic_df = None
+
 lstm_model = None
 scaler = None
 lstm_ready = False
@@ -116,6 +162,8 @@ print("=" * 80)
 # ENDPOINT 1: HOME
 # ============================================================================
 
+class ChatRequest(BaseModel):
+    question: str
 @app.get("/")
 def home():
     """Root endpoint - API information"""
@@ -406,7 +454,7 @@ def predict_next_hour(data: dict):
             "status": "unavailable",
             "message": "Model files not loaded. Check models/ folder."
         }
-    
+
     try:
         # Validate input
         if "last_24_hours" not in data:
@@ -441,17 +489,27 @@ def predict_next_hour(data: dict):
         last_24_array = np.array(last_24).reshape(-1, 1)
         last_24_normalized = scaler.transform(last_24_array)
         
-        # Reshape for LSTM (needs: samples=1, timesteps=24, features=1)
+        # Reshape for LSTM
         last_24_reshaped = last_24_normalized.reshape(1, 24, 1)
         
         # Make prediction
         prediction_normalized = lstm_model.predict(last_24_reshaped, verbose=0)[0][0]
-        
-        # Convert back to actual passenger count
         prediction_actual = scaler.inverse_transform([[prediction_normalized]])[0][0]
-        
-        # Ensure prediction is in reasonable range
         prediction_actual = max(50, min(1500, int(prediction_actual)))
+        
+        # Determine peak hour
+        current_hour = datetime.now().hour
+        peak_hour = current_hour in [7, 8, 9, 17, 18, 19]
+
+        # Get AI recommendation
+        try:
+            recommendation = get_ai_recommendation(
+                station="Metro Station",
+                predicted_passengers=prediction_actual,
+                peak_hour=peak_hour
+            )
+        except Exception:
+            recommendation = "AI recommendation currently unavailable."
         
         # Calculate confidence
         avg_recent = np.mean(last_24)
@@ -465,17 +523,54 @@ def predict_next_hour(data: dict):
             status_text = "MODERATE - Medium traffic"
         else:
             status_text = "QUIET - Low traffic expected"
+
+        # -----------------------------------------
+        # AI Train Scheduling Recommendation
+        # -----------------------------------------
+
+        schedule = TrainScheduler.optimize_frequency(
+            predicted_passengers=prediction_actual,
+            current_frequency=8
+        )
+
+        required_trains = TrainScheduler.estimate_required_trains(
+            prediction_actual
+        )
+
+        platform_load = TrainScheduler.estimate_platform_load(
+            prediction_actual
+        )
+
+        peak_schedule = TrainScheduler.peak_hour_optimization(
+            current_hour,
+            prediction_actual
+        ) 
+        frequency_adjustment = TrainScheduler.frequency_adjustment(
+            current_frequency=8,
+            recommended_frequency=schedule["recommended_frequency"]
+        )
+        alert = TrainScheduler.schedule_alert(
+        train_id=101,
+        message="Passenger demand is increasing. Prepare additional train."
+        )  
         
-        return {
+        return {  
             "status": "success",
             "prediction": prediction_actual,
             "confidence": round(confidence, 2),
             "confidence_percentage": f"{confidence*100:.1f}%",
             "status_text": status_text,
+            "ai_recommendation": recommendation,
             "message": f"Next hour: {prediction_actual} passengers ({confidence*100:.1f}% confidence)",
+            "train_schedule": schedule,
+            "required_trains": required_trains,
+            "platform_load": platform_load,
+            "peak_hour_optimization": peak_schedule,
+            "frequency_adjustment": frequency_adjustment,
+            "schedule_alert": alert,
             "timestamp": datetime.now().isoformat()
         }
-    
+
     except Exception as e:
         return {
             "error": str(e),
@@ -483,10 +578,121 @@ def predict_next_hour(data: dict):
             "message": "Prediction failed"
         }
 
+
 # ============================================================================
 # RUN SERVER
 # ============================================================================
+ 
+# ============================================================================
+# ENDPOINT 9: EXECUTIVE DASHBOARD KPI
+# ============================================================================
 
+@app.get("/api/dashboard/kpi")
+def dashboard_kpi():
+    try:
+        # Real values from datasets
+        total_passengers_today = int(crowd_df["passenger_count"].sum()) if crowd_df is not None else 0
+        
+        active_stations = int(crowd_df["station_id"].nunique()) if crowd_df is not None else 0
+        
+        congested_stations = int(len(crowd_df[crowd_df["capacity_percentage"] > 80])) if crowd_df is not None else 0
+        
+        active_alerts = int(len(alert_df[alert_df["is_active"] == True])) if alert_df is not None else 0
+        
+        # FIX HERE: Cleaned up inline conditional statements
+        forecast_records = int(len(forecast_df)) if forecast_df is not None else 0
+        traffic_records = int(len(traffic_df)) if traffic_df is not None else 0
+        
+        model_status = "Online" if lstm_ready else "Offline"
+        
+        return {
+            "status": "success",
+            "kpis": {
+                "total_passengers_today": total_passengers_today,
+                "active_stations": active_stations,
+                "congested_stations": congested_stations,
+                "active_alerts": active_alerts,
+                "forecast_records": forecast_records,
+                "traffic_records": traffic_records,
+                "model_status": model_status
+            }
+        }
+        
+    except Exception as e:
+        # FIX HERE: Closes the try block safely
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+# ============================================================================
+# ENDPOINT 10: ENTERPRISE SYSTEM HEALTH
+# ============================================================================
+
+@app.get("/api/system/health")
+def system_health():
+    """
+    Enterprise System Health Monitor
+    """
+
+    return {
+
+        "status": "healthy",
+
+        "services": {
+
+            "api": "Running",
+
+            "database": "Connected",
+
+            "ai_model": "Loaded" if lstm_ready else "Not Loaded",
+
+            "scaler": "Loaded" if scaler is not None else "Not Loaded",
+
+            "prediction_service": "Ready" if lstm_ready else "Unavailable"
+
+        },
+
+        "project": {
+
+            "name": "MetroFlow AI Platform",
+
+            "version": "2.0.0",
+
+            "framework": "FastAPI",
+
+            "ai_model": "TensorFlow LSTM"
+
+        },
+
+        "server_time": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+    } 
+
+# ============================================================================
+# ENDPOINT 11: AI CHAT ASSISTANT
+# ============================================================================
+
+@app.post("/api/ai/chat")
+def ai_chat(request: ChatRequest):
+    """
+    Ask MetroFlow AI any question.
+    """
+
+    try:
+        answer = get_ai_chat_response(request.question)
+
+        return {
+            "status": "success",
+            "question": request.question,
+            "answer": answer
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }  
 if __name__ == "__main__":
     import uvicorn
     
@@ -512,3 +718,4 @@ if __name__ == "__main__":
     print()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

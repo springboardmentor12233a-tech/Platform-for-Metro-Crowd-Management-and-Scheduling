@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  /* Premium Dark Theme Matrix */
+  --color-obsidian-bg: #0A0E17;      /* Deep, rich dark background */
+  --color-obsidian-card: #131A26;    /* Crisp, slightly lighter card color */
+  --color-obsidian-border: #1E293B;  /* Subtle, elegant border color */
+  
+  /* High-end Glowing Accents */
+  --color-cyber-cyan: #06B6D4;       /* Neon cyan for interactive items */
+  --color-cyber-indigo: #6366F1;     /* Rich indigo for main highlights */
+  --color-cyber-muted: #64748B;      /* Soft grey for secondary labels */
+}
