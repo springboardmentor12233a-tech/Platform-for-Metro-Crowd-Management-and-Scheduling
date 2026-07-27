@@ -19,13 +19,8 @@ def get_system_summary(db: Session = Depends(get_db)):
     # 2. Total active alerts
     active_alerts = db.query(Alert).filter(Alert.status == "Active").count()
     
-    # 3. Trains scheduled today
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = today_start + timedelta(days=1)
-    trains_today = db.query(Schedule).filter(
-        Schedule.scheduled_departure >= today_start,
-        Schedule.scheduled_departure <= today_end
-    ).count()
+    # Demo project: count all schedules
+    trains_today = db.query(Schedule).count()
     
     # 4. Average system passenger utilization ratio
     # Get latest metric for each station
@@ -43,13 +38,11 @@ def get_system_summary(db: Session = Depends(get_db)):
             total_passengers += latest_metric.passenger_count
             
     avg_utilization = (total_passengers / total_capacity) if total_capacity > 0 else 0
-    
-    # 5. Delay rate today
+    # Count all delayed trains
     delays_today = db.query(Schedule).filter(
-        Schedule.scheduled_departure >= today_start,
-        Schedule.scheduled_departure <= today_end,
-        Schedule.status == "Delayed"
-    ).count()
+    Schedule.status == "Delayed").count()
+
+
     
     delay_rate = (delays_today / trains_today) if trains_today > 0 else 0
     

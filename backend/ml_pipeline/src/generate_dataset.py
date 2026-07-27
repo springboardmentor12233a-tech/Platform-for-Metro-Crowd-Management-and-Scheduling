@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 
 # Set random seed for reproducibility
@@ -22,17 +22,17 @@ STATIONS = [
 WEATHER_MAPPING = {"Clear": 0, "Rainy": 1, "Snowy": 2, "Stormy": 3}
 
 def generate_historical_data(days=180):
-    start_date = datetime.utcnow() - timedelta(days=days)
-    end_date = datetime.utcnow()
+    start_date = datetime.now(timezone.utc) - timedelta(days=days)
+    end_date = datetime.now(timezone.utc)
     
     date_range = pd.date_range(start=start_date, end=end_date, freq='h')
     
     rows = []
     
     for station in STATIONS:
-        capacity = station["capacity"]
-        code = station["code"]
-        name = station["name"]
+        capacity = int(station["capacity"])
+        code = str(station["code"])
+        name = str(station["name"])
         
         # Initialize lag passenger count
         last_passenger_count = int(capacity * 0.1)

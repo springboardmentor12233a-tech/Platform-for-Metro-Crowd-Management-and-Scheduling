@@ -104,7 +104,7 @@ Strength of linear relationship with our target (`passenger_count`):
     for col in numeric_cols:
         if col == 'passenger_count':
             continue
-        corr_val = corr_matrix.loc['passenger_count', col]
+        corr_val = float(corr_matrix.loc['passenger_count', col])  # type: ignore
         report += f"| `{col}` | {corr_val:.4f} | "
         if abs(corr_val) > 0.5:
             report += "Strong association"
