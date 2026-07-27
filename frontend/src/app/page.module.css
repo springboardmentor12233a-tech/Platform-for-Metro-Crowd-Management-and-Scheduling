@@ -1,0 +1,42 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: 250px 1fr 350px;
+  grid-template-rows: 80px 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebarArea {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  z-index: 60;
+}
+
+.headerArea {
+  grid-column: 2 / 4;
+  grid-row: 1;
+}
+
+.mainArea {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 24px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.alertArea {
+  grid-column: 3;
+  grid-row: 2;
+  padding: 24px 24px 24px 0;
+  overflow-y: auto;
+}
+
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
