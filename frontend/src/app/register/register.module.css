@@ -1,0 +1,368 @@
+/* ================================================================
+   REGISTER PAGE — register.module.css
+   ================================================================
+   Underline-style inputs matching the reference design.
+   Uses globals.css design tokens throughout.
+   ================================================================ */
+
+/* ── Page Layout ── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-container);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #151d1e 0%, #080f10 100%);
+}
+
+/* ── Ambient Grid Overlay ── */
+.ambientGrid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(#ffffff 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Main Content Wrapper ── */
+.content {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Logo / Brand Header ── */
+.brandArea {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brandTitle {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  text-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+}
+
+.brandSubtitle {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--outline);
+  margin-top: 8px;
+}
+
+/* ── Glass Card ── */
+.card {
+  background-color: rgba(13, 21, 21, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Decorative top accent line ── */
+.cardAccent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--primary-container),
+    transparent
+  );
+  opacity: 0.5;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Status / Error Message ── */
+.statusBox {
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-default);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.statusBox.visible {
+  display: flex;
+}
+
+.statusBox.error {
+  background-color: rgba(147, 0, 10, 0.2);
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+
+.statusBox.success {
+  background-color: rgba(0, 242, 255, 0.1);
+  border: 1px solid var(--primary-container);
+  color: var(--primary-container);
+}
+
+.statusIcon {
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Input Group (underline style) ── */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputLabel {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  margin-bottom: 8px;
+}
+
+.inputWrapper {
+  position: relative;
+  border-bottom: 1px solid var(--outline-variant);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--primary-fixed-dim);
+  box-shadow: 0 1px 0 0 var(--primary-fixed-dim);
+}
+
+.inputIcon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: var(--outline);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.inputWrapper:focus-within .inputIcon {
+  color: var(--primary-container);
+}
+
+.inputField {
+  width: 100%;
+  padding: 8px 8px 8px 32px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--on-surface);
+  outline: none;
+}
+
+.inputField::placeholder {
+  color: var(--surface-variant);
+}
+
+/* ── Password toggle button ── */
+.togglePassword {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--outline);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.togglePassword:hover {
+  color: var(--primary-container);
+}
+
+.toggleIcon {
+  font-size: 20px;
+}
+
+/* ── Select / Dropdown ── */
+.selectField {
+  width: 100%;
+  padding: 8px 32px 8px 32px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--on-surface);
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23849495' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  background-size: 1em;
+}
+
+.selectField option {
+  background-color: #0d1515;
+  color: var(--on-surface);
+}
+
+/* ── Submit Button ── */
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #00dbe7 0%, #b600f8 100%);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--on-primary-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.submitBtn:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(0, 219, 231, 0.4);
+  transform: translateY(-1px);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btnArrow {
+  font-size: 18px;
+}
+
+/* ── Spinner ── */
+.spinner {
+  font-size: 20px;
+  animation: spinIcon 1s linear infinite;
+}
+
+@keyframes spinIcon {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Return to Login Link ── */
+.footerDivider {
+  margin-top: 32px;
+  text-align: center;
+  border-top: 1px solid rgba(58, 73, 75, 0.2);
+  padding-top: 24px;
+}
+
+.footerDivider a {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--outline);
+  transition: color 0.2s ease;
+}
+
+.footerDivider a:hover {
+  color: var(--primary);
+}
+
+/* ── Global Status Footer ── */
+.statusFooter {
+  margin-top: 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background-color: rgba(46, 54, 55, 0.5);
+  border: 1px solid rgba(58, 73, 75, 0.3);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-container);
+  animation: pulseCyan 2s infinite;
+  box-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+}
+
+.statusLabel {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+}
+
+.copyright {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: rgba(132, 148, 149, 0.4);
+  margin-top: 16px;
+}
