@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "../api/axios";
 
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
+/* ============================
+   Get AI Alerts
+============================ */
 
 export const getAlerts = async () => {
-  const response = await API.get("/alerts/");
+  const response = await api.get("/alerts/");
   return response.data;
 };

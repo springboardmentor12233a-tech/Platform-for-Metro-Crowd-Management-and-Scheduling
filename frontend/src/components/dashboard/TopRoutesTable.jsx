@@ -6,10 +6,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-function TopRoutesTable({ routes }) {
+function TopRoutesTable({ data = [] }) {
   const maxPassengers =
-    routes.length > 0
-      ? Math.max(...routes.map((r) => r.passengers))
+    data.length > 0
+      ? Math.max(...data.map((r) => r.passengers))
       : 1;
 
   return (
@@ -47,7 +47,7 @@ function TopRoutesTable({ routes }) {
 
       <div className="flex-1 overflow-y-auto pr-2 space-y-3">
 
-        {routes.map((route, index) => {
+        {data.map((route, index) => {
 
           const percentage =
             (route.passengers / maxPassengers) * 100;

@@ -19,11 +19,11 @@ function formatValue(value, prefix = "") {
 function MetricCard({
   title,
   value,
-  icon,
+  icon: Icon,
   iconBg,
-  lineColor,
-  valueColor,
-  growth,
+  iconColor,
+  trend,
+  trendColor,
   prefix = "",
 }) {
   const gradientId = title.replace(/\s+/g, "-").toLowerCase();
@@ -59,10 +59,7 @@ function MetricCard({
       {/* Decorative Glow */}
 
       <div
-        className="absolute -right-10 -top-10 w-28 h-28 rounded-full blur-3xl opacity-10"
-        style={{
-          background: lineColor,
-        }}
+        className={`absolute -right-10 -top-10 w-28 h-28 rounded-full blur-3xl opacity-10 ${iconBg}`}
       />
 
       {/* Header */}
@@ -86,13 +83,11 @@ function MetricCard({
             flex
             items-center
             justify-center
-            text-white
             shadow-lg
-            text-2xl
             shrink-0
           `}
         >
-          {icon}
+          <Icon className={`w-7 h-7 ${iconColor}`} />
         </motion.div>
 
         <div className="min-w-0">
@@ -110,7 +105,7 @@ function MetricCard({
       <div className="mt-6">
 
         <h2
-          className={`
+          className="
             text-[28px]
             lg:text-[32px]
             xl:text-[36px]
@@ -118,8 +113,8 @@ function MetricCard({
             leading-none
             tracking-tight
             whitespace-nowrap
-            ${valueColor}
-          `}
+            text-slate-800
+          "
         >
           {formatValue(value, prefix)}
         </h2>
@@ -133,7 +128,7 @@ function MetricCard({
         <div className="flex flex-col gap-2">
 
           <span
-            className="
+            className={`
               inline-flex
               w-fit
               items-center
@@ -143,10 +138,10 @@ function MetricCard({
               py-1
               text-xs
               font-bold
-              text-green-700
-            "
+              ${trendColor}
+            `}
           >
-            ↑ {growth}
+            ↑ {trend}
           </span>
 
           <span className="text-sm text-slate-400">
@@ -175,13 +170,15 @@ function MetricCard({
             >
               <stop
                 offset="0%"
-                stopColor={lineColor}
+                stopColor="currentColor"
                 stopOpacity="0.2"
+                className={iconColor}
               />
 
               <stop
                 offset="100%"
-                stopColor={lineColor}
+                stopColor="currentColor"
+                className={iconColor}
               />
 
             </linearGradient>
@@ -218,7 +215,8 @@ function MetricCard({
             cx="76"
             cy="9"
             r="3.5"
-            fill={lineColor}
+            className={iconColor}
+            fill="currentColor"
             initial={{
               scale: 0,
             }}

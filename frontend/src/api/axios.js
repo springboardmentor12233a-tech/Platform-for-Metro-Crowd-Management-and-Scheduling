@@ -5,7 +5,7 @@ const API_BASE_URL =
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -39,37 +39,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Unauthorized
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest?._retry
     ) {
       originalRequest._retry = true;
-
-      // Future refresh token implementation
-      // const refreshToken = localStorage.getItem("refreshToken");
-
-      // if (refreshToken) {
-      //   try {
-      //     const response = await axios.post(
-      //       `${API_BASE_URL}/auth/refresh`,
-      //       {
-      //         refresh_token: refreshToken,
-      //       }
-      //     );
-      //
-      //     const newToken = response.data.access_token;
-      //
-      //     localStorage.setItem("accessToken", newToken);
-      //
-      //     originalRequest.headers.Authorization =
-      //       `Bearer ${newToken}`;
-      //
-      //     return api(originalRequest);
-      //   } catch (err) {
-      //     console.error(err);
-      //   }
-      // }
 
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -80,7 +54,6 @@ api.interceptors.response.use(
       }
     }
 
-    // Forbidden
     if (error.response?.status === 403) {
       if (window.location.pathname !== "/unauthorized") {
         window.location.replace("/unauthorized");

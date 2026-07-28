@@ -1,10 +1,6 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
+import api from "./axios";
 
 export const predictPassengers = async (data) => {
-  const response = await API.post("/prediction/predict", data);
+  const response = await api.post("/prediction/predict", data);
   return response.data;
 };

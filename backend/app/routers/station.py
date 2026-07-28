@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.station import Station
 from app.schemas.station import StationCreate
-from app.auth.dependencies import require_roles
-
+from app.auth.permissions import require_roles
 from app.services.station_service import (
     create_station,
     get_all_stations,

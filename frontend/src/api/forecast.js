@@ -1,8 +1,6 @@
-import axios from "axios";
+import api from "./axios";
 
-const API = "http://127.0.0.1:8000";
-
-export async function getForecast(data) {
-  const response = await axios.post(`${API}/forecast/predict`, data);
+export const getForecast = async (data) => {
+  const response = await api.post("/forecast/predict", data);
   return response.data;
-}
+};

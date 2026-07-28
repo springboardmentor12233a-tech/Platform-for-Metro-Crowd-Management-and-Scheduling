@@ -13,29 +13,25 @@ export const login = async (email, password) => {
   return response.data;
 };
 
-export const logout = async () => {
-  try {
-    const response = await api.post("/auth/logout");
-    return response.data;
-  } catch (error) {
-    console.error("Logout failed:", error);
-    throw error;
-  }
-};
+/* ============================
+   Logout
+============================ */
+
+// Backend logout not implemented yet.
+// JWT is removed from localStorage in AuthContext.
+export const logout = async () => Promise.resolve();
 
 /* ============================
-   Current User
+   Future Features
 ============================ */
+
+
 
 export const getCurrentUser = async () => {
   const response = await api.get("/auth/me");
   return response.data;
 };
-
-/* ============================
-   Password Recovery
-============================ */
-
+/*
 export const forgotPassword = async (email) => {
   const response = await api.post("/auth/forgot-password", {
     email,
@@ -53,11 +49,6 @@ export const resetPassword = async (token, password) => {
   return response.data;
 };
 
-/* ============================
-   Refresh Token
-   (Future Feature)
-============================ */
-
 export const refreshAccessToken = async (refreshToken) => {
   const response = await api.post("/auth/refresh", {
     refresh_token: refreshToken,
@@ -65,6 +56,8 @@ export const refreshAccessToken = async (refreshToken) => {
 
   return response.data;
 };
+
+*/
 
 /* ============================
    User Management (Admin)

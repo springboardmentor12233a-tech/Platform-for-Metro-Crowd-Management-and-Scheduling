@@ -1,908 +1,454 @@
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Activity,
+  Search,
+  Filter,
+  ArrowUpDown,
   Users,
-  TrendingUp,
+  Activity,
+  AlertTriangle,
+  BrainCircuit,
+  Clock,
+  TrainFront,
 } from "lucide-react";
 
-function CongestionHeatmap({
-  busiestStations = [],
-}) {
-  // ==========================
-  // Prepare Data
-  // ==========================
+// =====================================================
+// Risk Styles
+// =====================================================
 
-  const stations = [...busiestStations]
-    .map((station) => {
+const riskStyles = {
+  Critical: {
+    bg: "bg-red-50",
+    border: "border-red-300",
+    text: "text-red-700",
+    dot: "bg-red-500",
+    badge: "bg-red-100 text-red-700",
+  },
+  High: {
+    bg: "bg-orange-50",
+    border: "border-orange-300",
+    text: "text-orange-700",
+    dot: "bg-orange-500",
+    badge: "bg-orange-100 text-orange-700",
+  },
+  Moderate: {
+    bg: "bg-yellow-50",
+    border: "border-yellow-300",
+    text: "text-yellow-700",
+    dot: "bg-yellow-400",
+    badge: "bg-yellow-100 text-yellow-700",
+  },
+  Low: {
+    bg: "bg-green-50",
+    border: "border-green-300",
+    text: "text-green-700",
+    dot: "bg-green-500",
+    badge: "bg-green-100 text-green-700",
+  },
+};
+
+const CongestionHeatmap = ({ busiestStations = [], onGenerateAI }) => {
+  const [search, setSearch] = useState("");
+  const [riskFilter, setRiskFilter] = useState("All");
+  const [sortBy, setSortBy] = useState("Occupancy");
+
+  // =====================================================
+  // Derive, Filter & Sort Stations
+  // =====================================================
+
+  const stations = useMemo(() => {
+    let data = [...busiestStations];
+
+    if (search) {
+      data = data.filter((station) =>
+        (station.station ?? "")
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      );
+    }
+
+    data = data.map((station) => {
       const occupancy = Math.min(
-        Math.round(
-          (station.passengers / 320000) * 100
-        ),
+        Math.round((station.passengers / 320000) * 100),
         100
       );
 
       let status = "Low";
-      let color = "bg-green-500";
-      let badge =
-        "bg-green-100 text-green-700";
 
       if (occupancy >= 85) {
         status = "Critical";
-        color = "bg-red-500";
-        badge =
-          "bg-red-100 text-red-700";
       } else if (occupancy >= 65) {
         status = "High";
-        color =
-          "bg-orange-500";
-        badge =
-          "bg-orange-100 text-orange-700";
       } else if (occupancy >= 40) {
         status = "Moderate";
-        color =
-          "bg-yellow-500";
-        badge =
-          "bg-yellow-100 text-yellow-700";
       }
+
+      const trend =
+        occupancy >= 85
+          ? "Rising"
+          : occupancy >= 50
+          ? "Stable"
+          : "Falling";
 
       return {
         ...station,
         occupancy,
         status,
-        color,
-        badge,
+        trend,
       };
-    })
-    .sort(
-      (a, b) =>
-        b.occupancy - a.occupancy
-    );
+    });
 
-  const averageCongestion =
-    stations.length === 0
-      ? 0
-      : Math.round(
-          stations.reduce(
-            (sum, station) =>
-              sum + station.occupancy,
-            0
-          ) / stations.length
-        );
+    if (riskFilter !== "All") {
+      data = data.filter((station) => station.status === riskFilter);
+    }
+
+    switch (sortBy) {
+      case "Passengers":
+        data.sort((a, b) => b.passengers - a.passengers);
+        break;
+
+      case "Station":
+        data.sort((a, b) => a.station.localeCompare(b.station));
+        break;
+
+      default:
+        data.sort((a, b) => b.occupancy - a.occupancy);
+    }
+
+    return data;
+  }, [busiestStations, search, riskFilter, sortBy]);
+
+  // =====================================================
+  // Network Summary
+  // =====================================================
+
+  const criticalCount = stations.filter((s) => s.status === "Critical").length;
+  const highCount = stations.filter((s) => s.status === "High").length;
+
+  const formatLastUpdated = (date) => {
+    if (!date) return "Just Now";
+
+    return `Updated ${new Date(date).toLocaleTimeString()}`;
+  };
 
   return (
-    <motion.section
-      initial={{
-        opacity: 0,
-        y: 20,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.45,
-      }}
-      className="
-        rounded-[32px]
-        border
-        border-slate-200
-        bg-white
-        p-8
-        shadow-xl
-      "
-    >
-      {/* Header */}
-
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-
-        <div className="flex items-center gap-4">
-
-          <div
-            className="
-              rounded-2xl
-              bg-gradient-to-br
-              from-red-500
-              to-orange-500
-              p-4
-            "
-          >
-
-            <Activity
-              size={34}
-              className="text-white"
-            />
-
-          </div>
-
-          <div>
-
-            <h2 className="text-3xl font-bold text-slate-900">
-              Live Congestion Heatmap
-            </h2>
-
-            <p className="mt-2 text-slate-500">
-              AI-powered passenger congestion monitoring
-            </p>
-
-          </div>
-
-        </div>
-
-        <div
-          className="
-            rounded-2xl
-            bg-red-50
-            px-6
-            py-4
-            text-center
-          "
-        >
-
-          <p className="text-sm text-slate-500">
-            Average Congestion
-          </p>
-
-          <h2 className="mt-1 text-3xl font-bold text-red-600">
-            {averageCongestion}%
-          </h2>
-
-        </div>
-
-      </div>
-
-      <div className="my-8 h-px bg-slate-200" />
-            {/* ==========================
-          Live Congestion List
-      ========================== */}
-
-      <div className="space-y-5">
-
-        {stations.length === 0 ? (
-
-          <div
-            className="
-              rounded-3xl
-              border
-              border-dashed
-              border-slate-300
-              py-16
-              text-center
-            "
-          >
-
-            <Activity
-              size={60}
-              className="mx-auto text-slate-300"
-            />
-
-            <h3 className="mt-5 text-2xl font-bold text-slate-700">
-              No Congestion Data
-            </h3>
-
-            <p className="mt-2 text-slate-500">
-              Waiting for live passenger information...
-            </p>
-
-          </div>
-
-        ) : (
-
-          stations.map((station, index) => (
-
-            <motion.div
-              key={index}
-              initial={{
-                opacity: 0,
-                y: 12,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                delay: index * 0.08,
-              }}
-              whileHover={{
-                scale: 1.01,
-              }}
-              className="
-                rounded-3xl
-                border
-                border-slate-200
-                bg-white
-                p-6
-                shadow-sm
-                transition-all
-                duration-300
-                hover:shadow-lg
-              "
-            >
-
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
-                {/* Left */}
-
-                <div className="flex items-center gap-5">
-
-                  <div
-                    className="
-                      flex
-                      h-14
-                      w-14
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-gradient-to-br
-                      from-indigo-500
-                      to-violet-600
-                      text-xl
-                      font-bold
-                      text-white
-                    "
-                  >
-                    {index + 1}
-                  </div>
-
-                  <div>
-
-                    <h3 className="text-xl font-bold text-slate-900">
-                      {station.station}
-                    </h3>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-
-                      <div className="flex items-center gap-2 text-slate-500">
-
-                        <Users size={16} />
-
-                        <span className="text-sm">
-                          {station.passengers.toLocaleString()} Passengers
-                        </span>
-
-                      </div>
-
-                      <span
-                        className={`
-                          rounded-full
-                          px-3
-                          py-1
-                          text-xs
-                          font-semibold
-                          ${station.badge}
-                        `}
-                      >
-                        {station.status}
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                {/* Right */}
-
-                <div className="w-full lg:w-[340px]">
-
-                  <div className="mb-2 flex justify-between text-sm">
-
-                    <span className="font-medium text-slate-600">
-                      Congestion Level
-                    </span>
-
-                    <span className="font-bold text-slate-900">
-                      {station.occupancy}%
-                    </span>
-
-                  </div>
-
-                  <div
-                    className="
-                      h-4
-                      overflow-hidden
-                      rounded-full
-                      bg-slate-200
-                    "
-                  >
-
-                    <motion.div
-                      initial={{
-                        width: 0,
-                      }}
-                      animate={{
-                        width: `${station.occupancy}%`,
-                      }}
-                      transition={{
-                        duration: 0.8,
-                      }}
-                      className={`
-                        h-full
-                        rounded-full
-                        ${station.color}
-                      `}
-                    />
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-
-          ))
-
-        )}
-
-      </div>
-
-      <div className="my-8 h-px bg-slate-200" />
-            {/* ==========================
-          Live Congestion List
-      ========================== */}
-
-      <div className="space-y-5">
-
-        {stations.length === 0 ? (
-
-          <div
-            className="
-              rounded-3xl
-              border
-              border-dashed
-              border-slate-300
-              py-16
-              text-center
-            "
-          >
-
-            <Activity
-              size={60}
-              className="mx-auto text-slate-300"
-            />
-
-            <h3 className="mt-5 text-2xl font-bold text-slate-700">
-              No Congestion Data
-            </h3>
-
-            <p className="mt-2 text-slate-500">
-              Waiting for live passenger information...
-            </p>
-
-          </div>
-
-        ) : (
-
-          stations.map((station, index) => (
-
-            <motion.div
-              key={index}
-              initial={{
-                opacity: 0,
-                y: 12,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                delay: index * 0.08,
-              }}
-              whileHover={{
-                scale: 1.01,
-              }}
-              className="
-                rounded-3xl
-                border
-                border-slate-200
-                bg-white
-                p-6
-                shadow-sm
-                transition-all
-                duration-300
-                hover:shadow-lg
-              "
-            >
-
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
-                {/* Left */}
-
-                <div className="flex items-center gap-5">
-
-                  <div
-                    className="
-                      flex
-                      h-14
-                      w-14
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-gradient-to-br
-                      from-indigo-500
-                      to-violet-600
-                      text-xl
-                      font-bold
-                      text-white
-                    "
-                  >
-                    {index + 1}
-                  </div>
-
-                  <div>
-
-                    <h3 className="text-xl font-bold text-slate-900">
-                      {station.station}
-                    </h3>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-
-                      <div className="flex items-center gap-2 text-slate-500">
-
-                        <Users size={16} />
-
-                        <span className="text-sm">
-                          {station.passengers.toLocaleString()} Passengers
-                        </span>
-
-                      </div>
-
-                      <span
-                        className={`
-                          rounded-full
-                          px-3
-                          py-1
-                          text-xs
-                          font-semibold
-                          ${station.badge}
-                        `}
-                      >
-                        {station.status}
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                {/* Right */}
-
-                <div className="w-full lg:w-[340px]">
-
-                  <div className="mb-2 flex justify-between text-sm">
-
-                    <span className="font-medium text-slate-600">
-                      Congestion Level
-                    </span>
-
-                    <span className="font-bold text-slate-900">
-                      {station.occupancy}%
-                    </span>
-
-                  </div>
-
-                  <div
-                    className="
-                      h-4
-                      overflow-hidden
-                      rounded-full
-                      bg-slate-200
-                    "
-                  >
-
-                    <motion.div
-                      initial={{
-                        width: 0,
-                      }}
-                      animate={{
-                        width: `${station.occupancy}%`,
-                      }}
-                      transition={{
-                        duration: 0.8,
-                      }}
-                      className={`
-                        h-full
-                        rounded-full
-                        ${station.color}
-                      `}
-                    />
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-
-          ))
-
-        )}
-
-      </div>
-
-      <div className="my-8 h-px bg-slate-200" />
-            {/* ==========================
-          Live Network Insights
-      ========================== */}
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-        {/* Congestion Overview */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-gradient-to-br
-            from-red-50
-            to-orange-50
-            p-7
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Critical Stations
-              </p>
-
-              <h2 className="mt-2 text-5xl font-bold text-red-600">
-
-                {
-                  stations.filter(
-                    (station) =>
-                      station.status === "Critical"
-                  ).length
-                }
-
-              </h2>
-
-            </div>
-
-            <div className="rounded-2xl bg-red-100 p-4">
-
-              <TrendingUp
-                size={34}
-                className="text-red-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-600">
-            Stations operating above
-            85% occupancy.
-          </p>
-
-        </div>
-
-        {/* High Congestion */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-gradient-to-br
-            from-orange-50
-            to-yellow-50
-            p-7
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                High Congestion
-              </p>
-
-              <h2 className="mt-2 text-5xl font-bold text-orange-600">
-
-                {
-                  stations.filter(
-                    (station) =>
-                      station.status === "High"
-                  ).length
-                }
-
-              </h2>
-
-            </div>
-
-            <div className="rounded-2xl bg-orange-100 p-4">
-
-              <Activity
-                size={34}
-                className="text-orange-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-600">
-            Stations between
-            65% and 84% occupancy.
-          </p>
-
-        </div>
-
-        {/* Normal Stations */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-gradient-to-br
-            from-green-50
-            to-emerald-50
-            p-7
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Normal Stations
-              </p>
-
-              <h2 className="mt-2 text-5xl font-bold text-green-600">
-
-                {
-                  stations.filter(
-                    (station) =>
-                      station.status === "Low" ||
-                      station.status === "Moderate"
-                  ).length
-                }
-
-              </h2>
-
-            </div>
-
-            <div className="rounded-2xl bg-green-100 p-4">
-
-              <Users
-                size={34}
-                className="text-green-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-600">
-            Operating within safe
-            passenger limits.
-          </p>
-
-        </div>
-
-      </div>
-
-      {/* ==========================
-          Footer
-      ========================== */}
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-
-        {/* Risk Legend */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
+    <section className="rounded-3xl">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
           <h2 className="text-2xl font-bold text-slate-900">
-            Congestion Legend
+            Congestion Heatmap
           </h2>
 
-          <div className="mt-8 space-y-5">
-
-            <div className="flex items-center justify-between">
-
-              <div className="flex items-center gap-4">
-
-                <span className="h-4 w-4 rounded-full bg-red-500"></span>
-
-                <span className="font-medium text-slate-700">
-                  Critical
-                </span>
-
-              </div>
-
-              <span className="text-slate-500">
-                85% - 100%
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <div className="flex items-center gap-4">
-
-                <span className="h-4 w-4 rounded-full bg-orange-500"></span>
-
-                <span className="font-medium text-slate-700">
-                  High
-                </span>
-
-              </div>
-
-              <span className="text-slate-500">
-                65% - 84%
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <div className="flex items-center gap-4">
-
-                <span className="h-4 w-4 rounded-full bg-yellow-500"></span>
-
-                <span className="font-medium text-slate-700">
-                  Moderate
-                </span>
-
-              </div>
-
-              <span className="text-slate-500">
-                40% - 64%
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <div className="flex items-center gap-4">
-
-                <span className="h-4 w-4 rounded-full bg-green-500"></span>
-
-                <span className="font-medium text-slate-700">
-                  Low
-                </span>
-
-              </div>
-
-              <span className="text-slate-500">
-                0% - 39%
-              </span>
-
-            </div>
-
-          </div>
-
+          <p className="mt-1 text-slate-500">
+            Real-time network-wide congestion monitoring
+          </p>
         </div>
 
-        {/* Live Monitoring */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-gradient-to-br
-            from-slate-900
-            via-slate-800
-            to-slate-900
-            p-7
-            text-white
-            shadow-xl
-          "
-        >
-
-          <div className="flex items-center gap-3">
-
-            <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse"></span>
-
-            <h2 className="text-2xl font-bold">
-              Live Monitoring
-            </h2>
-
+        <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">
+            <TrainFront size={16} />
+            {stations.length} Stations
           </div>
 
-          <div className="mt-8 space-y-5">
-
-            <div className="flex justify-between">
-
-              <span className="text-slate-300">
-                Status
-              </span>
-
-              <span className="font-semibold text-green-400">
-                Active
-              </span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span className="text-slate-300">
-                Stations Monitored
-              </span>
-
-              <span className="font-semibold">
-                {stations.length}
-              </span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span className="text-slate-300">
-                Average Congestion
-              </span>
-
-              <span className="font-semibold">
-                {averageCongestion}%
-              </span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span className="text-slate-300">
-                Highest Congestion
-              </span>
-
-              <span className="font-semibold">
-
-                {stations.length
-                  ? `${stations[0].occupancy}%`
-                  : "--"}
-
-              </span>
-
-            </div>
-
+          <div className="flex items-center gap-2 rounded-xl bg-red-100 px-4 py-2 text-sm font-medium text-red-700">
+            <AlertTriangle size={16} />
+            {criticalCount} Critical
           </div>
 
-          <div
-            className="
-              mt-8
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/5
-              p-5
-            "
-          >
-
-            <p className="text-sm leading-7 text-slate-300">
-
-              MetroFlow continuously analyzes passenger traffic and
-              congestion trends in real time. Stations with sustained
-              high occupancy should be prioritized for operational
-              adjustments and additional train scheduling.
-
-            </p>
-
+          <div className="flex items-center gap-2 rounded-xl bg-orange-100 px-4 py-2 text-sm font-medium text-orange-700">
+            <Activity size={16} />
+            {highCount} High
           </div>
-
         </div>
-
       </div>
 
-    </motion.section>
+      <div className="my-8 h-px bg-slate-200" />
+
+      {/* =====================================================
+          Metro Heatmap Grid
+      ===================================================== */}
+
+      <div className="mb-10">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">
+              Network Heatmap
+            </h3>
+
+            <p className="text-slate-500">
+              Color-coded station congestion overview
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600">
+            {stations.length} Stations
+          </div>
+        </div>
+
+        {stations.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
+            <Filter size={40} className="mx-auto text-slate-400" />
+
+            <p className="mt-4 text-slate-500">
+              No stations match your filters.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+            {stations.map((station, index) => {
+              const style = riskStyles[station.status];
+
+              return (
+                <motion.div
+                  key={station.station_id ?? `heatmap-${index}`}
+                  whileHover={{
+                    scale: 1.04,
+                    y: -4,
+                  }}
+                  className={`
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    p-5
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    hover:shadow-xl
+                    ${style.border}
+                    ${style.bg}
+                  `}
+                >
+                  {station.status === "Critical" && (
+                    <div className="absolute right-2 top-2 h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+                  )}
+
+                  <h3 className="font-bold text-slate-900">
+                    {station.station}
+                  </h3>
+
+                  <p className="mt-3 text-4xl font-bold">
+                    {station.occupancy}%
+                  </p>
+
+                  <span
+                    className={`mt-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${style.badge}`}
+                  >
+                    {station.status}
+                  </span>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* =====================================================
+          Search, Filter & Sort Toolbar
+      ===================================================== */}
+
+      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="relative w-full lg:w-96">
+          <Search
+            className="absolute left-4 top-3.5 text-slate-400"
+            size={18}
+          />
+
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search station..."
+            className="
+              w-full
+              rounded-2xl
+              border
+              border-slate-200
+              py-3
+              pl-11
+              pr-4
+              outline-none
+              focus:border-indigo-500
+            "
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <select
+            value={riskFilter}
+            onChange={(e) => setRiskFilter(e.target.value)}
+            className="rounded-xl border border-slate-200 px-4 py-3"
+          >
+            <option>All</option>
+            <option>Critical</option>
+            <option>High</option>
+            <option>Moderate</option>
+            <option>Low</option>
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-xl border border-slate-200 px-4 py-3"
+          >
+            <option>Occupancy</option>
+            <option>Passengers</option>
+            <option>Station</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="my-8 h-px bg-slate-200" />
+
+      {/* =====================================================
+          Live Congestion List (single copy)
+      ===================================================== */}
+
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">
+              Live Congestion List
+            </h3>
+
+            <p className="text-slate-500">
+              Detailed per-station breakdown with AI decision support
+            </p>
+          </div>
+
+          <span className="rounded-full bg-indigo-100 px-4 py-2 text-sm font-semibold text-indigo-700">
+            LIVE
+          </span>
+        </div>
+
+        {stations.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
+            <Users size={40} className="mx-auto text-slate-400" />
+
+            <p className="mt-4 text-slate-500">
+              No stations to display.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {stations.map((station, index) => {
+              const style = riskStyles[station.status];
+
+              return (
+                <motion.div
+                  key={station.station_id ?? `list-${index}`}
+                  whileHover={{ scale: 1.01 }}
+                  className="rounded-2xl border border-slate-200 p-5"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold text-lg">{station.station}</h3>
+
+                      <p className="mt-1 text-slate-500">
+                        {station.passengers.toLocaleString()} passengers
+                      </p>
+
+                      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                        <Clock size={14} />
+                        {formatLastUpdated(station.last_updated)}
+                      </div>
+                    </div>
+
+                    <span
+                      className={`rounded-full px-4 py-2 text-sm font-semibold ${style.badge}`}
+                    >
+                      {station.status}
+                    </span>
+                  </div>
+
+                  {/* Occupancy Bar */}
+
+                  <div className="mt-5">
+                    <div className="mb-2 flex justify-between text-sm">
+                      <span>Occupancy</span>
+
+                      <span>{station.occupancy}%</span>
+                    </div>
+
+                    <div className="h-3 overflow-hidden rounded-full bg-slate-200">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${station.occupancy}%` }}
+                        transition={{ duration: 1 }}
+                        className={`h-full rounded-full ${style.dot}`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Trend Indicator */}
+
+                  <div className="mt-4 flex items-center gap-4 text-sm">
+                    <span
+                      className={`
+                        rounded-full
+                        px-3
+                        py-1
+                        ${
+                          station.trend === "Rising"
+                            ? "bg-red-100 text-red-700"
+                            : station.trend === "Stable"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }
+                      `}
+                    >
+                      {station.trend === "Rising"
+                        ? "▲ Rising"
+                        : station.trend === "Stable"
+                        ? "→ Stable"
+                        : "▼ Falling"}
+                    </span>
+                  </div>
+
+                  {/* AI Decision Support */}
+
+                  <div className="mt-5 flex items-center justify-between">
+                    <div className="text-xs text-slate-500">
+                      AI Decision Support
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => onGenerateAI?.(station)}
+                      className="
+                        flex
+                        items-center
+                        gap-2
+                        rounded-xl
+                        bg-gradient-to-r
+                        from-indigo-600
+                        to-violet-600
+                        px-4
+                        py-2
+                        text-sm
+                        font-semibold
+                        text-white
+                        transition-all
+                        duration-300
+                        hover:scale-105
+                        hover:shadow-lg
+                      "
+                    >
+                      <BrainCircuit size={16} />
+                      Generate AI Recommendation
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
   );
-}
+};
 
 export default CongestionHeatmap;

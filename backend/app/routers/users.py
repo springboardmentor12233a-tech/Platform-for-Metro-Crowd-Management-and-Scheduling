@@ -1,93 +1,152 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserResponse
-from app.auth.dependencies import require_roles
+from app.schemas.user import UserCreate
+from app.schemas.auth import LoginRequest
 
-router = APIRouter(prefix="/users", tags=["User Management"])
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-@router.get(
-    "/",
-    response_model=list[UserResponse],
-    dependencies=[Depends(require_roles("Admin"))],
+from app.auth.dependencies import get_current_user
+from app.auth.hashing import (
+    hash_password,
+    verify_password,
 )
-def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+from app.auth.jwt_handler import create_access_token
 
-
-@router.post(
-    "/",
-    response_model=UserResponse,
-    dependencies=[Depends(require_roles("Admin"))],
+from app.services.user_service import (
+    get_user_by_email,
+    create_user,
+    authenticate_user,
 )
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+from app.services.auth_service import record_login
 
-    existing = db.query(User).filter(User.email == user.email).first()
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
 
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already exists")
 
-    new_user = User(
-        name=user.name,
-        email=user.email,
-        password=pwd_context.hash(user.password),
-        role=user.role,
+# ======================================================
+# Register User
+# ======================================================
+
+@router.post("/register")
+def register(
+    request: UserCreate,
+    db: Session = Depends(get_db),
+):
+    existing_user = get_user_by_email(
+        db,
+        request.email,
     )
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered",
+        )
 
-    return new_user
+    new_user = User(
+        name=request.name,
+        email=request.email,
+        password=hash_password(request.password),
+        role=request.role,
+    )
+
+    create_user(
+        db,
+        new_user,
+    )
+
+    return {
+        "message": "User registered successfully"
+    }
 
 
-@router.put(
-    "/{user_id}",
-    response_model=UserResponse,
-    dependencies=[Depends(require_roles("Admin"))],
-)
-def update_user(
-    user_id: int,
-    data: UserUpdate,
+# ======================================================
+# Login User
+# ======================================================
+
+@router.post("/login")
+def login(
+    request: LoginRequest,
     db: Session = Depends(get_db),
 ):
-
-    user = db.query(User).filter(User.id == user_id).first()
+    user = authenticate_user(
+        db,
+        request.email,
+    )
 
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password",
+        )
 
-    user.name = data.name
-    user.email = data.email
-    user.role = data.role
+    if not verify_password(
+        request.password,
+        user.password,
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password",
+        )
 
-    db.commit()
-    db.refresh(user)
+    # Record last login timestamp
+    record_login(db, user)
 
-    return user
+    access_token = create_access_token(
+        {
+            "sub": user.email,
+            "role": user.role,
+        }
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+        },
+    }
 
 
-@router.delete(
-    "/{user_id}",
-    dependencies=[Depends(require_roles("Admin"))],
-)
-def delete_user(
-    user_id: int,
-    db: Session = Depends(get_db),
+# ======================================================
+# Current Logged-in User
+# ======================================================
+
+@router.get("/me")
+def get_me(
+    current_user: User = Depends(get_current_user),
 ):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "role": current_user.role,
+    }
 
-    user = db.query(User).filter(User.id == user_id).first()
 
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+# ======================================================
+# Logout (Placeholder)
+# ======================================================
 
-    db.delete(user)
-    db.commit()
+@router.post("/logout")
+def logout():
+    """
+    Placeholder logout endpoint.
 
-    return {"message": "User deleted successfully"}
+    JWT authentication is stateless, so the frontend simply
+    deletes the token from localStorage.
+
+    Later we can implement:
+    - Refresh Tokens
+    - Token Blacklisting
+    - Redis Session Storage
+    """
+    return {
+        "message": "Logged out successfully"
+    }

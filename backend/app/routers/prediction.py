@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.auth.dependencies import require_roles
-
+from app.auth.permissions import require_roles
 from app.schemas.prediction import (
     PassengerPredictionRequest,
     PassengerPredictionResponse,

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.auth.dependencies import require_roles
+from app.auth.permissions import require_roles
 from app.services.alert_service import get_alerts
 
 router = APIRouter(
@@ -9,14 +9,17 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-def alerts(
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
+@router.get(
+    "/",
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+            )
         )
-    ),
-):
+    ],
+)
+def alerts():
     return get_alerts()

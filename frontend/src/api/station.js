@@ -1,10 +1,6 @@
-import axios from "axios";
+import api from "./axios";
 
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
-
-export const getStations = async () => {
-  const response = await API.get("/stations/");
+export const getAllStations = async () => {
+  const response = await api.get("/stations/");
   return response.data;
 };

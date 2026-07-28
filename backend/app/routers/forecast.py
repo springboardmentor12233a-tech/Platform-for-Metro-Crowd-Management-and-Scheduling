@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.auth.dependencies import require_roles
-
+from app.auth.permissions import require_roles
 from app.schemas.forecast import (
     ForecastRequest,
     ForecastResponse,

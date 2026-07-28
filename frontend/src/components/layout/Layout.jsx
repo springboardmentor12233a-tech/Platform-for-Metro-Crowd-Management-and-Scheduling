@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-function Layout({ children }) {
+function Layout() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -28,7 +29,7 @@ function Layout({ children }) {
 
         {/* Page Content */}
         <div className="px-8 py-6">
-          {children}
+          <Outlet />
         </div>
       </main>
     </div>

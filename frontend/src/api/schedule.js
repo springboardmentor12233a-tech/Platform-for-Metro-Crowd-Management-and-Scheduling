@@ -1,11 +1,7 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
+import api from "./axios";
 
 export const getScheduleRecommendation = async (predictedPassengers) => {
-  const response = await API.post("/schedule/recommend", {
+  const response = await api.post("/schedule/recommend", {
     predicted_passengers: predictedPassengers,
   });
 

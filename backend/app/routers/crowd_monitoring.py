@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.auth.dependencies import require_roles
+from app.auth.permissions import require_roles
 
 from app.services.crowd_monitoring_service import (
     get_live_crowd,

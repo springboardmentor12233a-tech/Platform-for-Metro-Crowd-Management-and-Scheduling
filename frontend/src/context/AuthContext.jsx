@@ -15,11 +15,8 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
-
-  const [isAuthenticated, setIsAuthenticated] =
-    useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   /* ============================
         Restore Session
@@ -40,8 +37,12 @@ export function AuthProvider({ children }) {
     try {
       const currentUser = await getCurrentUser();
 
-      setUser(currentUser);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(currentUser)
+      );
 
+      setUser(currentUser);
       setIsAuthenticated(true);
     } catch (error) {
       console.error(error);
@@ -50,7 +51,6 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("user");
 
       setUser(null);
-
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
@@ -69,18 +69,15 @@ export function AuthProvider({ children }) {
       data.access_token
     );
 
-    const currentUser = await getCurrentUser();
-
     localStorage.setItem(
       "user",
-      JSON.stringify(currentUser)
+      JSON.stringify(data.user)
     );
 
-    setUser(currentUser);
-
+    setUser(data.user);
     setIsAuthenticated(true);
 
-    return currentUser;
+    return data.user;
   };
 
   /* ============================
@@ -98,7 +95,6 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("user");
 
     setUser(null);
-
     setIsAuthenticated(false);
   };
 
@@ -108,7 +104,6 @@ export function AuthProvider({ children }) {
 
   const hasRole = (...roles) => {
     if (!user) return false;
-
     return roles.includes(user.role);
   };
 
@@ -128,25 +123,15 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-
         loading,
-
         isAuthenticated,
-
         login,
-
         logout,
-
         restoreSession,
-
         hasRole,
-
         isAdmin,
-
         isOperator,
-
         isAnalyst,
-
         isMember,
       }}
     >

@@ -3,3 +3,5 @@ from .station import Station
 from .passenger_flow import PassengerFlow
 from .trip_record import TripRecord
 from .prediction_history import PredictionHistory
+from .ai_recommendation import AIRecommendation
+from .report import Report

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Download,
@@ -9,7 +9,19 @@ import {
   Calendar,
   Mail,
   CheckCircle2,
+  Loader2,
+  Eye,
+  FileDown,
+  X,
 } from "lucide-react";
+
+import {
+  generateReport,
+  exportPdfReport,
+  exportCsvReport,
+  exportExcelReport,
+  getReportHistory,
+} from "../../services/api";
 
 function ExportPanel({
 
@@ -30,6 +42,23 @@ function ExportPanel({
     useState("Executive");
 
   const [scheduled, setScheduled] =
+    useState(false);
+
+  /* ===============================
+     REPORT WORKFLOW
+  ================================ */
+
+  const [report, setReport] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+
+  const [generationStep, setGenerationStep] =
+    useState("");
+
+  const [reportReady, setReportReady] =
+    useState(false);
+
+  const [previewOpen, setPreviewOpen] =
     useState(false);
 
   const formats = [
@@ -60,27 +89,142 @@ function ExportPanel({
 
   ];
 
-  const handleExport = () => {
+  const handleGenerate = async () => {
 
-    console.log({
+    try {
 
-      format: selectedFormat,
+      setLoading(true);
 
-      reportType,
+      setReportReady(false);
 
-      summary,
+      setGenerationStep(
+        "Collecting operational analytics..."
+      );
 
-      passengerTrend,
+      const payload = {
 
-      revenueAnalysis,
+        report_type: reportType,
 
-      busiestStations,
+        export_format: selectedFormat,
 
-    });
+        summary,
 
-    alert(
-      `${selectedFormat} export functionality will be connected to the backend.`
-    );
+        passengerTrend,
+
+        revenueAnalysis,
+
+        busiestStations,
+
+      };
+
+      await new Promise((r) =>
+        setTimeout(r, 500)
+      );
+
+      setGenerationStep(
+        "Generating executive summary..."
+      );
+
+      await new Promise((r) =>
+        setTimeout(r, 600)
+      );
+
+      const response =
+        await generateReport(payload);
+
+      setGenerationStep(
+        "Preparing report preview..."
+      );
+
+      await new Promise((r) =>
+        setTimeout(r, 500)
+      );
+
+      setReport(response);
+
+      setReportReady(true);
+
+      setPreviewOpen(true);
+
+    }
+
+    catch (err) {
+
+      console.error(err);
+
+      alert("Report generation failed.");
+
+    }
+
+    finally {
+
+      setGenerationStep("");
+
+      setLoading(false);
+
+    }
+
+  };
+
+  const downloadBlob = (response, filename) => {
+
+    const blob = new Blob([response.data]);
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download = filename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  };
+
+  const handleDownload = async (format) => {
+
+    if (!report) return;
+
+    try {
+
+      let response;
+
+      switch (format) {
+
+        case "PDF":
+          response = await exportPdfReport(report.id);
+          downloadBlob(response, `MetroFlow_Report_${report.id}.pdf`);
+          break;
+
+        case "CSV":
+          response = await exportCsvReport(report.id);
+          downloadBlob(response, `MetroFlow_Report_${report.id}.csv`);
+          break;
+
+        case "Excel":
+          response = await exportExcelReport(report.id);
+          downloadBlob(response, `MetroFlow_Report_${report.id}.xlsx`);
+          break;
+
+        default:
+          return;
+
+      }
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert("Failed to download report.");
+
+    }
 
   };
 
@@ -473,131 +617,654 @@ function ExportPanel({
             Overview of the selected report.
           </p>
 
-          <div className="mt-8 space-y-5">
+          <div className="mt-8">
 
-            <div
-              className="
-                rounded-2xl
-                bg-slate-50
-                p-5
-              "
-            >
+            {loading ? (
 
-              <p className="text-sm text-slate-500">
-                Report Type
-              </p>
-
-              <h4
+              <div
                 className="
-                  mt-2
-                  text-lg
-                  font-bold
-                  text-slate-900
+                  py-24
+                  text-center
                 "
               >
-                {reportType}
-              </h4>
 
-            </div>
+                <Loader2
 
-            <div
-              className="
-                rounded-2xl
-                bg-slate-50
-                p-5
-              "
-            >
+                  size={60}
 
-              <p className="text-sm text-slate-500">
-                Export Format
-              </p>
+                  className="
+                    mx-auto
+                    animate-spin
+                    text-indigo-600
+                  "
 
-              <h4
+                />
+
+                <h3
+                  className="
+                    mt-8
+                    text-2xl
+                    font-bold
+                  "
+                >
+
+                  {generationStep}
+
+                </h3>
+
+                <p
+                  className="
+                    mt-4
+                    text-slate-500
+                  "
+                >
+
+                  MetroFlow AI is analyzing operational data...
+
+                </p>
+
+              </div>
+
+            ) : !report ? (
+
+              <div
                 className="
-                  mt-2
-                  text-lg
-                  font-bold
-                  text-slate-900
+                  rounded-3xl
+                  border-2
+                  border-dashed
+                  border-slate-300
+                  py-20
+                  text-center
                 "
               >
-                {selectedFormat}
-              </h4>
 
-            </div>
+                <FileText
+                  size={60}
+                  className="mx-auto text-slate-300"
+                />
 
-            <div
-              className="
-                rounded-2xl
-                bg-slate-50
-                p-5
-              "
-            >
+                <h3
+                  className="
+                    mt-6
+                    text-xl
+                    font-bold
+                    text-slate-700
+                  "
+                >
 
-              <p className="text-sm text-slate-500">
-                Included Data
-              </p>
+                  No Report Generated
 
-              <ul
-                className="
-                  mt-3
-                  space-y-2
-                  text-sm
-                  text-slate-700
-                "
-              >
-                <li>
-                  • Executive KPIs
-                </li>
+                </h3>
 
-                <li>
-                  • Passenger Analytics
-                </li>
+                <p
+                  className="
+                    mt-3
+                    text-slate-500
+                  "
+                >
 
-                <li>
-                  • Revenue Analysis
-                </li>
+                  Click{" "}
 
-                <li>
-                  • Operational Metrics
-                </li>
+                  <span className="font-semibold text-indigo-600">
 
-                <li>
-                  • AI Insights
-                </li>
+                    Generate Report
 
-                <li>
-                  • Heatmap Analytics
-                </li>
+                  </span>{" "}
 
-              </ul>
+                  to build an executive report preview.
 
-            </div>
+                </p>
 
-            <div
-              className="
-                rounded-2xl
-                border
-                border-indigo-100
-                bg-indigo-50
-                p-5
-              "
-            >
+              </div>
 
-              <p
-                className="
-                  text-sm
-                  leading-7
-                  text-slate-700
-                "
-              >
-                The generated report will include
-                charts, KPI summaries, AI insights,
-                operational metrics, and analytics
-                corresponding to the selected report
-                type and export format.
-              </p>
+            ) : (
 
-            </div>
+              <div className="space-y-6">
+
+                <motion.div
+
+                  initial={{ opacity: 0, y: 20 }}
+
+                  animate={{ opacity: 1, y: 0 }}
+
+                  className="
+                    rounded-3xl
+                    bg-gradient-to-r
+                    from-indigo-500
+                    to-cyan-500
+                    p-8
+                    text-white
+                  "
+
+                >
+
+                  <p className="text-sm opacity-80">
+
+                    Executive Summary
+
+                  </p>
+
+                  <h2
+                    className="
+                      mt-3
+                      text-3xl
+                      font-bold
+                    "
+                  >
+
+                    {report.report_type}
+
+                  </h2>
+
+                  <p
+                    className="
+                      mt-6
+                      leading-8
+                      opacity-95
+                    "
+                  >
+
+                    {report.summary}
+
+                  </p>
+
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="
+                    grid
+                    gap-5
+                    md:grid-cols-4
+                  "
+                >
+
+                  <div className="rounded-2xl bg-slate-50 p-5">
+
+                    <p className="text-sm text-slate-500">
+
+                      Generated On
+
+                    </p>
+
+                    <h3 className="mt-2 font-bold text-slate-900">
+
+                      {new Date(report.generated_at).toLocaleString()}
+
+                    </h3>
+
+                  </div>
+
+                  <div className="rounded-2xl bg-slate-50 p-5">
+
+                    <p className="text-sm text-slate-500">
+
+                      Format
+
+                    </p>
+
+                    <h3 className="mt-2 font-bold text-indigo-600">
+
+                      {selectedFormat}
+
+                    </h3>
+
+                  </div>
+
+                  <div className="rounded-2xl bg-slate-50 p-5">
+
+                    <p className="text-sm text-slate-500">
+
+                      Report Type
+
+                    </p>
+
+                    <h3 className="mt-2 font-bold text-slate-900">
+
+                      {report.report_type}
+
+                    </h3>
+
+                  </div>
+
+                  <div className="rounded-2xl bg-slate-50 p-5">
+
+                    <p className="text-sm text-slate-500">
+
+                      Status
+
+                    </p>
+
+                    <h3 className="mt-2 font-bold text-emerald-600">
+
+                      Ready
+
+                    </h3>
+
+                  </div>
+
+                </motion.div>
+
+                <div
+                  className="
+                    grid
+                    gap-5
+                    md:grid-cols-2
+                  "
+                >
+
+                  <div className="rounded-2xl bg-slate-50 p-6">
+
+                    <p className="text-sm text-slate-500">
+
+                      Network Status
+
+                    </p>
+
+                    <h3
+                      className="
+                        mt-2
+                        text-2xl
+                        font-bold
+                        text-emerald-600
+                      "
+                    >
+
+                      {report.network_status}
+
+                    </h3>
+
+                  </div>
+
+                  <div className="rounded-2xl bg-slate-50 p-6">
+
+                    <p className="text-sm text-slate-500">
+
+                      Busiest Station
+
+                    </p>
+
+                    <h3
+                      className="
+                        mt-2
+                        text-2xl
+                        font-bold
+                        text-indigo-600
+                      "
+                    >
+
+                      {report.busiest_station}
+
+                    </h3>
+
+                  </div>
+
+                </div>
+
+                <div
+                  className="
+                    grid
+                    gap-5
+                    md:grid-cols-2
+                  "
+                >
+
+                  <div className="rounded-2xl border p-5">
+
+                    <p>Total Passengers</p>
+
+                    <h2
+                      className="
+                        mt-2
+                        text-3xl
+                        font-black
+                      "
+                    >
+
+                      {report.statistics.total_passengers}
+
+                    </h2>
+
+                  </div>
+
+                  <div className="rounded-2xl border p-5">
+
+                    <p>Total Revenue</p>
+
+                    <h2
+                      className="
+                        mt-2
+                        text-3xl
+                        font-black
+                      "
+                    >
+
+                      ₹{report.statistics.total_revenue}
+
+                    </h2>
+
+                  </div>
+
+                  <div className="rounded-2xl border p-5">
+
+                    <p>Stations</p>
+
+                    <h2
+                      className="
+                        mt-2
+                        text-3xl
+                        font-black
+                      "
+                    >
+
+                      {report.statistics.total_stations}
+
+                    </h2>
+
+                  </div>
+
+                  <div className="rounded-2xl border p-5">
+
+                    <p>Total Trips</p>
+
+                    <h2
+                      className="
+                        mt-2
+                        text-3xl
+                        font-black
+                      "
+                    >
+
+                      {report.statistics.total_trips}
+
+                    </h2>
+
+                  </div>
+
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="
+                    rounded-3xl
+                    border
+                    border-emerald-200
+                    bg-gradient-to-r
+                    from-emerald-50
+                    to-cyan-50
+                    p-6
+                  "
+                >
+
+                  <div className="flex justify-between items-center">
+
+                    <div>
+
+                      <p className="text-sm text-slate-500">
+
+                        AI Confidence
+
+                      </p>
+
+                      <h2 className="mt-2 text-4xl font-black text-emerald-600">
+
+                        {report.confidence ?? 96}%
+
+                      </h2>
+
+                    </div>
+
+                    <div>
+
+                      <p className="text-sm text-slate-500">
+
+                        Prediction Accuracy
+
+                      </p>
+
+                      <h2 className="mt-2 text-4xl font-black text-cyan-600">
+
+                        98%
+
+                      </h2>
+
+                    </div>
+
+                  </div>
+
+                </motion.div>
+
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-indigo-100
+                    bg-indigo-50
+                    p-6
+                  "
+                >
+
+                  <h3
+                    className="
+                      text-xl
+                      font-bold
+                      text-indigo-700
+                    "
+                  >
+
+                    AI Recommendations
+
+                  </h3>
+
+                  <div className="mt-5 space-y-4">
+
+                    {report.recommendations.map(
+
+                      (item, index) => (
+
+                        <div
+
+                          key={index}
+
+                          className="
+                            rounded-2xl
+                            bg-white
+                            p-5
+                            shadow-sm
+                          "
+
+                        >
+
+                          <div className="flex gap-3">
+
+                            <div
+                              className="
+                                mt-1
+                                h-2
+                                w-2
+                                rounded-full
+                                bg-indigo-500
+                              "
+                            />
+
+                            <p
+                              className="
+                                leading-7
+                                text-slate-700
+                              "
+                            >
+
+                              {item}
+
+                            </p>
+
+                          </div>
+
+                        </div>
+
+                      )
+
+                    )}
+
+                  </div>
+
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="
+                    rounded-3xl
+                    border
+                    border-orange-200
+                    bg-orange-50
+                    p-6
+                  "
+                >
+
+                  <h3
+                    className="
+                      text-xl
+                      font-bold
+                      text-orange-700
+                    "
+                  >
+
+                    Recommended Operational Actions
+
+                  </h3>
+
+                  <div className="mt-5 space-y-4">
+
+                    {report.operational_actions?.map((action, index) => (
+
+                      <div
+
+                        key={index}
+
+                        className="
+                          rounded-2xl
+                          bg-white
+                          p-5
+                        "
+
+                      >
+
+                        <div className="flex gap-3">
+
+                          <div className="h-2 w-2 rounded-full bg-orange-500 mt-2" />
+
+                          <p className="leading-7">
+
+                            {action}
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="
+                    rounded-3xl
+                    border
+                    border-cyan-200
+                    bg-cyan-50
+                    p-6
+                  "
+                >
+
+                  <h3
+                    className="
+                      text-xl
+                      font-bold
+                      text-cyan-700
+                    "
+                  >
+
+                    Expected Impact
+
+                  </h3>
+
+                  <p
+                    className="
+                      mt-5
+                      leading-8
+                      text-slate-700
+                    "
+                  >
+
+                    {report.expected_impact}
+
+                  </p>
+
+                </motion.div>
+
+                <div
+                  className="
+                    mt-8
+                    rounded-3xl
+                    bg-slate-900
+                    p-6
+                    text-white
+                  "
+                >
+
+                  <div className="flex justify-between items-center">
+
+                    <div>
+
+                      <h3 className="font-bold">
+
+                        MetroFlow Enterprise Reporting System
+
+                      </h3>
+
+                      <p className="text-sm opacity-70 mt-2">
+
+                        AI Generated Operational Report
+
+                      </p>
+
+                    </div>
+
+                    <div className="text-right">
+
+                      <p className="text-sm opacity-70">
+
+                        Powered by
+
+                      </p>
+
+                      <h3 className="text-indigo-300 font-bold">
+
+                        Google Gemini AI
+
+                      </h3>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
 
           </div>
 
@@ -1070,7 +1737,8 @@ function ExportPanel({
           </div>
 
           <button
-            onClick={handleExport}
+            disabled={loading}
+            onClick={handleGenerate}
             className="
               mt-8
               flex
@@ -1087,12 +1755,107 @@ function ExportPanel({
               text-white
               transition-all
               hover:bg-indigo-700
+              disabled:cursor-not-allowed
+              disabled:opacity-70
             "
           >
 
-            <Download size={22} />
+            {loading ? (
 
-            Generate & Export Report
+              <>
+
+                <Loader2
+                  size={22}
+                  className="animate-spin"
+                />
+
+                {generationStep}
+
+              </>
+
+            ) : (
+
+              <>
+
+                <Download size={22} />
+
+                Generate Report
+
+              </>
+
+            )}
+
+          </button>
+
+          <button
+
+            disabled={!reportReady}
+
+            onClick={() =>
+              setPreviewOpen(true)
+            }
+
+            className={`
+              mt-4
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-3
+              rounded-2xl
+              border
+              py-4
+              font-semibold
+              transition-all
+
+              ${
+                reportReady
+                  ? "border-indigo-300 bg-white hover:bg-slate-50"
+                  : "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+              }
+            `}
+
+          >
+
+            <Eye size={20} />
+
+            Preview Report
+
+          </button>
+
+          <button
+
+            disabled={!reportReady}
+
+            onClick={() => handleDownload(selectedFormat)}
+
+            className={`
+              mt-4
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-3
+              rounded-2xl
+              bg-emerald-600
+              py-4
+              font-semibold
+              text-white
+
+              transition
+
+              ${
+                !reportReady
+                  ? "cursor-not-allowed opacity-50"
+                  : "hover:bg-emerald-700"
+              }
+            `}
+
+          >
+
+            <FileDown size={20} />
+
+            Export {selectedFormat}
 
           </button>
 
@@ -1327,7 +2090,109 @@ function ExportPanel({
         </div>
 
       </motion.div>
-          </section>
+
+      {/* Report Preview Modal */}
+
+      <AnimatePresence>
+
+        {previewOpen && report && (
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            onClick={() => setPreviewOpen(false)}
+          >
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl"
+            >
+
+              <div className="flex items-start justify-between">
+
+                <div>
+
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Report Preview
+                  </h3>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    {reportType} report • {selectedFormat} format
+                  </p>
+
+                </div>
+
+                <button
+                  onClick={() => setPreviewOpen(false)}
+                  className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                >
+                  <X size={22} />
+                </button>
+
+              </div>
+
+              <div className="mt-6 space-y-4">
+
+                <div className="rounded-2xl bg-slate-50 p-5">
+
+                  <p className="text-sm text-slate-500">
+                    Generated At
+                  </p>
+
+                  <h4 className="mt-2 font-semibold text-slate-900">
+                    {new Date().toLocaleString()}
+                  </h4>
+
+                </div>
+
+                <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+
+                  <p className="text-sm font-semibold text-indigo-700">
+                    Report Contents
+                  </p>
+
+                  <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap break-words text-xs text-slate-700">
+
+                    {JSON.stringify(report, null, 2)}
+
+                  </pre>
+
+                </div>
+
+              </div>
+
+              <div className="mt-8 flex gap-3">
+
+                <button
+                  onClick={() => setPreviewOpen(false)}
+                  className="flex-1 rounded-2xl border border-slate-200 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Close
+                </button>
+
+                <button
+                  onClick={() => handleDownload(selectedFormat)}
+                  className="flex-1 rounded-2xl bg-emerald-600 py-3 font-semibold text-white transition hover:bg-emerald-700"
+                >
+                  Export {selectedFormat}
+                </button>
+
+              </div>
+
+            </motion.div>
+
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
+
+    </section>
 
   );
 

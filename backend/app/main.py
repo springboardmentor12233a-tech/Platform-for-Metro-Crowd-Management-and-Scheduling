@@ -9,6 +9,7 @@ from app.models import *
 # Import routers
 from app.routers import (
     auth,
+    users,
     station,
     passenger_flow,
     dashboard,
@@ -17,13 +18,23 @@ from app.routers import (
     history,
     schedule,
     prediction_history,
+    recommendation,
+    ai,
     alert,
+    reports,
     live_dashboard,
     crowd_monitoring,
 )
 
-# Create database tables
+# ------------------------------------------------
+# Create Database Tables
+# ------------------------------------------------
+
 Base.metadata.create_all(bind=engine)
+
+# ------------------------------------------------
+# FastAPI App
+# ------------------------------------------------
 
 app = FastAPI(
     title="MetroFlow API",
@@ -37,6 +48,7 @@ AI-powered Metro Crowd Management and Scheduling Platform.
 
 - 🔐 JWT Authentication
 - 👥 Role-Based Access Control (RBAC)
+- 👤 User Management
 - 🚉 Station Management
 - 👨‍👩‍👧 Passenger Flow Monitoring
 - 🤖 AI Passenger Prediction
@@ -45,6 +57,7 @@ AI-powered Metro Crowd Management and Scheduling Platform.
 - 🚨 AI Alerts
 - 📊 Dashboard & Analytics
 - 📡 Live Crowd Monitoring
+- 📄 AI Report Generation
 """,
     contact={
         "name": "MetroFlow Team",
@@ -67,10 +80,11 @@ app.add_middleware(
 )
 
 # ------------------------------------------------
-# Routers
+# Register Routers
 # ------------------------------------------------
 
 app.include_router(auth.router)
+app.include_router(users.router)
 app.include_router(station.router)
 app.include_router(passenger_flow.router)
 app.include_router(dashboard.router)
@@ -79,7 +93,10 @@ app.include_router(forecast.router)
 app.include_router(history.router)
 app.include_router(schedule.router)
 app.include_router(prediction_history.router)
+app.include_router(recommendation.router)
+app.include_router(ai.router)
 app.include_router(alert.router)
+app.include_router(reports.router)
 app.include_router(live_dashboard.router)
 app.include_router(crowd_monitoring.router)
 
@@ -97,7 +114,7 @@ def root():
 
 
 # ------------------------------------------------
-# Health
+# Health Check
 # ------------------------------------------------
 
 @app.get("/health", tags=["System"])

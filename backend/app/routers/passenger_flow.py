@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.passenger_flow import PassengerFlow
 from app.schemas.passenger_flow import PassengerFlowCreate
-from app.auth.dependencies import require_roles
-
+from app.auth.permissions import require_roles
 from app.services.passenger_flow_service import (
     create_passenger_flow,
     get_all_passenger_flow,

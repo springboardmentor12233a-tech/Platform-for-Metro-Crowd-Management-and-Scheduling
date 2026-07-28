@@ -1,79 +1,42 @@
-from typing import Callable
-
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from app.auth.jwt_handler import SECRET_KEY, ALGORITHM
 from app.database import get_db
-from app.models.user import User
+from app.auth.jwt_handler import verify_token
+from app.services.user_service import get_user_by_email
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+security = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ):
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Invalid or expired token",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    token = credentials.credentials
 
-    try:
-        print("=" * 60)
-        print("TOKEN:", token)
+    payload = verify_token(token)
 
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
         )
 
-        print("PAYLOAD:", payload)
+    email = payload.get("sub")
 
-        email = payload.get("sub")
-        print("EMAIL:", email)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
 
-        if email is None:
-            print("EMAIL IS NONE")
-            raise credentials_exception
-
-    except Exception as e:
-        print("JWT ERROR:", repr(e))
-        raise credentials_exception
-
-    user = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
-    )
-
-    print("USER:", user)
+    user = get_user_by_email(db, email)
 
     if user is None:
-        print("USER NOT FOUND")
-        raise credentials_exception
-
-    print("ROLE:", user.role)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
 
     return user
-
-
-def require_roles(*roles: str) -> Callable:
-
-    def role_checker(
-        current_user: User = Depends(get_current_user),
-    ):
-
-        if current_user.role not in roles:
-            raise HTTPException(
-                status_code=403,
-                detail="Permission denied",
-            )
-
-        return current_user
-
-    return role_checker

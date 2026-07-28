@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { predictPassengers } from "../../api/prediction";
-import { getStations } from "../../api/station";
+import { getAllStations } from "../../api/station";
 
 export default function Prediction() {
   const [stations, setStations] = useState([]);
@@ -25,7 +25,7 @@ export default function Prediction() {
 
   const loadStations = async () => {
     try {
-      const data = await getStations();
+      const data = await getAllStations();
       setStations(data);
     } catch (error) {
       console.error("Failed to load stations", error);
@@ -54,10 +54,8 @@ export default function Prediction() {
 
       const result = await predictPassengers(data);
 
-      // Update UI
       setPrediction(result.predicted_passengers);
 
-      // Save for Smart Scheduling
       localStorage.setItem(
         "predictedPassengers",
         result.predicted_passengers
@@ -75,9 +73,7 @@ export default function Prediction() {
 
       localStorage.setItem(
         "predictionCrowd",
-        getCrowdLevelFromPrediction(
-          result.predicted_passengers
-        )
+        getCrowdLevelFromPrediction(result.predicted_passengers)
       );
 
       localStorage.setItem(
@@ -118,14 +114,11 @@ export default function Prediction() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-8">
-
       <h1 className="text-4xl font-bold mb-8 text-slate-800">
         🤖 AI Passenger Prediction
       </h1>
 
       <div className="grid lg:grid-cols-2 gap-8">
-
-        {/* Prediction Form */}
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
 
@@ -145,9 +138,7 @@ export default function Prediction() {
               className="w-full border rounded-xl p-3"
               required
             >
-              <option value="">
-                Select From Station
-              </option>
+              <option value="">Select From Station</option>
 
               {stations.map((station) => (
                 <option
@@ -166,9 +157,7 @@ export default function Prediction() {
               className="w-full border rounded-xl p-3"
               required
             >
-              <option value="">
-                Select To Station
-              </option>
+              <option value="">Select To Station</option>
 
               {stations.map((station) => (
                 <option
@@ -219,21 +208,10 @@ export default function Prediction() {
               className="w-full border rounded-xl p-3"
               required
             >
-              <option value="">
-                Select Ticket Type
-              </option>
-
-              <option value="Smart Card">
-                Smart Card
-              </option>
-
-              <option value="Single">
-                Single
-              </option>
-
-              <option value="Tourist Card">
-                Tourist Card
-              </option>
+              <option value="">Select Ticket Type</option>
+              <option value="Smart Card">Smart Card</option>
+              <option value="Single">Single</option>
+              <option value="Tourist Card">Tourist Card</option>
             </select>
 
             <select
@@ -243,21 +221,10 @@ export default function Prediction() {
               className="w-full border rounded-xl p-3"
               required
             >
-              <option value="">
-                Select Remarks
-              </option>
-
-              <option value="peak">
-                Peak Hour
-              </option>
-
-              <option value="off-peak">
-                Off Peak
-              </option>
-
-              <option value="maintenance">
-                Maintenance
-              </option>
+              <option value="">Select Remarks</option>
+              <option value="peak">Peak Hour</option>
+              <option value="off-peak">Off Peak</option>
+              <option value="maintenance">Maintenance</option>
             </select>
 
             <button
@@ -273,8 +240,6 @@ export default function Prediction() {
 
         </div>
 
-        {/* Prediction Result */}
-
         <div className="space-y-6">
 
           <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -286,7 +251,6 @@ export default function Prediction() {
             <div className="grid gap-5">
 
               <div className="bg-indigo-50 rounded-xl p-5">
-
                 <p className="text-gray-500">
                   Predicted Passengers
                 </p>
@@ -294,11 +258,9 @@ export default function Prediction() {
                 <h2 className="text-5xl font-bold text-indigo-600 mt-2">
                   {prediction ?? "--"}
                 </h2>
-
               </div>
 
               <div className="bg-green-50 rounded-xl p-5">
-
                 <p className="text-gray-500">
                   Crowd Level
                 </p>
@@ -308,11 +270,9 @@ export default function Prediction() {
                     ? getCrowdLevel()
                     : "--"}
                 </h2>
-
               </div>
 
               <div className="bg-yellow-50 rounded-xl p-5">
-
                 <p className="text-gray-500">
                   AI Recommendation
                 </p>
@@ -322,7 +282,6 @@ export default function Prediction() {
                     ? getRecommendation()
                     : "Prediction not available"}
                 </p>
-
               </div>
 
             </div>
@@ -349,7 +308,6 @@ export default function Prediction() {
         </div>
 
       </div>
-
     </div>
   );
 }
