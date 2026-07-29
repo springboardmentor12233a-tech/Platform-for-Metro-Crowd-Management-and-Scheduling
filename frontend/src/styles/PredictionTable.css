@@ -1,0 +1,19 @@
+.prediction-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.prediction-table th{
+    background:#f1f5f9;
+    padding:14px;
+    text-align:left;
+}
+
+.prediction-table td{
+    padding:14px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.prediction-table tr:hover{
+    background:#f8fafc;
+}

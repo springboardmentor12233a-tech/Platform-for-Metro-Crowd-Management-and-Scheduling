@@ -1,0 +1,1 @@
+DATABASE_URL = "postgresql://postgres:Pahal_infosys@localhost:5432/metro_ai"

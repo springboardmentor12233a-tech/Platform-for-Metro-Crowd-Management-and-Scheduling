@@ -1,0 +1,43 @@
+.prediction-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.prediction-header {
+    margin-bottom: 20px;
+}
+
+.prediction-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #1e293b;
+}
+
+.prediction-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.prediction-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.high {
+    color: #dc2626;
+}

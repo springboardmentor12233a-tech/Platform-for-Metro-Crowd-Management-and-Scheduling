@@ -1,0 +1,11 @@
+.user-layout{
+    display:flex;
+    min-height:100vh;
+    background:#f8fafc;
+}
+
+.user-content{
+    flex:1;
+    padding:20px;
+    overflow-y:auto;
+}

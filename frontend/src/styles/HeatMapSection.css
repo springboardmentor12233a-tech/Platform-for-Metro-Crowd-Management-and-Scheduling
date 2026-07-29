@@ -1,0 +1,56 @@
+.heatmap-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.heatmap-card h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1e293b;
+}
+
+.heatmap-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.heatmap-table th {
+    background: #f1f5f9;
+    color: #334155;
+    padding: 14px;
+    text-align: left;
+}
+
+.heatmap-table td {
+    padding: 14px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.heatmap-table tr:hover {
+    background: #f8fafc;
+}
+
+/* Crowd Level Badges */
+
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+}
+
+.high {
+    background: #dc2626;
+}
+
+.medium, .moderate {
+    background: #f59e0b;
+}
+
+.low {
+    background: #16a34a;
+}

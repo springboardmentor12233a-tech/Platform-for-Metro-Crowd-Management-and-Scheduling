@@ -1,0 +1,56 @@
+.analytics-page{
+
+    padding:25px;
+
+}
+
+
+.analytics-page h1{
+
+    color:#1e293b;
+
+    margin-bottom:25px;
+
+}
+
+
+.analytics-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+}
+
+
+.analytics-card{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:14px;
+
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+
+}
+
+
+.analytics-card h2{
+
+    color:#1e293b;
+
+    margin-bottom:8px;
+
+}
+
+
+.analytics-card p{
+
+    color:#64748b;
+
+    margin-bottom:20px;
+
+}
