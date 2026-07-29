@@ -1,0 +1,13 @@
+[
+    {
+        "Timestamp": "29-07-2026 20:13:05",
+        "Passenger_Count": 12,
+        "Occupancy_Percent": 2,
+        "Delay_Minutes": 12,
+        "Number_of_Trips": 2,
+        "Train_Frequency_Per_Hour": 12,
+        "Train_Speed_kmph": 23,
+        "Crowd_Level": "Low",
+        "Recommendation": "Normal Operation"
+    }
+]

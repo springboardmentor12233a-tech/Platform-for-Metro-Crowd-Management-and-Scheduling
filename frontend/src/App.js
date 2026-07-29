@@ -20,7 +20,8 @@ import AdminRoute from "./components/AdminRoute";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import PredictionHistory from "./pages/PredictionHistory";
+import Testing from "./pages/Testing";
 function App() {
   return (
     <BrowserRouter>
@@ -62,6 +63,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+    path="/prediction-history"
+    element={<PredictionHistory />}
+/>
 
         {/* Schedule */}
         <Route
@@ -102,7 +107,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route path="/testing" element={<Testing />} />
         {/* Heatmap */}
         <Route
           path="/heatmap"

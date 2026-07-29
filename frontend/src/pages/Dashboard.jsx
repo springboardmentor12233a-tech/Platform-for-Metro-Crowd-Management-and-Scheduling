@@ -1,12 +1,17 @@
+
 // import { useEffect, useState, useRef } from "react";
+// import { useNavigate } from "react-router-dom";
+
 // import Navbar from "../components/Navbar";
 // import Footer from "../components/Footer";
 // import Charts from "../components/Charts";
+// import ChatBot from "../components/ChatBot";
+
 // import api from "../services/api";
 
 // import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
-// import ChatBot from "../components/ChatBot";
+
 // import {
 //   FaUsers,
 //   FaTrain,
@@ -23,9 +28,14 @@
 
 // function Dashboard() {
 
+//   const navigate = useNavigate();
+
 //   const [data, setData] = useState(null);
+
 //   const [alert, setAlert] = useState(null);
+
 //   const [notification, setNotification] = useState(null);
+
 //   const [lastUpdated, setLastUpdated] = useState("");
 
 //   const [currentTime, setCurrentTime] = useState(
@@ -43,12 +53,15 @@
 //         .then((res) => {
 
 //           setData(res.data);
-//           setLastUpdated(new Date().toLocaleTimeString());
+
+//           setLastUpdated(
+//             new Date().toLocaleTimeString()
+//           );
 
 //         })
 //         .catch(console.log);
 
-//       // AI Alert API
+//       // AI Alerts
 //       api.get("/alerts")
 //         .then((res) => {
 
@@ -67,11 +80,13 @@
 //               toast.error(res.data.Alert);
 
 //             }
+
 //             else if (res.data.Priority === "Medium") {
 
 //               toast.warning(res.data.Alert);
 
 //             }
+
 //             else {
 
 //               toast.success(res.data.Alert);
@@ -83,7 +98,8 @@
 //         })
 //         .catch(console.log);
 
-//       // AI Notification API
+//       // AI Notifications
+
 //       api.get("/notifications")
 //         .then((res) => {
 
@@ -96,19 +112,23 @@
 
 //     loadDashboard();
 
-//     // Refresh every 10 seconds
-//     const dashboardInterval = setInterval(loadDashboard, 10000);
+//     const dashboardInterval = setInterval(
+//       loadDashboard,
+//       10000
+//     );
 
-//     // Live Clock
 //     const clockInterval = setInterval(() => {
 
-//       setCurrentTime(new Date().toLocaleTimeString());
+//       setCurrentTime(
+//         new Date().toLocaleTimeString()
+//       );
 
 //     }, 1000);
 
 //     return () => {
 
 //       clearInterval(dashboardInterval);
+
 //       clearInterval(clockInterval);
 
 //     };
@@ -128,7 +148,9 @@
 //           <div className="spinner-border text-primary"></div>
 
 //           <h3 className="mt-3">
+
 //             Loading MetroFlow Dashboard...
+
 //           </h3>
 
 //         </div>
@@ -158,25 +180,35 @@
 //         <div className="text-center">
 
 //           <span className="badge bg-success fs-6">
+
 //             🟢 LIVE SYSTEM
+
 //           </span>
 
 //         </div>
 
 //         <h1 className="text-center mt-3">
+
 //           🚇 MetroFlow Dashboard
+
 //         </h1>
 
 //         <p className="text-center text-muted">
+
 //           AI-Based Metro Crowd Management and Scheduling Platform
+
 //         </p>
 
 //         <h5 className="text-center">
+
 //           🕒 Current Time : {currentTime}
+
 //         </h5>
 
 //         <p className="text-center">
+
 //           <strong>Last Updated :</strong> {lastUpdated}
+
 //         </p>
 
 //         <hr />
@@ -185,7 +217,7 @@
 //         {alert && (
 
 //           <div
-//             className={`alert shadow mb-4 ${
+//             className={`alert shadow-lg mb-4 border-0 ${
 //               alert.Priority === "High"
 //                 ? "alert-danger"
 //                 : alert.Priority === "Medium"
@@ -194,9 +226,31 @@
 //             }`}
 //           >
 
-//             <h4>
-//               <FaBell /> Live AI Alert
-//             </h4>
+//             <div className="d-flex justify-content-between align-items-center">
+
+//               <h3>
+
+//                 <FaBell className="me-2" />
+
+//                 Live AI Alert
+
+//               </h3>
+
+//               <span
+//                 className={`badge fs-6 ${
+//                   alert.Priority === "High"
+//                     ? "bg-danger"
+//                     : alert.Priority === "Medium"
+//                     ? "bg-warning text-dark"
+//                     : "bg-success"
+//                 }`}
+//               >
+
+//                 {alert.Priority} Priority
+
+//               </span>
+
+//             </div>
 
 //             <hr />
 
@@ -205,69 +259,82 @@
 //               <div className="col-md-6">
 
 //                 <p>
-//                   <strong>Station :</strong> {alert.Station}
+
+//                   <strong>Station :</strong>
+
+//                   {" "}
+
+//                   {alert.Station}
+
 //                 </p>
 
 //                 <p>
-//                   <strong>Passenger Count :</strong> {alert.Passenger_Count}
+
+//                   <strong>Passenger Count :</strong>
+
+//                   {" "}
+
+//                   {alert.Passenger_Count}
+
 //                 </p>
 
 //                 <p>
-//                   <strong>Crowd Level :</strong> {alert.Crowd_Level}
+
+//                   <strong>Crowd Level :</strong>
+
+//                   {" "}
+
+//                   {alert.Crowd_Level}
+
 //                 </p>
 
 //                 <p>
-//                   <strong>Delay :</strong> {alert.Delay} min
+
+//                   <strong>Delay :</strong>
+
+//                   {" "}
+
+//                   {alert.Delay} Minutes
+
 //                 </p>
 
 //               </div>
 
 //               <div className="col-md-6">
 
-//                 <p>
-//                   <strong>Priority :</strong>
-//                 </p>
+//                 <div className="card bg-light border-0 p-3">
 
-//                 <span
-//                   className={`badge ${
-//                     alert.Priority === "High"
-//                       ? "bg-danger"
-//                       : alert.Priority === "Medium"
-//                       ? "bg-warning text-dark"
-//                       : "bg-success"
-//                   }`}
-//                 >
-//                   {alert.Priority}
-//                 </span>
+//                   <h5>
+
+//                     🤖 AI Alert
+
+//                   </h5>
+
+//                   <p style={{ whiteSpace: "pre-wrap" }}>
+
+//                     {alert.Alert}
+
+//                   </p>
+
+//                 </div>
+
+//                 <div className="card bg-info bg-opacity-10 border-0 p-3 mt-3">
+
+//                   <h5>
+
+//                     🚇 AI Recommendation
+
+//                   </h5>
+
+//                   <p>
+
+//                     {alert.Recommendation}
+
+//                   </p>
+
+//                 </div>
 
 //               </div>
-
-//             </div>
-
-//             <hr />
-
-//             <div
-//               className="border rounded p-3 bg-light"
-//               style={{ whiteSpace: "pre-wrap" }}
-//             >
-
-//               <strong>🤖 AI Alert</strong>
-
-//               <br />
-
-//               {alert.Alert}
-
-//             </div>
-
-//             <div
-//               className="border rounded p-3 mt-3 bg-info bg-opacity-10"
-//             >
-
-//               <strong>🚇 AI Recommendation</strong>
-
-//               <br />
-
-//               {alert.Recommendation}
 
 //             </div>
 
@@ -275,40 +342,46 @@
 
 //         )}
 
-//         {/* ================= AI NOTIFICATION ================= */}
+//         {/* ================= PASSENGER NOTIFICATION ================= */}
 
 //         {notification && (
 
-//           <div className="alert alert-primary shadow mb-4">
+//           <div className="card shadow-lg border-0 mb-5">
 
-//             <h4>
-//               📢 Passenger Notification
-//             </h4>
+//             <div className="card-header bg-primary text-white">
 
-//             <hr />
+//               <h4>
 
-//             <p>
+//                 📢 Passenger Notification
 
-//               <strong>Station :</strong>
+//               </h4>
 
-//               {" "}
+//             </div>
 
-//               {notification.Station}
+//             <div className="card-body">
 
-//             </p>
+//               <h5>
 
-//             <p>
+//                 Station :
 
-//               <strong>Message :</strong>
+//                 {" "}
 
-//             </p>
+//                 {notification.Station}
 
-//             <div
-//               className="border rounded p-3 bg-white"
-//               style={{ whiteSpace: "pre-wrap" }}
-//             >
+//               </h5>
 
-//               {notification.Notification}
+//               <hr />
+
+//               <p
+//                 style={{
+//                   fontSize: "17px",
+//                   whiteSpace: "pre-wrap"
+//                 }}
+//               >
+
+//                 {notification.Notification}
+
+//               </p>
 
 //             </div>
 
@@ -321,289 +394,378 @@
 //         <div className="row">
 
 //           {/* Passenger Count */}
-//           <div className="col-md-3 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//               <FaUsers
-//                 size={35}
-//                 className="text-primary mx-auto"
-//               />
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <h5 className="mt-3">
-//                 Passenger Count
-//               </h5>
+//               <div className="card-body">
 
-//               <h2>
-//                 {data.Current_Status.Passenger_Count}
-//               </h2>
+//                 <FaUsers
+//                   size={40}
+//                   className="text-primary mb-3"
+//                 />
+
+//                 <h5>
+
+//                   Passenger Count
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Current_Status.Passenger_Count}
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Crowd Level */}
-//           <div className="col-md-3 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//               <FaTrain
-//                 size={35}
-//                 className="text-success mx-auto"
-//               />
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <h5 className="mt-3">
-//                 Crowd Level
-//               </h5>
+//               <div className="card-body">
 
-//               <h2>
+//                 <FaTrain
+//                   size={40}
+//                   className="text-success mb-3"
+//                 />
+
+//                 <h5>
+
+//                   Crowd Level
+
+//                 </h5>
 
 //                 <span
-//                   className={
+//                   className={`badge fs-5 ${
 //                     data.Current_Status.Crowd_Level === "High"
-//                       ? "badge bg-danger"
+//                       ? "bg-danger"
 //                       : data.Current_Status.Crowd_Level === "Medium"
-//                       ? "badge bg-warning text-dark"
-//                       : "badge bg-success"
-//                   }
+//                       ? "bg-warning text-dark"
+//                       : "bg-success"
+//                   }`}
 //                 >
 
 //                   {data.Current_Status.Crowd_Level}
 
 //                 </span>
 
-//               </h2>
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Predicted Passengers */}
-//           <div className="col-md-3 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//               <FaChartLine
-//                 size={35}
-//                 className="text-info mx-auto"
-//               />
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <h5 className="mt-3">
-//                 Predicted Passengers
-//               </h5>
+//               <div className="card-body">
 
-//               <h2>
+//                 <FaChartLine
+//                   size={40}
+//                   className="text-info mb-3"
+//                 />
 
-//                 {data.Forecast.Predicted_Passenger_Count}
+//                 <h5>
 
-//               </h2>
+//                   Predicted Passengers
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Forecast.Predicted_Passenger_Count}
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Current Station */}
-//           <div className="col-md-3 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//               <FaMapMarkerAlt
-//                 size={35}
-//                 className="text-danger mx-auto"
-//               />
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <h5 className="mt-3">
-//                 Current Station
-//               </h5>
+//               <div className="card-body">
 
-//               <h4>
+//                 <FaMapMarkerAlt
+//                   size={40}
+//                   className="text-danger mb-3"
+//                 />
 
-//                 {data.Current_Status.Station}
+//                 <h5>
 
-//               </h4>
+//                   Current Station
+
+//                 </h5>
+
+//                 <h4>
+
+//                   {data.Current_Status.Station}
+
+//                 </h4>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 //                     {/* Delay */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaClock
-//                 size={35}
-//                 className="text-warning mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 Delay
-//               </h5>
+//                 <FaClock
+//                   size={40}
+//                   className="text-warning mb-3"
+//                 />
 
-//               <h2>
-//                 {data.Current_Status.Delay_Minutes} min
-//               </h2>
+//                 <h5>
+
+//                   Delay
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Current_Status.Delay_Minutes} min
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Occupancy */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaPercentage
-//                 size={35}
-//                 className="text-secondary mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 Occupancy
-//               </h5>
+//                 <FaPercentage
+//                   size={40}
+//                   className="text-secondary mb-3"
+//                 />
 
-//               <h2>
-//                 {data.Current_Status.Occupancy}%
-//               </h2>
+//                 <h5>
+
+//                   Occupancy
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Current_Status.Occupancy}%
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* AI Recommendation */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaRobot
-//                 size={35}
-//                 className="text-primary mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 AI Recommendation
-//               </h5>
+//                 <FaRobot
+//                   size={40}
+//                   className="text-primary mb-3"
+//                 />
 
-//               <h6 className="mt-3">
-//                 {alert?.Recommendation || "Normal Operation"}
-//               </h6>
+//                 <h5>
+
+//                   AI Recommendation
+
+//                 </h5>
+
+//                 <p className="fw-bold text-success">
+
+//                   {alert?.Recommendation || "Normal Operation"}
+
+//                 </p>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Total Passengers */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaUsers
-//                 size={35}
-//                 className="text-success mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 Total Passengers
-//               </h5>
+//                 <FaUsers
+//                   size={40}
+//                   className="text-success mb-3"
+//                 />
 
-//               <h2>
-//                 {data.Traffic_Report.Total_Passengers}
-//               </h2>
+//                 <h5>
+
+//                   Total Passengers
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Traffic_Report.Total_Passengers}
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* System Health */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaHeartbeat
-//                 size={35}
-//                 className="text-danger mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 System Health
-//               </h5>
+//                 <FaHeartbeat
+//                   size={40}
+//                   className="text-danger mb-3"
+//                 />
 
-//               <h3 className="text-success">
-//                 Healthy
-//               </h3>
+//                 <h5>
+
+//                   System Health
+
+//                 </h5>
+
+//                 <span className="badge bg-success fs-6">
+
+//                   Healthy
+
+//                 </span>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* AI Status */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaRobot
-//                 size={35}
-//                 className="text-primary mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 AI Status
-//               </h5>
+//                 <FaRobot
+//                   size={40}
+//                   className="text-primary mb-3"
+//                 />
 
-//               <h3 className="text-primary">
-//                 Running
-//               </h3>
+//                 <h5>
+
+//                   AI Status
+
+//                 </h5>
+
+//                 <span className="badge bg-primary fs-6">
+
+//                   Running
+
+//                 </span>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Network */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaWifi
-//                 size={35}
-//                 className="text-success mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 Network
-//               </h5>
+//                 <FaWifi
+//                   size={40}
+//                   className="text-success mb-3"
+//                 />
 
-//               <h3 className="text-success">
-//                 Online
-//               </h3>
+//                 <h5>
+
+//                   Network
+
+//                 </h5>
+
+//                 <span className="badge bg-success fs-6">
+
+//                   Online
+
+//                 </span>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //           {/* Last Prediction */}
-//           <div className="col-md-3 mb-4">
+//           <div className="col-lg-3 col-md-6 mb-4">
 
-//             <div className="card shadow text-center p-3 h-100">
+//             <div className="card shadow h-100 text-center border-0">
 
-//               <FaChartLine
-//                 size={35}
-//                 className="text-info mx-auto"
-//               />
+//               <div className="card-body">
 
-//               <h5 className="mt-3">
-//                 Last Prediction
-//               </h5>
+//                 <FaChartLine
+//                   size={40}
+//                   className="text-info mb-3"
+//                 />
 
-//               <h2>
-//                 {data.Forecast.Predicted_Passenger_Count}
-//               </h2>
+//                 <h5>
+
+//                   Last Prediction
+
+//                 </h5>
+
+//                 <h2 className="fw-bold">
+
+//                   {data.Forecast.Predicted_Passenger_Count}
+
+//                 </h2>
+
+//               </div>
 
 //             </div>
 
 //           </div>
 
 //         </div>
-
-//         {/* Analytics */}
+//                 {/* ================= ADVANCED ANALYTICS ================= */}
 
 //         <div className="mt-5">
 
@@ -612,48 +774,200 @@
 //           </h2>
 
 //           <p className="text-center text-muted">
-//             Passenger statistics, forecasting insights and operational monitoring analytics.
+
+//             AI-powered passenger forecasting and operational insights
+
 //           </p>
 
 //           <Charts data={data} />
 
 //         </div>
 
-//         {/* Download Report */}
+//         {/* ================= QUICK AI INSIGHTS ================= */}
 
-//         <div className="text-center mt-5 mb-5">
+//         <div className="row mt-5">
 
-//           <button
-//             className="btn btn-success btn-lg"
-//             onClick={() =>
-//               window.open(
-//                 "http://127.0.0.1:5000/report",
-//                 "_blank"
-//               )
-//             }
-//           >
+//           <div className="col-lg-6 mb-4">
 
-//             <FaDownload />
+//             <div className="card shadow h-100">
 
-//             {" "}Download Traffic Report
+//               <div className="card-header bg-primary text-white">
 
-//           </button>
+//                 🤖 AI Insights
+
+//               </div>
+
+//               <div className="card-body">
+
+//                 <ul className="list-group list-group-flush">
+
+//                   <li className="list-group-item">
+
+//                     ✅ Crowd Level :
+//                     <strong> {data.Current_Status.Crowd_Level}</strong>
+
+//                   </li>
+
+//                   <li className="list-group-item">
+
+//                     🚉 Current Station :
+//                     <strong> {data.Current_Status.Station}</strong>
+
+//                   </li>
+
+//                   <li className="list-group-item">
+
+//                     👥 Predicted Passengers :
+//                     <strong> {data.Forecast.Predicted_Passenger_Count}</strong>
+
+//                   </li>
+
+//                   <li className="list-group-item">
+
+//                     🤖 Recommendation :
+//                     <strong>
+//                       {" "}
+//                       {alert?.Recommendation || "Normal Operation"}
+//                     </strong>
+
+//                   </li>
+
+//                 </ul>
+
+//               </div>
+
+//             </div>
+
+//           </div>
+
+//           <div className="col-lg-6 mb-4">
+
+//             <div className="card shadow h-100">
+
+//               <div className="card-header bg-success text-white">
+
+//                 🚦 System Status
+
+//               </div>
+
+//               <div className="card-body">
+
+//                 <table className="table table-bordered">
+
+//                   <tbody>
+
+//                     <tr>
+
+//                       <td>Backend API</td>
+
+//                       <td>
+//                         <span className="badge bg-success">
+//                           Running
+//                         </span>
+//                       </td>
+
+//                     </tr>
+
+//                     <tr>
+
+//                       <td>AI Prediction Engine</td>
+
+//                       <td>
+//                         <span className="badge bg-success">
+//                           Active
+//                         </span>
+//                       </td>
+
+//                     </tr>
+
+//                     <tr>
+
+//                       <td>Database</td>
+
+//                       <td>
+//                         <span className="badge bg-success">
+//                           Connected
+//                         </span>
+//                       </td>
+
+//                     </tr>
+
+//                     <tr>
+
+//                       <td>Monitoring</td>
+
+//                       <td>
+//                         <span className="badge bg-success">
+//                           Live
+//                         </span>
+//                       </td>
+
+//                     </tr>
+
+//                   </tbody>
+
+//                 </table>
+
+//               </div>
+
+//             </div>
+
+//           </div>
 
 //         </div>
-              
 
-      
+//         {/* ================= REPORT SECTION ================= */}
 
-      
+//         <div className="card shadow-lg mt-5 border-0">
 
-//     </div>
+//           <div className="card-body text-center">
 
-//     <Footer />
-//     <ChatBot />
+//             <FaDownload
+//               size={45}
+//               className="text-success mb-3"
+//             />
 
-//   </>
+//             <h3>
 
-// );
+//               Traffic Analysis Report
+
+//             </h3>
+
+//             <p className="text-muted">
+
+//               View the complete AI-generated traffic analysis,
+//               passenger statistics, operational insights,
+//               occupancy trends, and recommendations.
+
+//             </p>
+
+//             <button
+//               className="btn btn-success btn-lg"
+//               onClick={() => window.open("/report", "_blank")}
+//             >
+
+//               <FaDownload />
+
+//               {" "}Open Report
+
+//             </button>
+
+//           </div>
+
+//         </div>
+                
+
+       
+
+//       </div>
+
+//       <Footer />
+
+//       <ChatBot />
+
+//     </>
+
+//   );
 
 // }
 
@@ -683,7 +997,9 @@ import {
   FaMapMarkerAlt,
   FaBell,
   FaHeartbeat,
-  FaWifi
+  FaWifi,
+  FaCheckCircle,
+  FaBroadcastTower
 } from "react-icons/fa";
 
 function Dashboard() {
@@ -691,9 +1007,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
-
   const [alert, setAlert] = useState(null);
-
   const [notification, setNotification] = useState(null);
 
   const [lastUpdated, setLastUpdated] = useState("");
@@ -708,7 +1022,6 @@ function Dashboard() {
 
     const loadDashboard = () => {
 
-      // Dashboard API
       api.get("/dashboard")
         .then((res) => {
 
@@ -721,7 +1034,6 @@ function Dashboard() {
         })
         .catch(console.log);
 
-      // AI Alerts
       api.get("/alerts")
         .then((res) => {
 
@@ -757,8 +1069,6 @@ function Dashboard() {
 
         })
         .catch(console.log);
-
-      // AI Notifications
 
       api.get("/notifications")
         .then((res) => {
@@ -803,15 +1113,36 @@ function Dashboard() {
 
         <Navbar />
 
-        <div className="container mt-5 text-center">
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{
+            height: "80vh"
+          }}
+        >
 
-          <div className="spinner-border text-primary"></div>
+          <div className="text-center">
 
-          <h3 className="mt-3">
+            <div
+              className="spinner-border text-primary"
+              style={{
+                width: "4rem",
+                height: "4rem"
+              }}
+            ></div>
 
-            Loading MetroFlow Dashboard...
+            <h2 className="mt-4">
 
-          </h3>
+              Loading MetroFlow Dashboard...
+
+            </h2>
+
+            <p className="text-muted">
+
+              Initializing AI Modules...
+
+            </p>
+
+          </div>
 
         </div>
 
@@ -830,167 +1161,235 @@ function Dashboard() {
       <ToastContainer
         position="top-right"
         autoClose={4000}
-        newestOnTop
       />
 
       <Navbar />
 
-      <div className="container mt-4">
+      <div className="container-fluid px-4">
 
-        <div className="text-center">
+        {/* ================= HERO ================= */}
 
-          <span className="badge bg-success fs-6">
+        <div
+          className="rounded-4 shadow-lg text-white p-5 mt-4"
+          style={{
+            background:
+              "linear-gradient(135deg,#0d6efd,#198754,#20c997)"
+          }}
+        >
 
-            🟢 LIVE SYSTEM
+          <div className="row align-items-center">
 
-          </span>
+            <div className="col-lg-8">
+
+              <h1 className="fw-bold display-5">
+
+                🚇 MetroFlow AI Dashboard
+
+              </h1>
+
+              <p className="fs-5">
+
+                AI-Based Metro Crowd Management and Scheduling Platform
+
+              </p>
+
+              <div className="mt-4">
+
+                <span className="badge bg-light text-dark me-3 fs-6">
+
+                  <FaBroadcastTower />
+
+                  {" "}LIVE SYSTEM
+
+                </span>
+
+                <span className="badge bg-warning text-dark fs-6">
+
+                  <FaRobot />
+
+                  {" "}AI ACTIVE
+
+                </span>
+
+              </div>
+
+            </div>
+
+            <div className="col-lg-4 text-center">
+
+              <FaTrain
+                size={130}
+                style={{
+                  opacity: 0.95
+                }}
+              />
+
+            </div>
+
+          </div>
 
         </div>
 
-        <h1 className="text-center mt-3">
+        {/* ================= STATUS BAR ================= */}
 
-          🚇 MetroFlow Dashboard
+        <div className="row mt-4">
 
-        </h1>
+          <div className="col-md-4">
 
-        <p className="text-center text-muted">
+            <div className="alert alert-primary">
 
-          AI-Based Metro Crowd Management and Scheduling Platform
+              🕒 Current Time
 
-        </p>
+              <h4>{currentTime}</h4>
 
-        <h5 className="text-center">
+            </div>
 
-          🕒 Current Time : {currentTime}
+          </div>
 
-        </h5>
+          <div className="col-md-4">
 
-        <p className="text-center">
+            <div className="alert alert-success">
 
-          <strong>Last Updated :</strong> {lastUpdated}
+              <FaCheckCircle />
 
-        </p>
+              {" "}System Status
 
-        <hr />
-                {/* ================= AI ALERT ================= */}
+              <h4>Running</h4>
+
+            </div>
+
+          </div>
+
+          <div className="col-md-4">
+
+            <div className="alert alert-info">
+
+              🔄 Last Updated
+
+              <h4>{lastUpdated}</h4>
+
+            </div>
+
+          </div>
+
+        </div>
+                {/* ================= LIVE AI ALERT ================= */}
 
         {alert && (
 
           <div
-            className={`alert shadow-lg mb-4 border-0 ${
+            className={`card shadow-lg border-0 mt-4 mb-5 ${
               alert.Priority === "High"
-                ? "alert-danger"
+                ? "border-start border-5 border-danger"
                 : alert.Priority === "Medium"
-                ? "alert-warning"
-                : "alert-success"
+                ? "border-start border-5 border-warning"
+                : "border-start border-5 border-success"
             }`}
           >
 
-            <div className="d-flex justify-content-between align-items-center">
+            <div className="card-header bg-white">
 
-              <h3>
+              <div className="d-flex justify-content-between align-items-center">
 
-                <FaBell className="me-2" />
+                <h3 className="mb-0">
 
-                Live AI Alert
+                  <FaBell className="text-danger me-2" />
 
-              </h3>
+                  Live AI Alert
 
-              <span
-                className={`badge fs-6 ${
-                  alert.Priority === "High"
-                    ? "bg-danger"
-                    : alert.Priority === "Medium"
-                    ? "bg-warning text-dark"
-                    : "bg-success"
-                }`}
-              >
+                </h3>
 
-                {alert.Priority} Priority
+                <span
+                  className={`badge fs-6 ${
+                    alert.Priority === "High"
+                      ? "bg-danger"
+                      : alert.Priority === "Medium"
+                      ? "bg-warning text-dark"
+                      : "bg-success"
+                  }`}
+                >
 
-              </span>
+                  {alert.Priority} Priority
 
-            </div>
-
-            <hr />
-
-            <div className="row">
-
-              <div className="col-md-6">
-
-                <p>
-
-                  <strong>Station :</strong>
-
-                  {" "}
-
-                  {alert.Station}
-
-                </p>
-
-                <p>
-
-                  <strong>Passenger Count :</strong>
-
-                  {" "}
-
-                  {alert.Passenger_Count}
-
-                </p>
-
-                <p>
-
-                  <strong>Crowd Level :</strong>
-
-                  {" "}
-
-                  {alert.Crowd_Level}
-
-                </p>
-
-                <p>
-
-                  <strong>Delay :</strong>
-
-                  {" "}
-
-                  {alert.Delay} Minutes
-
-                </p>
+                </span>
 
               </div>
 
-              <div className="col-md-6">
+            </div>
 
-                <div className="card bg-light border-0 p-3">
+            <div className="card-body">
 
-                  <h5>
+              <div className="row">
 
-                    🤖 AI Alert
+                <div className="col-md-6">
 
-                  </h5>
+                  <p>
 
-                  <p style={{ whiteSpace: "pre-wrap" }}>
+                    <strong>Station :</strong>{" "}
 
-                    {alert.Alert}
+                    {alert.Station}
+
+                  </p>
+
+                  <p>
+
+                    <strong>Passenger Count :</strong>{" "}
+
+                    {alert.Passenger_Count}
+
+                  </p>
+
+                  <p>
+
+                    <strong>Crowd Level :</strong>{" "}
+
+                    {alert.Crowd_Level}
+
+                  </p>
+
+                  <p>
+
+                    <strong>Delay :</strong>{" "}
+
+                    {alert.Delay} Minutes
 
                   </p>
 
                 </div>
 
-                <div className="card bg-info bg-opacity-10 border-0 p-3 mt-3">
+                <div className="col-md-6">
 
-                  <h5>
+                  <div className="alert alert-light">
 
-                    🚇 AI Recommendation
+                    <h5>
 
-                  </h5>
+                      🤖 AI Alert
 
-                  <p>
+                    </h5>
 
-                    {alert.Recommendation}
+                    <p style={{ whiteSpace: "pre-wrap" }}>
 
-                  </p>
+                      {alert.Alert}
+
+                    </p>
+
+                  </div>
+
+                  <div className="alert alert-info">
+
+                    <h5>
+
+                      🚇 AI Recommendation
+
+                    </h5>
+
+                    <p>
+
+                      {alert.Recommendation}
+
+                    </p>
+
+                  </div>
 
                 </div>
 
@@ -1010,7 +1409,7 @@ function Dashboard() {
 
             <div className="card-header bg-primary text-white">
 
-              <h4>
+              <h4 className="mb-0">
 
                 📢 Passenger Notification
 
@@ -1022,11 +1421,7 @@ function Dashboard() {
 
               <h5>
 
-                Station :
-
-                {" "}
-
-                {notification.Station}
+                Station : {notification.Station}
 
               </h5>
 
@@ -1034,8 +1429,8 @@ function Dashboard() {
 
               <p
                 style={{
-                  fontSize: "17px",
-                  whiteSpace: "pre-wrap"
+                  whiteSpace: "pre-wrap",
+                  fontSize: "17px"
                 }}
               >
 
@@ -1055,22 +1450,18 @@ function Dashboard() {
 
           {/* Passenger Count */}
 
-          <div className="col-lg-3 col-md-6 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+            <div className="card shadow border-0 h-100">
 
-              <div className="card-body">
+              <div className="card-body text-center">
 
                 <FaUsers
-                  size={40}
+                  size={45}
                   className="text-primary mb-3"
                 />
 
-                <h5>
-
-                  Passenger Count
-
-                </h5>
+                <h5>Passenger Count</h5>
 
                 <h2 className="fw-bold">
 
@@ -1084,24 +1475,20 @@ function Dashboard() {
 
           </div>
 
-          {/* Crowd Level */}
+          {/* Crowd */}
 
-          <div className="col-lg-3 col-md-6 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+            <div className="card shadow border-0 h-100">
 
-              <div className="card-body">
+              <div className="card-body text-center">
 
                 <FaTrain
-                  size={40}
+                  size={45}
                   className="text-success mb-3"
                 />
 
-                <h5>
-
-                  Crowd Level
-
-                </h5>
+                <h5>Crowd Level</h5>
 
                 <span
                   className={`badge fs-5 ${
@@ -1123,26 +1510,22 @@ function Dashboard() {
 
           </div>
 
-          {/* Predicted Passengers */}
+          {/* Prediction */}
 
-          <div className="col-lg-3 col-md-6 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+            <div className="card shadow border-0 h-100">
 
-              <div className="card-body">
+              <div className="card-body text-center">
 
                 <FaChartLine
-                  size={40}
+                  size={45}
                   className="text-info mb-3"
                 />
 
-                <h5>
+                <h5>Predicted Passengers</h5>
 
-                  Predicted Passengers
-
-                </h5>
-
-                <h2 className="fw-bold">
+                <h2>
 
                   {data.Forecast.Predicted_Passenger_Count}
 
@@ -1154,24 +1537,20 @@ function Dashboard() {
 
           </div>
 
-          {/* Current Station */}
+          {/* Station */}
 
-          <div className="col-lg-3 col-md-6 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+            <div className="card shadow border-0 h-100">
 
-              <div className="card-body">
+              <div className="card-body text-center">
 
                 <FaMapMarkerAlt
-                  size={40}
+                  size={45}
                   className="text-danger mb-3"
                 />
 
-                <h5>
-
-                  Current Station
-
-                </h5>
+                <h5>Current Station</h5>
 
                 <h4>
 
@@ -1184,25 +1563,23 @@ function Dashboard() {
             </div>
 
           </div>
-                    {/* Delay */}
-          <div className="col-lg-3 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+          {/* Delay */}
 
-              <div className="card-body">
+          <div className="col-lg-4 col-md-6 mb-4">
+
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaClock
-                  size={40}
+                  size={45}
                   className="text-warning mb-3"
                 />
 
-                <h5>
+                <h5>Delay</h5>
 
-                  Delay
-
-                </h5>
-
-                <h2 className="fw-bold">
+                <h2>
 
                   {data.Current_Status.Delay_Minutes} min
 
@@ -1215,24 +1592,21 @@ function Dashboard() {
           </div>
 
           {/* Occupancy */}
-          <div className="col-lg-3 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaPercentage
-                  size={40}
+                  size={45}
                   className="text-secondary mb-3"
                 />
 
-                <h5>
+                <h5>Occupancy</h5>
 
-                  Occupancy
-
-                </h5>
-
-                <h2 className="fw-bold">
+                <h2>
 
                   {data.Current_Status.Occupancy}%
 
@@ -1243,30 +1617,26 @@ function Dashboard() {
             </div>
 
           </div>
+                    {/* ================= AI RECOMMENDATION ================= */}
 
-          {/* AI Recommendation */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-            <div className="card shadow h-100 text-center border-0">
+            <div className="card shadow border-0 h-100">
 
-              <div className="card-body">
+              <div className="card-body text-center">
 
                 <FaRobot
-                  size={40}
+                  size={45}
                   className="text-primary mb-3"
                 />
 
-                <h5>
+                <h5>AI Recommendation</h5>
 
-                  AI Recommendation
-
-                </h5>
-
-                <p className="fw-bold text-success">
+                <h5 className="text-success fw-bold">
 
                   {alert?.Recommendation || "Normal Operation"}
 
-                </p>
+                </h5>
 
               </div>
 
@@ -1274,23 +1644,20 @@ function Dashboard() {
 
           </div>
 
-          {/* Total Passengers */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          {/* ================= TOTAL PASSENGERS ================= */}
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaUsers
-                  size={40}
+                  size={45}
                   className="text-success mb-3"
                 />
 
-                <h5>
-
-                  Total Passengers
-
-                </h5>
+                <h5>Total Passengers</h5>
 
                 <h2 className="fw-bold">
 
@@ -1304,23 +1671,20 @@ function Dashboard() {
 
           </div>
 
-          {/* System Health */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          {/* ================= SYSTEM HEALTH ================= */}
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaHeartbeat
-                  size={40}
+                  size={45}
                   className="text-danger mb-3"
                 />
 
-                <h5>
-
-                  System Health
-
-                </h5>
+                <h5>System Health</h5>
 
                 <span className="badge bg-success fs-6">
 
@@ -1334,23 +1698,20 @@ function Dashboard() {
 
           </div>
 
-          {/* AI Status */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          {/* ================= AI STATUS ================= */}
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaRobot
-                  size={40}
+                  size={45}
                   className="text-primary mb-3"
                 />
 
-                <h5>
-
-                  AI Status
-
-                </h5>
+                <h5>AI Status</h5>
 
                 <span className="badge bg-primary fs-6">
 
@@ -1364,23 +1725,20 @@ function Dashboard() {
 
           </div>
 
-          {/* Network */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          {/* ================= NETWORK ================= */}
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaWifi
-                  size={40}
+                  size={45}
                   className="text-success mb-3"
                 />
 
-                <h5>
-
-                  Network
-
-                </h5>
+                <h5>Network</h5>
 
                 <span className="badge bg-success fs-6">
 
@@ -1394,25 +1752,22 @@ function Dashboard() {
 
           </div>
 
-          {/* Last Prediction */}
-          <div className="col-lg-3 col-md-6 mb-4">
+          {/* ================= LAST PREDICTION ================= */}
 
-            <div className="card shadow h-100 text-center border-0">
+          <div className="col-lg-4 col-md-6 mb-4">
 
-              <div className="card-body">
+            <div className="card shadow border-0 h-100">
+
+              <div className="card-body text-center">
 
                 <FaChartLine
-                  size={40}
+                  size={45}
                   className="text-info mb-3"
                 />
 
-                <h5>
+                <h5>Last Prediction</h5>
 
-                  Last Prediction
-
-                </h5>
-
-                <h2 className="fw-bold">
+                <h2>
 
                   {data.Forecast.Predicted_Passenger_Count}
 
@@ -1425,35 +1780,51 @@ function Dashboard() {
           </div>
 
         </div>
-                {/* ================= ADVANCED ANALYTICS ================= */}
 
-        <div className="mt-5">
+        {/* ================= ADVANCED ANALYTICS ================= */}
 
-          <h2 className="text-center">
-            📊 Advanced Analytics
-          </h2>
+        <div className="card shadow-lg border-0 mt-5">
 
-          <p className="text-center text-muted">
+          <div className="card-header bg-dark text-white">
 
-            AI-powered passenger forecasting and operational insights
+            <h3 className="mb-0">
 
-          </p>
+              📊 Advanced Analytics
 
-          <Charts data={data} />
+            </h3>
+
+          </div>
+
+          <div className="card-body">
+
+            <p className="text-center text-muted">
+
+              AI-powered passenger forecasting, operational monitoring,
+              occupancy trends and analytics.
+
+            </p>
+
+            <Charts data={data} />
+
+          </div>
 
         </div>
 
-        {/* ================= QUICK AI INSIGHTS ================= */}
+        {/* ================= AI INSIGHTS ================= */}
 
         <div className="row mt-5">
 
           <div className="col-lg-6 mb-4">
 
-            <div className="card shadow h-100">
+            <div className="card shadow border-0 h-100">
 
               <div className="card-header bg-primary text-white">
 
-                🤖 AI Insights
+                <h4 className="mb-0">
+
+                  🤖 AI Insights
+
+                </h4>
 
               </div>
 
@@ -1463,31 +1834,70 @@ function Dashboard() {
 
                   <li className="list-group-item">
 
-                    ✅ Crowd Level :
-                    <strong> {data.Current_Status.Crowd_Level}</strong>
+                    Crowd Level :
 
-                  </li>
-
-                  <li className="list-group-item">
-
-                    🚉 Current Station :
-                    <strong> {data.Current_Status.Station}</strong>
-
-                  </li>
-
-                  <li className="list-group-item">
-
-                    👥 Predicted Passengers :
-                    <strong> {data.Forecast.Predicted_Passenger_Count}</strong>
-
-                  </li>
-
-                  <li className="list-group-item">
-
-                    🤖 Recommendation :
                     <strong>
+
                       {" "}
+
+                      {data.Current_Status.Crowd_Level}
+
+                    </strong>
+
+                  </li>
+
+                  <li className="list-group-item">
+
+                    Current Station :
+
+                    <strong>
+
+                      {" "}
+
+                      {data.Current_Status.Station}
+
+                    </strong>
+
+                  </li>
+
+                  <li className="list-group-item">
+
+                    Passenger Count :
+
+                    <strong>
+
+                      {" "}
+
+                      {data.Current_Status.Passenger_Count}
+
+                    </strong>
+
+                  </li>
+
+                  <li className="list-group-item">
+
+                    Predicted Passengers :
+
+                    <strong>
+
+                      {" "}
+
+                      {data.Forecast.Predicted_Passenger_Count}
+
+                    </strong>
+
+                  </li>
+
+                  <li className="list-group-item">
+
+                    AI Recommendation :
+
+                    <strong className="text-success">
+
+                      {" "}
+
                       {alert?.Recommendation || "Normal Operation"}
+
                     </strong>
 
                   </li>
@@ -1500,19 +1910,25 @@ function Dashboard() {
 
           </div>
 
+          {/* ================= SYSTEM STATUS ================= */}
+
           <div className="col-lg-6 mb-4">
 
-            <div className="card shadow h-100">
+            <div className="card shadow border-0 h-100">
 
               <div className="card-header bg-success text-white">
 
-                🚦 System Status
+                <h4 className="mb-0">
+
+                  🚦 System Status
+
+                </h4>
 
               </div>
 
               <div className="card-body">
 
-                <table className="table table-bordered">
+                <table className="table table-bordered table-hover">
 
                   <tbody>
 
@@ -1521,9 +1937,13 @@ function Dashboard() {
                       <td>Backend API</td>
 
                       <td>
+
                         <span className="badge bg-success">
+
                           Running
+
                         </span>
+
                       </td>
 
                     </tr>
@@ -1533,21 +1953,61 @@ function Dashboard() {
                       <td>AI Prediction Engine</td>
 
                       <td>
+
                         <span className="badge bg-success">
+
                           Active
+
                         </span>
+
                       </td>
 
                     </tr>
 
                     <tr>
 
-                      <td>Database</td>
+                      <td>Prediction History</td>
 
                       <td>
+
                         <span className="badge bg-success">
-                          Connected
+
+                          Available
+
                         </span>
+
+                      </td>
+
+                    </tr>
+
+                    <tr>
+
+                      <td>Gemini AI</td>
+
+                      <td>
+
+                        <span className="badge bg-success">
+
+                          Connected
+
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                    <tr>
+
+                      <td>Network</td>
+
+                      <td>
+
+                        <span className="badge bg-success">
+
+                          Online
+
+                        </span>
+
                       </td>
 
                     </tr>
@@ -1557,9 +2017,13 @@ function Dashboard() {
                       <td>Monitoring</td>
 
                       <td>
+
                         <span className="badge bg-success">
+
                           Live
+
                         </span>
+
                       </td>
 
                     </tr>
@@ -1575,49 +2039,201 @@ function Dashboard() {
           </div>
 
         </div>
+                {/* ================= REPORT SECTION ================= */}
 
-        {/* ================= REPORT SECTION ================= */}
+        <div className="card shadow-lg border-0 mt-5">
 
-        <div className="card shadow-lg mt-5 border-0">
-
-          <div className="card-body text-center">
+          <div className="card-body text-center p-5">
 
             <FaDownload
-              size={45}
+              size={55}
               className="text-success mb-3"
             />
 
-            <h3>
+            <h2 className="fw-bold">
 
               Traffic Analysis Report
 
-            </h3>
+            </h2>
 
-            <p className="text-muted">
+            <p className="text-muted fs-5">
 
-              View the complete AI-generated traffic analysis,
-              passenger statistics, operational insights,
-              occupancy trends, and recommendations.
+              Download the complete AI-generated traffic report containing
+              passenger statistics, crowd analysis, forecasting,
+              operational performance, recommendations and system summary.
 
             </p>
 
-            <button
-              className="btn btn-success btn-lg"
-              onClick={() => window.open("/report", "_blank")}
-            >
+            <div className="d-flex justify-content-center flex-wrap gap-3 mt-4">
 
-              <FaDownload />
+              {/* PDF Report */}
 
-              {" "}Open Report
+              <button
+                className="btn btn-success btn-lg"
+                onClick={() =>
+                  window.open(
+                    "http://127.0.0.1:5000/report",
+                    "_blank"
+                  )
+                }
+              >
 
-            </button>
+                <FaDownload className="me-2" />
+
+                Download PDF Report
+
+              </button>
+
+              {/* Prediction History */}
+
+              <button
+                className="btn btn-primary btn-lg"
+                onClick={() =>
+                  navigate("/prediction-history")
+                }
+              >
+
+                <FaChartLine className="me-2" />
+
+                Prediction History
+
+              </button>
+
+            </div>
 
           </div>
 
         </div>
-                
 
-       
+        {/* ================= PROJECT INFORMATION ================= */}
+
+        <div className="card shadow border-0 mt-5">
+
+          <div className="card-header bg-dark text-white">
+
+            <h3 className="mb-0">
+
+              📌 MetroFlow Platform Information
+
+            </h3>
+
+          </div>
+
+          <div className="card-body">
+
+            <div className="row">
+
+              <div className="col-md-4">
+
+                <h5>Project</h5>
+
+                <p>
+
+                  AI-Based Metro Crowd Management and Scheduling Platform
+
+                </p>
+
+              </div>
+
+              <div className="col-md-4">
+
+                <h5>Machine Learning</h5>
+
+                <p>
+
+                  Random Forest Classifier
+
+                </p>
+
+              </div>
+
+              <div className="col-md-4">
+
+                <h5>Prediction Accuracy</h5>
+
+                <span className="badge bg-success fs-5">
+
+                  100%
+
+                </span>
+
+              </div>
+
+            </div>
+
+            <hr />
+
+            <div className="row text-center">
+
+              <div className="col-md-3">
+
+                <h5>Backend</h5>
+
+                <span className="badge bg-primary">
+
+                  Flask
+
+                </span>
+
+              </div>
+
+              <div className="col-md-3">
+
+                <h5>Frontend</h5>
+
+                <span className="badge bg-success">
+
+                  React
+
+                </span>
+
+              </div>
+
+              <div className="col-md-3">
+
+                <h5>Charts</h5>
+
+                <span className="badge bg-warning text-dark">
+
+                  Chart.js
+
+                </span>
+
+              </div>
+
+              <div className="col-md-3">
+
+                <h5>AI Assistant</h5>
+
+                <span className="badge bg-info text-dark">
+
+                  Gemini AI
+
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* ================= FOOTER NOTE ================= */}
+
+        <div className="text-center mt-5 mb-3">
+
+          <p className="text-muted">
+
+            MetroFlow © 2026 |
+
+            AI-Based Metro Crowd Management and Scheduling Platform |
+
+            Built using React, Flask, Machine Learning & Gemini AI
+
+          </p>
+
+        </div>
 
       </div>
 

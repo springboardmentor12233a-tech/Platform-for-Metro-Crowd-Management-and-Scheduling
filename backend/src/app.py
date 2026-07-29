@@ -8,8 +8,12 @@ from gemini_service import (
     generate_notification
 )
 from chatbot_service import metro_chat
-
-app = Flask(__name__)
+from prediction_history import save_prediction, get_prediction_history
+from system_test import run_system_tests
+app = Flask(
+    __name__,
+    template_folder="../templates"
+)
 CORS(app)
 
 # -------------------------------------------------
@@ -226,14 +230,24 @@ def predict():
 
         }
 
-        return jsonify({
+        result = {
 
-            "Crowd_Level": crowd,
+    "Passenger_Count": data["Passenger_Count"],
+    "Occupancy_Percent": data["Occupancy_Percent"],
+    "Delay_Minutes": data["Delay_Minutes"],
+    "Number_of_Trips": data["Number_of_Trips"],
+    "Train_Frequency_Per_Hour": data["Train_Frequency_Per_Hour"],
+    "Train_Speed_kmph": data["Train_Speed_kmph"],
 
-            "Recommendation": recommendation[crowd]
+    "Crowd_Level": crowd,
+    "Recommendation": recommendation[crowd]
 
-        })
+}
 
+# Save prediction to history.json
+        save_prediction(result)
+
+        return jsonify(result)
     except Exception as e:
 
         return jsonify({"Error": str(e)})
@@ -347,13 +361,14 @@ def monitor():
 # REPORT API
 # -------------------------------------------------
 
+from flask import render_template
+
 @app.route("/report")
 def report():
 
     report = {
 
-        "Total_Passengers":
-        int(df["Passenger_Count"].sum()),
+        "Total_Passengers": int(df["Passenger_Count"].sum()),
 
         "Average_Passenger_Count":
         round(float(df["Passenger_Count"].mean()),2),
@@ -362,27 +377,28 @@ def report():
         round(float(df["Delay_Minutes"].mean()),2),
 
         "Maximum_Occupancy":
-        float(df["Occupancy_Percent"].max()),
-
-        "Peak_Hour":
-        str(
-            df.groupby("Peak_Hour")["Passenger_Count"]
-            .mean()
-            .idxmax()
-        ),
+        round(float(df["Occupancy_Percent"].max()),2),
 
         "Most_Crowded_Station":
         str(
             df.groupby("Station")["Passenger_Count"]
             .mean()
             .idxmax()
+        ),
+
+        "Peak_Hour":
+        str(
+            df.groupby("Peak_Hour")["Passenger_Count"]
+            .mean()
+            .idxmax()
         )
 
     }
 
-    return jsonify(report)
-
-
+    return render_template(
+        "report.html",
+        report=report
+    )
 # -------------------------------------------------
 # DASHBOARD API
 # -------------------------------------------------
@@ -770,6 +786,12 @@ def all_data():
 # RUN APPLICATION
 # -------------------------------------------------
 # ----------------------------
+@app.route("/prediction-history", methods=["GET"])
+def prediction_history():
+
+    history = get_prediction_history()
+
+    return jsonify(history)
 #------------------------------------------------------
 # Notifications API
 # ----------------------------
@@ -828,6 +850,10 @@ def notifications():
 
     })
 # -------------------------------------------------
+@app.route("/system-test")
+def system_test():
+
+    return jsonify(run_system_tests())
 # AI METRO CHATBOT API
 # -------------------------------------------------
 

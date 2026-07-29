@@ -61,7 +61,18 @@ function Navbar() {
                 Prediction
               </Link>
             </li>
+            <li className="nav-item">
 
+    <Link
+        className="nav-link"
+        to="/prediction-history"
+    >
+
+        Prediction History
+
+    </Link>
+
+</li>
             {/* Schedule */}
             <li className="nav-item">
               <Link className="nav-link" to="/schedule">
@@ -144,6 +155,12 @@ function Navbar() {
                     Heatmap
                   </Link>
                 </li>
+                <Link
+  className="nav-link"
+  to="/testing"
+>
+  Testing
+</Link>
 
               </>
 
