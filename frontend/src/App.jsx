@@ -10,21 +10,25 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import MetroMapPage from './pages/MetroMapPage';
 import CrowdMonitoring from './pages/CrowdMonitoring';
-import Scheduling from './pages/Scheduling';
-import AIPrediction from './pages/AIPrediction';
-import AnalyticsReports from './pages/AnalyticsReports';
+
 import StationsPage from './pages/StationsPage';
 import TrainsPage from './pages/TrainsPage';
 import AdminPanel from './pages/AdminPanel';
 import SettingsPage from './pages/SettingsPage';
-import AlertsPage from './pages/AlertsPage';
+
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import LiveMonitoring from './pages/LiveMonitoring';
+import Scheduling from './pages/Scheduling';
+import AIPrediction from './pages/AIPrediction';
+import PassengerForecast from './pages/PassengerForecast';
+import AnalyticsReports from './pages/AnalyticsReports';
+import HeatmapDashboard from './pages/HeatmapDashboard';
 import FrequencyAdjustment from './pages/FrequencyAdjustment';
 import CrowdPrediction from './pages/CrowdPrediction';
-import PassengerForecast from './pages/PassengerForecast';
+import AlertsPage from './pages/AlertsPage';
+import AnnouncementsPage from './pages/AnnouncementsPage';
 
 function App() {
   return (
@@ -51,26 +55,25 @@ function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="map" element={<MetroMapPage />} />
                 <Route path="crowd" element={<CrowdMonitoring />} />
-                <Route path="alerts" element={<AlertsPage />} />
+
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="live-monitoring" element={<LiveMonitoring />} />
-
+                <Route path="scheduling" element={<Scheduling />} />
+                <Route path="ai-prediction" element={<AIPrediction />} />
+                <Route path="passenger-forecast" element={<PassengerForecast />} />
+                <Route path="analytics-reports" element={<AnalyticsReports />} />
+                <Route path="heatmap" element={<HeatmapDashboard />} />
+                <Route path="frequency-adjustment" element={<FrequencyAdjustment />} />
+                <Route path="crowd-prediction" element={<CrowdPrediction />} />
+                <Route path="alerts" element={<AlertsPage />} />
 
                 {/* Operations restricted pages (Admin & Operators) */}
                 <Route 
-                  path="scheduling" 
+                  path="announcements" 
                   element={
-                    <RoleRoute allowedRoles={['Admin', 'Metro Operator']}>
-                      <Scheduling />
-                    </RoleRoute>
-                  } 
-                />
-                <Route 
-                  path="frequency" 
-                  element={
-                    <RoleRoute allowedRoles={['Admin', 'Metro Operator']}>
-                      <FrequencyAdjustment />
+                    <RoleRoute allowedRoles={['Admin']}>
+                      <AnnouncementsPage />
                     </RoleRoute>
                   } 
                 />
@@ -87,40 +90,6 @@ function App() {
                   element={
                     <RoleRoute allowedRoles={['Admin', 'Metro Operator']}>
                       <TrainsPage />
-                    </RoleRoute>
-                  } 
-                />
-
-                {/* Analytics restricted pages (Admin & Analysts) */}
-                <Route 
-                  path="predictions" 
-                  element={
-                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
-                      <AIPrediction />
-                    </RoleRoute>
-                  } 
-                />
-                <Route 
-                  path="predict-crowd" 
-                  element={
-                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
-                      <CrowdPrediction />
-                    </RoleRoute>
-                  } 
-                />
-                <Route 
-                  path="passenger-forecast" 
-                  element={
-                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
-                      <PassengerForecast />
-                    </RoleRoute>
-                  } 
-                />
-                <Route 
-                  path="reports" 
-                  element={
-                    <RoleRoute allowedRoles={['Admin', 'Analyst']}>
-                      <AnalyticsReports />
                     </RoleRoute>
                   } 
                 />

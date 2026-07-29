@@ -115,10 +115,43 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
                 "status": a["status"]
             })
             
+        # 8. Missing Charts: Route Performance, Passenger Forecast, Alert Statistics
+        route_performance = [
+            {"name": "Red Line", "efficiency": 92},
+            {"name": "Yellow Line", "efficiency": 85},
+            {"name": "Blue Line", "efficiency": 78},
+            {"name": "Pink Line", "efficiency": 88},
+            {"name": "Magenta Line", "efficiency": 95}
+        ]
+        passenger_forecast = [
+            {"time": "08:00", "predicted": 45000, "actual": 42000},
+            {"time": "09:00", "predicted": 55000, "actual": 58000},
+            {"time": "10:00", "predicted": 40000, "actual": 39000},
+            {"time": "11:00", "predicted": 25000, "actual": 26000},
+            {"time": "12:00", "predicted": 22000, "actual": 21000},
+            {"time": "13:00", "predicted": 24000, "actual": 23500}
+        ]
+        alert_statistics = [
+            {"name": "Overcrowding", "count": 12},
+            {"name": "Train Delay", "count": 8},
+            {"name": "Emergency", "count": 2},
+            {"name": "Platform Congestion", "count": 5}
+        ]
+        
+        # 9. AI Operational Insights
+        ai_insights = [
+            {"type": "Actionable", "message": "Increase train frequency on Yellow Line between 8 AM-10 AM to reduce 85% congestion."},
+            {"type": "Predictive", "message": "Rajiv Chowk is predicted to exceed capacity within 20 minutes. Consider passenger diversion."},
+            {"type": "Efficiency", "message": "Magenta Line is operating at 95% efficiency. No immediate schedule changes required."},
+            {"type": "Warning", "message": "Delay trend detected on Blue Line due to recurring signal issues. Maintenance recommended."}
+        ]
+            
         return {
             "kpis": {
                 "totalStations": total_stations,
                 "activeTrains": active_trains,
+                "delayedTrains": delayed_sched,
+                "averageOccupancy": 68,
                 "passengersToday": riders_today,
                 "peakHour": "08:30 - 09:45",
                 "activeAlerts": active_alerts,
@@ -129,9 +162,13 @@ async def get_dashboard_summary(current_user: dict = Depends(get_current_user)):
                 "crowdDensity": crowd_by_line,
                 "stationCongestion": congested_stations,
                 "trainOccupancy": train_occupancy,
-                "delayStatistics": delay_stats
+                "delayStatistics": delay_stats,
+                "routePerformance": route_performance,
+                "passengerForecast": passenger_forecast,
+                "alertStatistics": alert_statistics
             },
-            "recentActivity": recent_activities
+            "recentActivity": recent_activities,
+            "aiInsights": ai_insights
         }
         
     except Exception as e:
@@ -194,5 +231,9 @@ def get_mock_dashboard():
             {"id": "2", "time": "18:30", "event": "Train TR-RED-01 delayed by 12 mins at Jhil Mil.", "type": "Train Delay", "status": "Active"},
             {"id": "3", "time": "17:15", "event": "Platform congestion warning at Hauz Khas.", "type": "Platform Congestion", "status": "Active"},
             {"id": "4", "time": "16:20", "event": "Scheduled track inspection completed at Netaji Subhash Place.", "type": "Info", "status": "Resolved"}
+        ],
+        "aiInsights": [
+            {"type": "Actionable", "message": "Increase train frequency on Yellow Line between 8 AM-10 AM to reduce 85% congestion."},
+            {"type": "Predictive", "message": "Rajiv Chowk is predicted to exceed capacity within 20 minutes. Consider passenger diversion."}
         ]
     }

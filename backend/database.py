@@ -46,6 +46,9 @@ async def init_db():
     await db.passenger_history.create_index([("station_id", 1), ("timestamp", -1)])
     await db.traffic_reports.create_index("created_at")
     await db.train_status.create_index([("train_id", 1), ("timestamp", -1)])
+    await db.notifications.create_index([("user_id", 1), ("timestamp", -1)])
+    await db.announcements.create_index([("expiry_date", 1)])
+    await db.heatmap_data.create_index([("timestamp", -1)])
     
     # Seed default users
     user_count = await db.users.count_documents({})

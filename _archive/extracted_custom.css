@@ -1,0 +1,36 @@
+.gradient-mesh-bg{z-index:0;pointer-events:none;position:fixed;inset:0;overflow:hidden}
+.blob{filter:blur(80px);opacity:.25;border-radius:50%;animation:20s ease-in-out infinite alternate mesh-drift;position:absolute}
+.blob{opacity:.5}
+.blob-1{background:radial-gradient(circle,#8b5cf61f 0%,#0000 70%);width:500px;height:500px;animation-duration:25s;top:-10%;left:-5%}
+.blob-1{background:radial-gradient(circle,#8b5cf640 0%,#0000 70%)}
+.blob-2{background:radial-gradient(circle,#06b6d41a 0%,#0000 70%);width:450px;height:450px;animation-duration:20s;animation-delay:-5s;top:50%;right:-8%}
+.blob-2{background:radial-gradient(circle,#06b6d433 0%,#0000 70%)}
+.blob-3{background:radial-gradient(circle,#10b98114 0%,#0000 70%);width:400px;height:400px;animation-duration:22s;animation-delay:-10s;bottom:-5%;left:30%}
+.blob-3{background:radial-gradient(circle,#10b9812e 0%,#0000 70%)}
+.blob-4{background:radial-gradient(circle,#f59e0b0f 0%,#0000 70%);width:350px;height:350px;animation-duration:18s;animation-delay:-3s;top:20%;left:50%}
+.blob-4{background:radial-gradient(circle,#f59e0b1f 0%,#0000 70%)}
+.btn-shimmer{background-image:linear-gradient(90deg,#0000 0%,#ffffff1a 50%,#0000 100%);background-size:200%;transition:all .3s}
+.btn-shimmer:hover{animation:2s linear infinite shimmer}
+.gradient-text{-webkit-text-fill-color:transparent;background:linear-gradient(135deg,#8b5cf6,#06b6d4,#10b981);-webkit-background-clip:text;background-clip:text}
+.badge-gradient-emerald{color:#059669;background:linear-gradient(135deg,#10b98126,#10b9810d);border:1px solid #10b98133}
+.badge-gradient-emerald{color:#34d399}
+.badge-gradient-red{color:#dc2626;background:linear-gradient(135deg,#ef444426,#ef44440d);border:1px solid #ef444433}
+.badge-gradient-red{color:#f87171}
+.table-row-colorful:hover{background:linear-gradient(90deg,#8b5cf60d,#06b6d40d,#0000)}
+.table-row-colorful:hover{background:linear-gradient(90deg,#8b5cf608,#06b6d408,#0000)}
+@keyframes mesh-drift{0%{transform:translate(0)scale(1)}
+@keyframes pulse-green{0%,to{box-shadow:0 0 #22c55e66}
+@keyframes pulse-yellow{0%,to{box-shadow:0 0 #eab30866}
+@keyframes pulse-orange{0%,to{box-shadow:0 0 #f9731666}
+@keyframes pulse-red{0%,to{box-shadow:0 0 #ef444466}
+@keyframes antigravity-float-slow{0%,to{transform:translateY(0)}
+@keyframes antigravity-float-medium{0%,to{transform:translateY(0)}
+@keyframes antigravity-float-fast{0%,to{transform:translateY(0)}
+@keyframes fade-in-up{0%{opacity:0;transform:translateY(20px)}
+@keyframes shimmer{0%{background-position:-200%}
+@keyframes gradient-border-rotate{0%{--angle:0deg}
+@keyframes gradient-slide{0%{background-position:0%}
+@keyframes spin{to{transform:rotate(360deg)}
+@keyframes ping{75%,to{opacity:0;transform:scale(2)}
+@keyframes pulse{50%{opacity:.5}
+@keyframes bounce{0%,to{animation-timing-function:cubic-bezier(.8,0,1,1);transform:translateY(-25%)}

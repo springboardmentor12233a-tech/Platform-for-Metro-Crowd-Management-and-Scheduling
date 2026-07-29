@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI MetroFlow – AI Metro Crowd Management & Scheduling Platform
 
 AI MetroFlow is a production-ready, high-fidelity crowd intelligence and train dispatch scheduling platform designed for metropolitan rapid transit networks. By combining a **Python FastAPI** backend, a **MongoDB** database, **WebSockets**, and a **React + Vite** frontend (visualized via **Leaflet Maps** and **Recharts**), the system enables operators to manage timetables, predict congestion trends, monitor crowd inflows/outflows, and resolve delays in real-time.
@@ -192,3 +193,6 @@ To deploy AI MetroFlow to [Railway](https://railway.app):
 2. In the settings, select **Dockerfile** and configure it to use `Dockerfile.frontend`.
 3. Set service variables if needed.
 4. Expose the frontend container port (port `80` inside the Nginx container) by adding a custom domain or clicking **Generate Domain** in the settings. Nginx will handle proxying all `/api/` calls internally to the backend!
+=======
+# AI_Metroflow
+>>>>>>> 24054d02bf066e40b399fd6e23eccd926fd71f73

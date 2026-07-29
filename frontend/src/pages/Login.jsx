@@ -30,28 +30,33 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-tr from-slate-950 via-slate-900 to-blue-950 relative overflow-hidden">
-      {/* Background ambient glowing rings */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-violet-500/10 blur-[100px] animate-pulse pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[100px] animate-pulse pointer-events-none"></div>
+    <div className="min-h-screen flex bg-[#05050e] relative overflow-hidden">
+      {/* Background Gradient Mesh */}
+      <div className="gradient-mesh-bg">
+        <div className="blob blob-1" style={{ width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)' }}></div>
+        <div className="blob blob-2" style={{ width: '550px', height: '550px', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%)' }}></div>
+        <div className="blob blob-3" style={{ width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%)' }}></div>
+        <div className="blob blob-4" style={{ width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%)' }}></div>
+      </div>
 
       {/* Left Side: Brand Panel */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 relative overflow-hidden border-r border-white/5 bg-slate-950/30">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 relative overflow-hidden border-r border-white/5">
         {/* Top Brand Logo */}
         <div className="flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/30 text-white">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-purple-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/30 text-white relative">
             <Train size={20} />
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-violet-600 via-purple-500 to-cyan-500 blur-lg opacity-50"></div>
           </div>
           <span className="text-lg font-black tracking-tight text-white uppercase">AI MetroFlow</span>
         </div>
 
         {/* Center Brand Text */}
         <div className="my-auto space-y-6 relative z-10 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/15 to-cyan-500/15 border border-violet-500/25 text-violet-300 text-xs font-bold uppercase tracking-wider">
             <Sparkles size={14} /> AI-Powered Operations
           </div>
           <h1 className="text-4xl xl:text-5xl font-black text-white leading-tight">
-            AI Platform for <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Metro Crowd Management</span> and Scheduling
+            AI Platform for <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">Metro Crowd Management</span> and Scheduling
           </h1>
           <p className="text-slate-400 text-sm leading-relaxed font-semibold">
             Optimizing urban transit schedules, predicting station inflows, and coordinating fleet dispatches using deep reinforcement learning models and real-time WebSocket telemetries.
@@ -59,11 +64,11 @@ const Login = () => {
 
           {/* Decorative Feature Cards */}
           <div className="grid grid-cols-2 gap-4 pt-6 text-xs text-slate-300 font-bold">
-            <div className="flex items-center gap-2.5 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all">
+            <div className="flex items-center gap-2.5 p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/15 hover:border-cyan-500/30 hover:bg-cyan-500/15 transition-all duration-300">
               <Activity size={16} className="text-cyan-400" />
               <span>Real-time Density</span>
             </div>
-            <div className="flex items-center gap-2.5 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all">
+            <div className="flex items-center gap-2.5 p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/5 border border-violet-500/15 hover:border-violet-500/30 hover:bg-violet-500/15 transition-all duration-300">
               <Brain size={16} className="text-violet-400" />
               <span>AI Demand Forecasts</span>
             </div>
@@ -78,39 +83,47 @@ const Login = () => {
 
       {/* Right Side: Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
-        <div className="w-full max-w-md glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl relative">
+        <div className="w-full max-w-md bg-gradient-to-b from-white/5 to-white/[0.02] backdrop-blur-3xl p-10 rounded-[2rem] border border-white/8 shadow-[0_0_80px_rgba(139,92,246,0.1)] relative overflow-hidden group">
+          
+          {/* Glowing orbs inside the card */}
+          <div className="absolute -top-20 -right-20 w-48 h-48 bg-violet-500/15 rounded-full blur-[60px] pointer-events-none group-hover:bg-violet-500/25 transition-all duration-700"></div>
+          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-cyan-500/20 transition-all duration-700"></div>
+
           {/* Header (visible on mobile where brand panel is hidden) */}
-          <div className="flex flex-col items-center gap-3 mb-8 lg:hidden">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/30 text-white">
-              <Train size={24} />
+          <div className="flex flex-col items-center gap-4 mb-10 lg:hidden">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-500 to-cyan-500 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.4)] text-white relative">
+              <Train size={28} />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-500 to-cyan-500 blur-xl opacity-50"></div>
             </div>
             <div className="text-center">
-              <h2 className="text-2xl font-black tracking-tight text-white">
+              <h2 className="text-3xl font-black tracking-tighter text-white">
                 AI MetroFlow
               </h2>
-              <p className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-wider">
-                Crowd Management & Scheduling
+              <p className="text-xs font-bold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent mt-1 uppercase tracking-[0.2em]">
+                Operations Console
               </p>
             </div>
           </div>
 
-          <div className="hidden lg:block mb-8">
-            <h2 className="text-2xl font-black tracking-tight text-white">Sign In</h2>
-            <p className="text-xs text-slate-400 font-semibold mt-1">Access operations management console</p>
+          <div className="hidden lg:block mb-10 relative z-10">
+            <h2 className="text-3xl font-black tracking-tighter text-white">Welcome back</h2>
+            <p className="text-sm text-slate-400 font-medium mt-2">Sign in to the operations management console</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-200 text-xs font-semibold flex items-center gap-2">
-              <ShieldAlert size={16} className="text-red-400 shrink-0" />
+            <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/20 text-red-200 text-xs font-semibold flex items-center gap-3 backdrop-blur-md animate-in fade-in slide-in-from-top-2">
+              <div className="p-1.5 bg-red-500/20 rounded-lg">
+                <ShieldAlert size={16} className="text-red-400" />
+              </div>
               <span>{error}</span>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-300 tracking-wide uppercase">Select Access Level</label>
-              <div className="grid grid-cols-3 gap-2">
+          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Select Access Level</label>
+              <div className="grid grid-cols-3 gap-3">
                 {['Admin', 'Metro Operator', 'Analyst'].map((r) => {
                   const isActive = role === r;
                   return (
@@ -118,48 +131,48 @@ const Login = () => {
                       key={r}
                       type="button"
                       onClick={() => setRole(r)}
-                      className={`py-3 px-2 rounded-xl border text-[11px] font-extrabold transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-1.5 active:scale-[0.96] ${
+                      className={`py-3 px-2 rounded-2xl border text-[11px] font-bold transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2 active:scale-[0.96] ${
                         isActive
-                          ? 'bg-violet-600/20 border-violet-500 text-white shadow-[0_0_15px_rgba(139,92,246,0.35)]'
-                          : 'bg-slate-900/40 border-white/5 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 hover:border-white/10'
+                          ? 'bg-gradient-to-br from-violet-600/30 to-cyan-600/30 border-violet-500/50 text-white shadow-[0_0_24px_rgba(139,92,246,0.25)]'
+                          : 'bg-white/3 border-white/5 text-slate-400 hover:text-white hover:bg-white/8 hover:border-white/12'
                       }`}
                     >
-                      {r === 'Admin' && <Shield size={16} className={isActive ? 'text-violet-400' : 'text-slate-500'} />}
-                      {r === 'Metro Operator' && <Train size={16} className={isActive ? 'text-violet-400' : 'text-slate-500'} />}
-                      {r === 'Analyst' && <TrendingUp size={16} className={isActive ? 'text-violet-400' : 'text-slate-500'} />}
-                      <span>{r === 'Metro Operator' ? 'Operator' : r}</span>
+                      {r === 'Admin' && <Shield size={18} className={isActive ? 'text-violet-400' : 'text-slate-500'} />}
+                      {r === 'Metro Operator' && <Train size={18} className={isActive ? 'text-cyan-400' : 'text-slate-500'} />}
+                      {r === 'Analyst' && <TrendingUp size={18} className={isActive ? 'text-violet-400' : 'text-slate-500'} />}
+                      <span className="tracking-wide">{r === 'Metro Operator' ? 'Operator' : r}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 tracking-wide uppercase">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-violet-400 transition-colors" size={18} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="operator@metroflow.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/50 border border-white/5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/8 text-white placeholder-slate-600 text-sm font-medium focus:outline-none focus:border-violet-500/50 focus:bg-white/8 focus:ring-4 focus:ring-violet-500/10 transition-all"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 tracking-wide uppercase">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/50 border border-white/5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/8 text-white placeholder-slate-600 text-sm font-medium focus:outline-none focus:border-cyan-500/50 focus:bg-white/8 focus:ring-4 focus:ring-cyan-500/10 transition-all"
                 />
               </div>
             </div>
@@ -167,21 +180,21 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-violet-600/20 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-500 to-cyan-500 hover:from-violet-500 hover:via-purple-400 hover:to-cyan-400 text-white font-black text-sm tracking-wide shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:shadow-[0_0_50px_rgba(139,92,246,0.5)] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2 mt-8 btn-shimmer"
             >
               {loading ? (
-                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
               ) : (
-                <span>Sign In</span>
+                <span>Secure Sign In</span>
               )}
             </button>
           </form>
 
-          <div className="mt-8 text-xs text-slate-300">
+          <div className="mt-8 pt-6 border-t border-white/5 text-center text-xs text-slate-400 font-medium">
             <p className="flex items-center justify-center gap-1.5">
-              <span>New account?</span>
-              <Link to="/register" className="text-cyan-400 hover:text-cyan-300 hover:underline font-semibold">
-                Create an account
+              <span>Don't have an account?</span>
+              <Link to="/register" className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent hover:from-cyan-300 hover:to-violet-300 hover:underline font-bold transition-all">
+                Request Access
               </Link>
             </p>
           </div>

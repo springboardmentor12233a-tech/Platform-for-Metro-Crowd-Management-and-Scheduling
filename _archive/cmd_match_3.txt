@@ -1,0 +1,17 @@
+python -c "
+import json
+import sys
+
+transcript_path = r'C:\Users\tejas\.gemini\antigravity\brain\d19567c8-1cae-4745-b960-79914d824f2c\.system_generated\logs\transcript_full.jsonl'
+
+matches = []
+with open(transcript_path, 'r', encoding='utf-8') as f:
+    for line in f:
+        if 'gradient-mesh-bg' in line:
+            matches.append(line)
+
+with open('scratch/transcript_matches.txt', 'w', encoding='utf-8') as out:
+    for m in matches:
+        out.write(m + '\n')
+print(f'Found {len(matches)} matches.')
+"

@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, IsolationForest
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, confusion_matrix
 import joblib
 
@@ -80,6 +80,29 @@ def main():
     joblib.dump(demand_model, "ml/models/demand_model.pkl")
     
     # ----------------------------------------------------
+    # 2.5 TRAIN ANOMALY DETECTION MODEL (ISOLATION FOREST)
+    # ----------------------------------------------------
+    print("Training Anomaly Detection Model (Isolation Forest)...")
+    
+    # We use all features including passengers for anomaly detection
+    anomaly_features = ['From_Station_Code', 'To_Station_Code', 'Distance_km', 'DayOfWeek', 'Month', 'IsWeekend', 'Remarks_Code', 'Passengers']
+    X_anomaly = df_metro[anomaly_features]
+    
+    # Contamination defines the proportion of outliers in the data set (5%)
+    anomaly_model = IsolationForest(n_estimators=100, contamination=0.05, random_state=42, n_jobs=-1)
+    anomaly_model.fit(X_anomaly)
+    
+    # Calculate anomaly scores for metrics (-1 is anomaly, 1 is normal)
+    # decision_function returns average anomaly score, lower is more abnormal
+    scores = anomaly_model.decision_function(X_anomaly)
+    mean_score = float(np.mean(scores))
+    std_score = float(np.std(scores))
+    
+    print(f"Anomaly Model Trained. Mean Score: {mean_score:.4f}")
+    
+    joblib.dump(anomaly_model, "ml/models/anomaly_model.pkl")
+    
+    # ----------------------------------------------------
     # 3. TRAIN DELAY CLASSIFIER & REGRESSOR
     # ----------------------------------------------------
     print("Preprocessing Delay dataset...")
@@ -149,6 +172,11 @@ def main():
             "mae": float(dem_mae),
             "rmse": float(dem_rmse),
             "feature_importance": dem_feat_imp
+        },
+        "anomaly_model": {
+            "contamination": 0.05,
+            "mean_decision_score": mean_score,
+            "std_decision_score": std_score
         },
         "delay_model": {
             "accuracy": float(del_acc),

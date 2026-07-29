@@ -8,7 +8,13 @@ const Layout = () => {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   return (
     <div className="min-h-screen bg-[var(--background)] text-slate-800 dark:text-slate-100 transition-colors duration-300 relative overflow-hidden">
-      {/* Background is clean and flat based on index.css */}
+      {/* Animated Gradient Mesh Background */}
+      <div className="gradient-mesh-bg">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+        <div className="blob blob-4"></div>
+      </div>
 
       {/* Sidebar navigation */}
       <Sidebar isOpen={isMobileMenuOpen} closeMenu={() => setIsMobileMenuOpen(false)} />

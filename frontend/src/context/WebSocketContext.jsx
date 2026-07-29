@@ -21,20 +21,25 @@ export const WebSocketProvider = ({ children }) => {
     const newToast = { id, message, level, type, timestamp: new Date() };
     setToasts((prev) => [newToast, ...prev].slice(0, 5)); // Keep max 5 toasts
     
-    // Auto remove after 5 seconds
+    // Auto remove after 15 seconds
     setTimeout(() => {
       removeToast(id);
-    }, 5000);
+    }, 15000);
   };
 
   const getWsUrl = () => {
     if (typeof window !== 'undefined') {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = window.location.hostname;
-      if (host === 'localhost' || host === '127.0.0.1') {
+      let host = window.location.hostname;
+      
+      if (host.includes('devtunnels.ms')) {
+        host = host.replace('-5173', '-8000');
+        return `${protocol}//${host}/api/crowd/ws`;
+      } else if (host !== 'localhost' && host !== '127.0.0.1') {
+        return `${protocol}//${host}:8000/api/crowd/ws`;
+      } else {
         return `${protocol}//127.0.0.1:8000/api/crowd/ws`;
       }
-      return `${protocol}//${window.location.host}/api/crowd/ws`;
     }
     return 'ws://127.0.0.1:8000/api/crowd/ws';
   };
@@ -79,6 +84,18 @@ export const WebSocketProvider = ({ children }) => {
               ...prev,
               alerts: [alert, ...prev.alerts].slice(0, 10)
             }));
+          } else if (payload.type === 'new_notification') {
+            const notif = payload.data;
+            const showNotifications = user?.settings?.notifications ?? true;
+            if (showNotifications) {
+              addToast(notif.message, notif.level, notif.title || notif.type);
+            }
+          } else if (payload.type === 'emergency_announcement') {
+            const ann = payload.data;
+            addToast(`ANNOUNCEMENT: ${ann.title} - ${ann.message}`, ann.priority === 'Critical' ? 'Critical' : 'Warning', 'Announcement');
+          } else if (payload.type === 'schedule_update') {
+            const sched = payload.data;
+            addToast(`Schedule Updated: Train ${sched.train_name || 'Train'} is now ${sched.status}`, 'Info', 'Schedule Update');
           }
         } catch (e) {
           console.error("Error parsing WebSocket message:", e);
@@ -111,7 +128,7 @@ export const WebSocketProvider = ({ children }) => {
     <WebSocketContext.Provider value={{ realTimeData, toasts, wsConnected, addToast, removeToast }}>
       {children}
       {/* Toast Notification Container */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+      <div className="fixed top-24 right-8 z-50 flex flex-col gap-2 max-w-sm w-full">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -120,8 +137,8 @@ export const WebSocketProvider = ({ children }) => {
               toast.level === 'Critical'
                 ? 'bg-red-950/45 border-red-500 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse'
                 : toast.level === 'Warning'
-                ? 'bg-orange-950/30 border-orange-500/50 text-orange-100 shadow-[0_0_10px_rgba(249,115,22,0.15)]'
-                : 'bg-slate-900/65 border-white/5 text-slate-100'
+                ? 'bg-orange-950/30 border-orange-500/50 text-orange-100 shadow-[0_0_10px_rgba(249,115,22,0.15)] animate-pulse'
+                : 'bg-slate-900/65 border-white/5 text-slate-100 animate-pulse'
             }`}
           >
             <div className="flex justify-between items-center">
