@@ -26,7 +26,8 @@ ENV/
 # FastAPI / Uvicorn
 *.log
 *.pid
-
+__pycache__/
+*.py[cod]
 # Pytest
 .pytest_cache/
 .coverage
@@ -113,3 +114,5 @@ reports/*.html
 datasets/logs/
 datasets/raw/metro-sensordata.csv
 datasets/processed/sensor_preprocessed.csv
+datasets/old/sensor_preprocessed.csv
+datasets/old/

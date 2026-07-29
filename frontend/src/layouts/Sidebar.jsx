@@ -2,6 +2,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Activity,
+  Users,
   Zap,
   Calendar,
   BarChart2,
@@ -20,15 +21,22 @@ import { getInitials } from '../utils/helpers'
  * `badge` — optional numeric indicator shown on the nav item.
  */
 const navItems = [
-  { to: ROUTES.DASHBOARD,        icon: LayoutDashboard, label: 'Dashboard'        },
-  { to: ROUTES.CROWD_MONITORING, icon: Activity,        label: 'Crowd Monitoring' },
-  { to: ROUTES.TRAIN_STATUS,     icon: Zap,             label: 'Train Status'     },
-  { to: ROUTES.SCHEDULES,        icon: Calendar,        label: 'Schedules'        },
-  { to: ROUTES.ANALYTICS,        icon: BarChart2,       label: 'Analytics'        },
-  { to: ROUTES.ALERTS,           icon: Bell,            label: 'Alerts', badge: 3 },
-  { to: ROUTES.SETTINGS,         icon: Settings,        label: 'Settings'         },
-]
+  { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
 
+  { to: ROUTES.CROWD_PREDICTION, label: 'Crowd Prediction', icon: Activity },
+
+  { to: ROUTES.RIDERSHIP_PREDICTION, label: 'Ridership Prediction', icon: Users },
+
+  { to: ROUTES.TRAIN_STATUS, label: 'Train Status', icon: Zap },
+
+  { to: ROUTES.SCHEDULES, label: 'Schedules', icon: Calendar },
+
+  { to: ROUTES.ANALYTICS, label: 'Analytics', icon: BarChart2 },
+
+  { to: ROUTES.ALERTS, label: 'Alerts', icon: Bell, badge: 3 },
+
+  { to: ROUTES.SETTINGS, label: 'Settings', icon: Settings },
+]
 /**
  * Sidebar — Collapsible navigation rail.
  *

@@ -1,15 +1,11 @@
-/**
- * Application route constants.
- * Centralises all route paths to avoid magic strings scattered across the codebase.
- * Import and use these instead of hard-coding path strings in <Link> or navigate().
- */
 export const ROUTES = {
   /** Public routes */
   LOGIN: '/login',
 
-  /** Protected routes — require authentication */
+  /** Protected routes */
   DASHBOARD: '/',
-  CROWD_MONITORING: '/crowd-monitoring',
+  CROWD_PREDICTION: '/crowd-prediction',
+  RIDERSHIP_PREDICTION: '/ridership-prediction',   // <-- ADD THIS
   TRAIN_STATUS: '/train-status',
   SCHEDULES: '/schedules',
   ANALYTICS: '/analytics',

@@ -1,16 +1,35 @@
-"""
-Settings Re-export — Backward Compatibility Shim
-=================================================
-This module re-exports the `settings` singleton from `app.core.config`
-so that code importing from `app.config.settings` continues to work.
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-Preferred import path:
-    from app.core.config import settings
 
-Legacy / alternate import path (also valid):
-    from app.config.settings import settings
-"""
+class Settings(BaseSettings):
+    # Application
+    APP_NAME: str = "Metro Crowd Management API"
+    APP_VERSION: str = "1.0.0"
+    DEBUG: bool = True
+    ENVIRONMENT: str = "development"
 
-from app.core.config import settings  # noqa: F401 — intentional re-export
+    # Server
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
 
-__all__ = ["settings"]
+    # Security
+    SECRET_KEY: str = "secret"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # Database
+    DATABASE_URL: str = "postgresql+psycopg://postgres:test1234@localhost:5432/metroflow"
+
+    # CORS
+    ALLOWED_ORIGINS: str = Field(
+        default="http://localhost:5173,http://localhost:3000"
+    )
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+    )
+
+
+settings = Settings()

@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom'
  */
 const PAGE_TITLES = {
   '/':                 'Operations Dashboard',
-  '/crowd-monitoring': 'Crowd Monitoring',
+  '/crowd-prediction': 'Crowd Prediction',
   '/train-status':     'Train Status',
   '/schedules':        'Schedule Management',
   '/analytics':        'Analytics & Insights',

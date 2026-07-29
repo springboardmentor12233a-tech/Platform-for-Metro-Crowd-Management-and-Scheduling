@@ -1,28 +1,14 @@
 """
 Application Configuration — Pydantic Settings
-===============================================
+=============================================
 Loads all environment variables from the .env file and exposes them
 as a typed singleton `settings` object used throughout the application.
-
-Usage:
-    from app.core.config import settings
-    print(settings.app_name)
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import field_validator
-from typing import List
 
 
 class Settings(BaseSettings):
-    """
-    Central application configuration model.
-
-    All fields are read from environment variables (case-insensitive).
-    Defaults are provided for local development; override via .env or
-    actual environment variables in production.
-    """
-
     # ------------------------------------------------------------------
     # Application Identity
     # ------------------------------------------------------------------
@@ -45,29 +31,23 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # ------------------------------------------------------------------
-    # Database (prepared for Milestone 2 — not active in Milestone 1)
+    # Database
     # ------------------------------------------------------------------
-    database_url: str = "postgresql://user:password@localhost:5432/metro_db"
+    database_url: str = "postgresql+psycopg://postgres:test1234@localhost:5432/metroflow"
 
     # ------------------------------------------------------------------
-    # CORS Allowed Origins
-    # Accepts a comma-separated string from env vars and converts to list.
+    # CORS
+    # Store as a comma-separated string in .env
     # ------------------------------------------------------------------
-    allowed_origins: List[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ]
+    allowed_origins: str = "http://localhost:5173,http://localhost:3000"
 
-    @field_validator("allowed_origins", mode="before")
-    @classmethod
-    def parse_allowed_origins(cls, value: str | List[str]) -> List[str]:
-        """
-        Support comma-separated string from environment variables.
-        e.g. ALLOWED_ORIGINS="http://localhost:5173,http://localhost:3000"
-        """
-        if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return value
+    @property
+    def cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.allowed_origins.split(",")
+            if origin.strip()
+        ]
 
     # ------------------------------------------------------------------
     # Pydantic Settings Configuration
@@ -76,11 +56,9 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore",  # Silently ignore unknown env vars
+        extra="ignore",
     )
 
 
-# ---------------------------------------------------------------------------
-# Singleton — import and use this everywhere
-# ---------------------------------------------------------------------------
+# Singleton
 settings = Settings()

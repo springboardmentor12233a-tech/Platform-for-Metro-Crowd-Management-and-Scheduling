@@ -3,15 +3,16 @@ import { useAuth } from '../hooks/useAuth'
 import MainLayout from '../layouts/MainLayout'
 import Dashboard from '../pages/Dashboard'
 import Login from '../pages/Login'
-import CrowdMonitoring from '../pages/CrowdMonitoring'
+import CrowdPrediction from "../pages/CrowdPrediction";
 import TrainStatus from '../pages/TrainStatus'
 import Schedules from '../pages/Schedules'
 import Analytics from '../pages/Analytics'
-import Alerts from '../pages/Alerts'
+import Alerts from '../pages/Alerts'  
 import Settings from '../pages/Settings'
 import NotFound from '../pages/NotFound'
 import { ROUTES } from '../constants/routes'
-
+import DelayPrediction from "../pages/DelayPrediction";
+import RidershipPrediction from "../pages/RidershipPrediction";
 /**
  * ProtectedRoute — wraps children and redirects to /login when unauthenticated.
  * @param {{ children: ReactNode }} props
@@ -21,21 +22,7 @@ function ProtectedRoute({ children }) {
   return isAuthenticated ? children : <Navigate to={ROUTES.LOGIN} replace />
 }
 
-/**
- * AppRoutes — declarative route tree for the entire application.
- *
- * Structure:
- *  /login           → Login (public)
- *  /                → MainLayout (protected shell)
- *    index          → Dashboard
- *    /crowd-monitoring → CrowdMonitoring
- *    /train-status     → TrainStatus
- *    /schedules        → Schedules
- *    /analytics        → Analytics
- *    /alerts           → Alerts
- *    /settings         → Settings
- *  *                → NotFound
- */
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -51,13 +38,21 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        <Route
+  path="/ridership-prediction"
+  element={<RidershipPrediction />}
+/>
         <Route index element={<Dashboard />} />
-        <Route path={ROUTES.CROWD_MONITORING} element={<CrowdMonitoring />} />
+        <Route
+    path="/crowd-prediction"
+    element={<CrowdPrediction />}
+/>
         <Route path={ROUTES.TRAIN_STATUS} element={<TrainStatus />} />
         <Route path={ROUTES.SCHEDULES} element={<Schedules />} />
         <Route path={ROUTES.ANALYTICS} element={<Analytics />} />
         <Route path={ROUTES.ALERTS} element={<Alerts />} />
         <Route path={ROUTES.SETTINGS} element={<Settings />} />
+        <Route path="/prediction"element={<DelayPrediction />}/>
       </Route>
 
       {/* Catch-all */}

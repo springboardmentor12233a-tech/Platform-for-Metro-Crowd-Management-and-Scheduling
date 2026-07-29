@@ -4,20 +4,7 @@ import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-/**
- * MainLayout — The authenticated shell shared by all protected pages.
- *
- * Structure:
- *   ┌─────────────┬──────────────────────────────────┐
- *   │  Sidebar    │  Navbar                          │
- *   │  (fixed)    │─────────────────────────────────-│
- *   │             │  <Outlet /> (page content)       │
- *   │             │─────────────────────────────────-│
- *   │             │  Footer                          │
- *   └─────────────┴──────────────────────────────────┘
- *
- * The sidebar can be collapsed to icon-only mode (72px wide).
- */
+
 export default function MainLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 

@@ -1,0 +1,201 @@
+id,train_number,train_name,line,capacity,current_station,status,speed_limit_kmh,manufacturer,model,year_of_manufacture
+TRN_001,DL-2824,Red Line Train 1,Red Line,2200,Shaheed Nagar,Running,80,Alstom,METRO-X,2013
+TRN_002,DL-9935,Red Line Train 2,Red Line,2400,Hindon River,Running,80,BEML,RS2,2015
+TRN_003,DL-9279,Pink Line Train 3,Pink Line,1500,Shiv Vihar,Running,80,CAF,RS4,2015
+TRN_004,DL-8359,Pink Line Train 4,Pink Line,2200,Majlis Park,Running,80,Hyundai Rotem,RS3,2016
+TRN_005,DL-3547,Yellow Line Train 5,Yellow Line,2200,Model Town,Running,80,Hyundai Rotem,RS1,2017
+TRN_006,DL-6635,Pink Line Train 6,Pink Line,2200,Shalimar Bagh,Maintenance,80,Hyundai Rotem,RS15,2013
+TRN_007,DL-7201,Red Line Train 7,Red Line,2200,Rohini East,Maintenance,80,CAF,RS3,2021
+TRN_008,DL-4150,Magenta Line Train 8,Magenta Line,1500,Dabri Mor - Janakpuri South,Maintenance,80,Alstom,RS3,2013
+TRN_009,DL-4814,Red Line Train 9,Red Line,2400,Dilshad Garden,Idle,80,Bombardier,RS2,2017
+TRN_010,DL-6820,Yellow Line Train 10,Yellow Line,2200,Adarsh Nagar,Maintenance,80,Alstom,RS15,2023
+TRN_011,DL-5010,Yellow Line Train 11,Yellow Line,2400,Hauz Khas,Idle,80,CAF,RS2,2022
+TRN_012,DL-6313,Red Line Train 12,Red Line,1800,Rohini East,Running,80,Bombardier,RS4,2016
+TRN_013,DL-2084,Yellow Line Train 13,Yellow Line,2200,Chawri Bazar,Maintenance,80,Hyundai Rotem,RS4,2022
+TRN_014,DL-8517,Yellow Line Train 14,Yellow Line,2200,Vishwa Vidyalaya,Running,80,CAF,RS15,2016
+TRN_015,DL-8019,Pink Line Train 15,Pink Line,2400,East Vinod Nagar - Mayur Vihar-II,Running,80,Alstom,RS15,2019
+TRN_016,DL-2489,Red Line Train 16,Red Line,1500,Shyam Park,Maintenance,80,Alstom,METRO-X,2018
+TRN_017,DL-2040,Violet Line Train 17,Violet Line,2400,Neelam Chowk Ajronda,Maintenance,80,Bombardier,RS15,2025
+TRN_018,DL-1188,Magenta Line Train 18,Magenta Line,1500,Jasola Vihar Shaheen Bagh,Maintenance,80,Bombardier,METRO-X,2017
+TRN_019,DL-2827,Blue Line Train 19,Blue Line,2400,Nawada,Idle,80,BEML,METRO-X,2023
+TRN_020,DL-5315,Pink Line Train 20,Pink Line,1800,Maujpur - Babarpur,Running,80,Bombardier,METRO-X,2020
+TRN_021,DL-4258,Yellow Line Train 21,Yellow Line,2200,Civil Lines,Maintenance,80,CAF,RS1,2021
+TRN_022,DL-6310,Violet Line Train 22,Violet Line,1500,Central Secretariat,Idle,80,Bombardier,RS2,2012
+TRN_023,DL-4946,Pink Line Train 23,Pink Line,1500,Punjabi Bagh West,Maintenance,80,Hyundai Rotem,RS1,2024
+TRN_024,DL-9727,Yellow Line Train 24,Yellow Line,1800,Ghitorni,Maintenance,80,Alstom,RS3,2020
+TRN_025,DL-7932,Yellow Line Train 25,Yellow Line,1800,Lok Kalyan Marg,Idle,80,Bombardier,RS4,2020
+TRN_026,DL-8397,Red Line Train 26,Red Line,1800,Shaheed Nagar,Running,80,Bombardier,RS1,2021
+TRN_027,DL-4770,Pink Line Train 27,Pink Line,1800,Majlis Park,Running,80,BEML,RS2,2013
+TRN_028,DL-1514,Blue Line Train 28,Blue Line,1500,Supreme Court,Running,80,Bombardier,METRO-X,2019
+TRN_029,DL-4510,Pink Line Train 29,Pink Line,1800,East Azad Nagar,Running,80,Hyundai Rotem,RS4,2015
+TRN_030,DL-2545,Red Line Train 30,Red Line,2400,Shahdara,Idle,80,Hyundai Rotem,RS4,2025
+TRN_031,DL-1887,Magenta Line Train 31,Magenta Line,1500,Dabri Mor - Janakpuri South,Idle,80,Bombardier,RS1,2015
+TRN_032,DL-4139,Yellow Line Train 32,Yellow Line,2400,Vishwa Vidyalaya,Idle,80,Alstom,RS3,2019
+TRN_033,DL-5092,Red Line Train 33,Red Line,2400,Pitampura,Maintenance,80,BEML,RS1,2022
+TRN_034,DL-9856,Red Line Train 34,Red Line,1500,Kohat Enclave,Running,80,Alstom,RS4,2019
+TRN_035,DL-8886,Yellow Line Train 35,Yellow Line,2400,Jahangirpuri,Running,80,Hyundai Rotem,RS1,2018
+TRN_036,DL-5345,Violet Line Train 36,Violet Line,2200,Badkhal Mor,Maintenance,80,CAF,METRO-X,2023
+TRN_037,DL-8973,Yellow Line Train 37,Yellow Line,1800,Udyog Bhawan,Running,80,BEML,RS15,2023
+TRN_038,DL-9883,Red Line Train 38,Red Line,2200,Hindon River,Running,80,CAF,RS4,2020
+TRN_039,DL-9701,Yellow Line Train 39,Yellow Line,1500,Guru Dronacharya,Running,80,Alstom,RS1,2021
+TRN_040,DL-2113,Magenta Line Train 40,Magenta Line,1800,Panchsheel Park,Running,80,CAF,RS2,2021
+TRN_041,DL-1651,Pink Line Train 41,Pink Line,1500,Anand Vihar ISBT,Maintenance,80,CAF,RS15,2020
+TRN_042,DL-6183,Blue Line Train 42,Blue Line,1800,Botanical Garden,Maintenance,80,Bombardier,RS2,2016
+TRN_043,DL-7484,Yellow Line Train 43,Yellow Line,2200,Sultanpur,Idle,80,BEML,RS1,2019
+TRN_044,DL-2638,Red Line Train 44,Red Line,1800,Tis Hazari,Idle,80,Alstom,RS3,2013
+TRN_045,DL-5002,Blue Line Train 45,Blue Line,2200,Nawada,Idle,80,CAF,METRO-X,2016
+TRN_046,DL-9666,Red Line Train 46,Red Line,2200,Kanhaiya Nagar,Running,80,Alstom,RS3,2013
+TRN_047,DL-2753,Magenta Line Train 47,Magenta Line,1800,Munirka,Idle,80,CAF,RS2,2023
+TRN_048,DL-6617,Yellow Line Train 48,Yellow Line,2200,Guru Dronacharya,Idle,80,Bombardier,RS1,2013
+TRN_049,DL-7939,Blue Line Train 49,Blue Line,1500,Dwarka Sector 21,Idle,80,Alstom,METRO-X,2016
+TRN_050,DL-3647,Magenta Line Train 50,Magenta Line,2400,Okhla NSIC,Maintenance,80,Hyundai Rotem,RS15,2012
+TRN_051,DL-2832,Red Line Train 51,Red Line,1800,Pul Bangash,Running,80,Bombardier,RS15,2020
+TRN_052,DL-3426,Violet Line Train 52,Violet Line,1800,Jama Masjid,Idle,80,Bombardier,RS1,2017
+TRN_053,DL-4441,Magenta Line Train 53,Magenta Line,1800,Jasola Vihar Shaheen Bagh,Running,80,Bombardier,RS15,2025
+TRN_054,DL-7658,Pink Line Train 54,Pink Line,1800,South Extension,Running,80,Alstom,RS4,2012
+TRN_055,DL-3938,Magenta Line Train 55,Magenta Line,2200,Chirag Delhi,Maintenance,80,Alstom,RS3,2014
+TRN_056,DL-2771,Violet Line Train 56,Violet Line,1500,Bata Chowk,Running,80,Alstom,RS4,2017
+TRN_057,DL-6000,Yellow Line Train 57,Yellow Line,1800,"Rohini Sector 18, 19",Maintenance,80,Alstom,RS4,2017
+TRN_058,DL-5564,Red Line Train 58,Red Line,2200,Shahdara,Maintenance,80,CAF,RS4,2022
+TRN_059,DL-9785,Blue Line Train 59,Blue Line,1500,Dwarka Sector 14,Idle,80,Alstom,RS15,2016
+TRN_060,DL-1626,Red Line Train 60,Red Line,2400,Shahdara,Maintenance,80,Bombardier,RS4,2021
+TRN_061,DL-9379,Red Line Train 61,Red Line,2400,Rithala,Maintenance,80,Alstom,RS3,2012
+TRN_062,DL-8144,Red Line Train 62,Red Line,1800,Shahdara,Idle,80,BEML,METRO-X,2017
+TRN_063,DL-6143,Magenta Line Train 63,Magenta Line,1500,Okhla Bird Sanctuary,Idle,80,CAF,RS3,2022
+TRN_064,DL-7691,Blue Line Train 64,Blue Line,2400,Noida City Centre,Idle,80,CAF,RS2,2015
+TRN_065,DL-7888,Magenta Line Train 65,Magenta Line,2400,Jasola Vihar Shaheen Bagh,Maintenance,80,Alstom,RS15,2021
+TRN_066,DL-5930,Violet Line Train 66,Violet Line,1500,Sarita Vihar,Idle,80,Alstom,RS4,2024
+TRN_067,DL-6279,Violet Line Train 67,Violet Line,2400,Old Faridabad,Maintenance,80,Alstom,RS15,2019
+TRN_068,DL-3780,Magenta Line Train 68,Magenta Line,1500,R.K. Puram,Maintenance,80,CAF,RS3,2013
+TRN_069,DL-4848,Magenta Line Train 69,Magenta Line,2200,Vasant Vihar,Running,80,Alstom,RS1,2012
+TRN_070,DL-5011,Violet Line Train 70,Violet Line,1500,Neelam Chowk Ajronda,Idle,80,CAF,RS2,2023
+TRN_071,DL-7291,Violet Line Train 71,Violet Line,2400,Kalkaji Mandir,Running,80,BEML,RS1,2024
+TRN_072,DL-7965,Yellow Line Train 72,Yellow Line,1800,Sikanderpur,Idle,80,BEML,RS15,2015
+TRN_073,DL-2988,Violet Line Train 73,Violet Line,1800,Neelam Chowk Ajronda,Maintenance,80,CAF,RS15,2021
+TRN_074,DL-6198,Violet Line Train 74,Violet Line,2400,Old Faridabad,Running,80,Hyundai Rotem,RS4,2016
+TRN_075,DL-5050,Magenta Line Train 75,Magenta Line,2200,Botanical Garden,Maintenance,80,Hyundai Rotem,METRO-X,2015
+TRN_076,DL-5499,Violet Line Train 76,Violet Line,1500,Jasola Apollo,Running,80,Bombardier,RS3,2017
+TRN_077,DL-9849,Red Line Train 77,Red Line,1800,Shyam Park,Running,80,Hyundai Rotem,METRO-X,2014
+TRN_078,DL-4505,Red Line Train 78,Red Line,2400,Seelampur,Idle,80,CAF,RS4,2018
+TRN_079,DL-2020,Yellow Line Train 79,Yellow Line,2400,Hauz Khas,Maintenance,80,BEML,RS15,2018
+TRN_080,DL-8814,Red Line Train 80,Red Line,2200,Jhilmil,Idle,80,Hyundai Rotem,RS15,2023
+TRN_081,DL-9947,Pink Line Train 81,Pink Line,1800,Jafrabad,Running,80,Bombardier,RS4,2019
+TRN_082,DL-1475,Violet Line Train 82,Violet Line,2200,Mewala Maharajpur,Maintenance,80,Alstom,RS4,2014
+TRN_083,DL-9751,Red Line Train 83,Red Line,2400,Pratap Nagar,Maintenance,80,BEML,RS1,2022
+TRN_084,DL-8022,Yellow Line Train 84,Yellow Line,2400,Kashmere Gate,Running,80,Bombardier,RS4,2017
+TRN_085,DL-4467,Violet Line Train 85,Violet Line,2200,Tughlakabad,Idle,80,Bombardier,RS4,2016
+TRN_086,DL-2341,Violet Line Train 86,Violet Line,1500,Delhi Gate,Idle,80,Alstom,METRO-X,2013
+TRN_087,DL-1659,Red Line Train 87,Red Line,1800,Raj Bagh,Running,80,CAF,RS2,2015
+TRN_088,DL-3068,Violet Line Train 88,Violet Line,1500,Kailash Colony,Idle,80,Bombardier,RS3,2014
+TRN_089,DL-2876,Yellow Line Train 89,Yellow Line,2200,Model Town,Maintenance,80,BEML,RS3,2021
+TRN_090,DL-7149,Violet Line Train 90,Violet Line,1800,ITO,Maintenance,80,Alstom,RS1,2023
+TRN_091,DL-5941,Magenta Line Train 91,Magenta Line,1500,Sukhdev Vihar,Running,80,Bombardier,RS15,2018
+TRN_092,DL-7071,Red Line Train 92,Red Line,2200,Shaheed Sthal,Idle,80,Hyundai Rotem,RS1,2018
+TRN_093,DL-6934,Magenta Line Train 93,Magenta Line,2400,Kalindi Kunj,Running,80,Hyundai Rotem,RS2,2023
+TRN_094,DL-9548,Magenta Line Train 94,Magenta Line,2200,Jamia Millia Islamia,Maintenance,80,Hyundai Rotem,RS4,2018
+TRN_095,DL-5397,Blue Line Train 95,Blue Line,1800,Dwarka Sector 12,Idle,80,Hyundai Rotem,RS2,2024
+TRN_096,DL-8613,Pink Line Train 96,Pink Line,2400,Mayur Vihar Pocket 1,Running,80,Hyundai Rotem,RS3,2014
+TRN_097,DL-8988,Yellow Line Train 97,Yellow Line,2200,Patel Chowk,Idle,80,Bombardier,RS15,2023
+TRN_098,DL-5526,Pink Line Train 98,Pink Line,1500,Gokulpuri,Running,80,BEML,RS2,2023
+TRN_099,DL-7658,Violet Line Train 99,Violet Line,1800,Bata Chowk,Maintenance,80,Hyundai Rotem,RS4,2024
+TRN_100,DL-1282,Red Line Train 100,Red Line,2200,Shaheed Nagar,Idle,80,Alstom,RS3,2022
+TRN_101,DL-7046,Violet Line Train 101,Violet Line,2200,Badkhal Mor,Maintenance,80,CAF,RS3,2017
+TRN_102,DL-8434,Blue Line Train 102,Blue Line,2200,Tilak Nagar,Running,80,BEML,METRO-X,2015
+TRN_103,DL-6169,Red Line Train 103,Red Line,1800,Raj Bagh,Running,80,Hyundai Rotem,RS3,2023
+TRN_104,DL-9595,Pink Line Train 104,Pink Line,2200,ESI Basaidarapur,Running,80,Bombardier,RS2,2017
+TRN_105,DL-3939,Blue Line Train 105,Blue Line,1500,Noida Sector 34,Maintenance,80,Alstom,RS3,2012
+TRN_106,DL-1893,Pink Line Train 106,Pink Line,2200,Mayapuri Cantonment,Maintenance,80,Hyundai Rotem,RS1,2025
+TRN_107,DL-1200,Pink Line Train 107,Pink Line,2200,East Azad Nagar,Idle,80,Hyundai Rotem,RS3,2014
+TRN_108,DL-1841,Blue Line Train 108,Blue Line,2400,Dwarka Sector 14,Running,80,Hyundai Rotem,RS4,2013
+TRN_109,DL-1878,Yellow Line Train 109,Yellow Line,1800,Millennium City Centre Gurugram,Idle,80,BEML,RS2,2013
+TRN_110,DL-7818,Pink Line Train 110,Pink Line,1800,Gokulpuri,Idle,80,Hyundai Rotem,RS4,2016
+TRN_111,DL-8025,Blue Line Train 111,Blue Line,1500,Noida Sector 15,Maintenance,80,BEML,RS2,2022
+TRN_112,DL-4457,Blue Line Train 112,Blue Line,1500,Nawada,Running,80,Alstom,RS15,2013
+TRN_113,DL-3564,Red Line Train 113,Red Line,2400,Shastri Park,Maintenance,80,CAF,RS4,2016
+TRN_114,DL-1534,Yellow Line Train 114,Yellow Line,2200,Udyog Bhawan,Maintenance,80,Hyundai Rotem,RS1,2022
+TRN_115,DL-4824,Blue Line Train 115,Blue Line,1800,Jhandewalan,Running,80,CAF,RS2,2022
+TRN_116,DL-3441,Blue Line Train 116,Blue Line,1800,Dwarka Sector 11,Running,80,Alstom,RS3,2021
+TRN_117,DL-5728,Violet Line Train 117,Violet Line,1500,Neelam Chowk Ajronda,Maintenance,80,Bombardier,METRO-X,2018
+TRN_118,DL-5460,Pink Line Train 118,Pink Line,2400,Karkarduma Court,Running,80,CAF,RS1,2018
+TRN_119,DL-6280,Pink Line Train 119,Pink Line,2200,Azadpur,Running,80,Alstom,METRO-X,2025
+TRN_120,DL-1339,Magenta Line Train 120,Magenta Line,2200,Sukhdev Vihar,Running,80,Alstom,RS4,2020
+TRN_121,DL-8245,Blue Line Train 121,Blue Line,1800,Mayur Vihar Extension,Idle,80,Hyundai Rotem,RS1,2019
+TRN_122,DL-6700,Violet Line Train 122,Violet Line,2200,Mohan Estate,Maintenance,80,BEML,RS2,2017
+TRN_123,DL-7744,Magenta Line Train 123,Magenta Line,2400,R.K. Puram,Maintenance,80,Hyundai Rotem,RS15,2012
+TRN_124,DL-8451,Red Line Train 124,Red Line,2200,Dilshad Garden,Idle,80,BEML,RS4,2025
+TRN_125,DL-9431,Red Line Train 125,Red Line,2400,Seelampur,Running,80,Alstom,RS15,2017
+TRN_126,DL-9167,Magenta Line Train 126,Magenta Line,2400,Botanical Garden,Running,80,Alstom,RS3,2020
+TRN_127,DL-3146,Blue Line Train 127,Blue Line,2400,Noida City Centre,Idle,80,BEML,RS1,2022
+TRN_128,DL-4920,Magenta Line Train 128,Magenta Line,1800,R.K. Puram,Maintenance,80,BEML,RS15,2018
+TRN_129,DL-2527,Yellow Line Train 129,Yellow Line,1500,Sultanpur,Running,80,Alstom,RS4,2023
+TRN_130,DL-5781,Pink Line Train 130,Pink Line,2200,Anand Vihar ISBT,Idle,80,Hyundai Rotem,RS2,2019
+TRN_131,DL-3369,Violet Line Train 131,Violet Line,1800,Sant Surdas (Sihi),Maintenance,80,Alstom,RS1,2016
+TRN_132,DL-7798,Blue Line Train 132,Blue Line,2200,Dwarka Sector 21,Idle,80,Bombardier,RS15,2021
+TRN_133,DL-9022,Yellow Line Train 133,Yellow Line,2400,MG Road,Idle,80,Bombardier,RS3,2020
+TRN_134,DL-9903,Violet Line Train 134,Violet Line,2400,Mohan Estate,Running,80,Alstom,RS15,2018
+TRN_135,DL-4826,Violet Line Train 135,Violet Line,1500,Mohan Estate,Maintenance,80,Hyundai Rotem,METRO-X,2024
+TRN_136,DL-7246,Violet Line Train 136,Violet Line,1800,Escorts Mujesar,Running,80,Alstom,RS15,2021
+TRN_137,DL-6439,Red Line Train 137,Red Line,2400,Mohan Nagar,Maintenance,80,Hyundai Rotem,RS1,2023
+TRN_138,DL-3361,Violet Line Train 138,Violet Line,1800,ITO,Idle,80,Bombardier,RS3,2021
+TRN_139,DL-7512,Magenta Line Train 139,Magenta Line,1500,IIT Delhi,Maintenance,80,CAF,RS4,2017
+TRN_140,DL-8994,Pink Line Train 140,Pink Line,1500,Shakurpur,Running,80,Bombardier,RS2,2023
+TRN_141,DL-2480,Violet Line Train 141,Violet Line,1500,Janpath,Idle,80,Alstom,METRO-X,2016
+TRN_142,DL-1474,Red Line Train 142,Red Line,2200,Pitampura,Running,80,Bombardier,RS3,2017
+TRN_143,DL-8056,Yellow Line Train 143,Yellow Line,1800,Sikanderpur,Idle,80,CAF,METRO-X,2024
+TRN_144,DL-3950,Yellow Line Train 144,Yellow Line,1800,Azadpur,Maintenance,80,Hyundai Rotem,RS15,2022
+TRN_145,DL-4945,Violet Line Train 145,Violet Line,1800,Nehru Place,Idle,80,Bombardier,RS4,2016
+TRN_146,DL-1153,Violet Line Train 146,Violet Line,2200,Jangpura,Running,80,Hyundai Rotem,RS3,2021
+TRN_147,DL-5901,Magenta Line Train 147,Magenta Line,2400,Kalindi Kunj,Idle,80,Hyundai Rotem,RS3,2015
+TRN_148,DL-7302,Violet Line Train 148,Violet Line,1500,Kalkaji Mandir,Idle,80,CAF,RS3,2021
+TRN_149,DL-5847,Magenta Line Train 149,Magenta Line,2200,Janakpuri West,Maintenance,80,Hyundai Rotem,RS3,2012
+TRN_150,DL-1803,Pink Line Train 150,Pink Line,2400,Ashram,Running,80,CAF,RS3,2015
+TRN_151,DL-4115,Pink Line Train 151,Pink Line,2200,Mayapuri Cantonment,Maintenance,80,BEML,METRO-X,2022
+TRN_152,DL-1645,Blue Line Train 152,Blue Line,2400,Dwarka Sector 9,Maintenance,80,Bombardier,METRO-X,2014
+TRN_153,DL-2476,Blue Line Train 153,Blue Line,2200,Noida Sector 61,Idle,80,Alstom,RS2,2014
+TRN_154,DL-9837,Blue Line Train 154,Blue Line,2200,Nawada,Idle,80,Hyundai Rotem,RS3,2023
+TRN_155,DL-6549,Red Line Train 155,Red Line,2400,Arthala,Running,80,Alstom,METRO-X,2023
+TRN_156,DL-7511,Pink Line Train 156,Pink Line,2200,Punjabi Bagh West,Idle,80,BEML,RS3,2020
+TRN_157,DL-3024,Violet Line Train 157,Violet Line,2200,Govind Puri,Maintenance,80,Hyundai Rotem,METRO-X,2017
+TRN_158,DL-2775,Magenta Line Train 158,Magenta Line,1800,Nehru Enclave,Running,80,CAF,RS15,2017
+TRN_159,DL-4626,Magenta Line Train 159,Magenta Line,1500,Okhla Vihar,Idle,80,Bombardier,METRO-X,2018
+TRN_160,DL-2911,Yellow Line Train 160,Yellow Line,1500,Haiderpur Badli Mor,Idle,80,Hyundai Rotem,RS1,2013
+TRN_161,DL-4846,Pink Line Train 161,Pink Line,1800,Mandawali - West Vinod Nagar,Idle,80,Bombardier,METRO-X,2023
+TRN_162,DL-9850,Violet Line Train 162,Violet Line,1800,Sector 28,Maintenance,80,BEML,RS4,2021
+TRN_163,DL-7686,Blue Line Train 163,Blue Line,1500,Noida City Centre,Idle,80,Alstom,RS4,2019
+TRN_164,DL-4868,Blue Line Train 164,Blue Line,1500,Golf Course,Idle,80,CAF,METRO-X,2017
+TRN_165,DL-1992,Violet Line Train 165,Violet Line,2200,Moolchand,Running,80,Hyundai Rotem,RS1,2022
+TRN_166,DL-4475,Magenta Line Train 166,Magenta Line,1500,Dabri Mor - Janakpuri South,Idle,80,Alstom,RS2,2024
+TRN_167,DL-4362,Red Line Train 167,Red Line,1800,Pratap Nagar,Running,80,Alstom,RS3,2024
+TRN_168,DL-3417,Pink Line Train 168,Pink Line,1500,Vinobapuri,Running,80,Alstom,RS15,2016
+TRN_169,DL-3858,Red Line Train 169,Red Line,1500,Shyam Park,Running,80,Bombardier,RS2,2021
+TRN_170,DL-6304,Red Line Train 170,Red Line,1800,Dilshad Garden,Running,80,Alstom,METRO-X,2018
+TRN_171,DL-9619,Red Line Train 171,Red Line,1500,Kashmere Gate,Idle,80,Bombardier,RS15,2021
+TRN_172,DL-2786,Violet Line Train 172,Violet Line,1800,Jama Masjid,Maintenance,80,CAF,RS3,2019
+TRN_173,DL-1510,Red Line Train 173,Red Line,2400,Rohini West,Idle,80,Hyundai Rotem,METRO-X,2013
+TRN_174,DL-9032,Magenta Line Train 174,Magenta Line,2400,Dashrathpuri,Running,80,Bombardier,RS15,2014
+TRN_175,DL-2076,Yellow Line Train 175,Yellow Line,2200,IFFCO Chowk,Maintenance,80,Bombardier,RS4,2021
+TRN_176,DL-9692,Blue Line Train 176,Blue Line,2400,Supreme Court,Maintenance,80,Hyundai Rotem,RS1,2024
+TRN_177,DL-2874,Magenta Line Train 177,Magenta Line,1800,Chirag Delhi,Idle,80,Alstom,RS4,2017
+TRN_178,DL-8430,Violet Line Train 178,Violet Line,2400,Janpath,Idle,80,Hyundai Rotem,RS3,2022
+TRN_179,DL-5176,Blue Line Train 179,Blue Line,1800,Golf Course,Idle,80,BEML,RS1,2025
+TRN_180,DL-2398,Red Line Train 180,Red Line,2400,Mohan Nagar,Maintenance,80,Bombardier,RS2,2020
+TRN_181,DL-1982,Pink Line Train 181,Pink Line,2200,Rajouri Garden,Idle,80,Bombardier,METRO-X,2024
+TRN_182,DL-7929,Magenta Line Train 182,Magenta Line,1500,R.K. Puram,Maintenance,80,Bombardier,RS3,2013
+TRN_183,DL-9313,Yellow Line Train 183,Yellow Line,1800,Ghitorni,Running,80,BEML,RS3,2025
+TRN_184,DL-7022,Red Line Train 184,Red Line,2200,Pratap Nagar,Running,80,Hyundai Rotem,RS15,2024
+TRN_185,DL-1430,Pink Line Train 185,Pink Line,2200,Azadpur,Running,80,Bombardier,METRO-X,2024
+TRN_186,DL-6062,Blue Line Train 186,Blue Line,2200,Dwarka Sector 21,Running,80,Alstom,RS15,2022
+TRN_187,DL-7566,Red Line Train 187,Red Line,1800,Netaji Subhash Place,Maintenance,80,BEML,RS1,2023
+TRN_188,DL-9691,Yellow Line Train 188,Yellow Line,2400,Saket,Idle,80,Bombardier,RS2,2017
+TRN_189,DL-6105,Magenta Line Train 189,Magenta Line,2200,Botanical Garden,Maintenance,80,CAF,RS1,2012
+TRN_190,DL-3549,Yellow Line Train 190,Yellow Line,1500,Azadpur,Idle,80,Hyundai Rotem,METRO-X,2018
+TRN_191,DL-8957,Pink Line Train 191,Pink Line,2400,Anand Vihar ISBT,Idle,80,Alstom,RS15,2013
+TRN_192,DL-6655,Violet Line Train 192,Violet Line,1500,Jasola Apollo,Maintenance,80,CAF,RS4,2020
+TRN_193,DL-6053,Red Line Train 193,Red Line,1800,Welcome,Maintenance,80,BEML,RS1,2015
+TRN_194,DL-5938,Yellow Line Train 194,Yellow Line,1800,Patel Chowk,Idle,80,Bombardier,RS1,2012
+TRN_195,DL-9149,Magenta Line Train 195,Magenta Line,2400,Terminal 1 IGI Airport,Running,80,Hyundai Rotem,RS15,2023
+TRN_196,DL-4770,Pink Line Train 196,Pink Line,2200,Shakurpur,Idle,80,BEML,RS4,2012
+TRN_197,DL-8532,Red Line Train 197,Red Line,2200,Pratap Nagar,Idle,80,CAF,RS4,2023
+TRN_198,DL-7843,Blue Line Train 198,Blue Line,1500,Rajendra Place,Running,80,Bombardier,RS2,2024
+TRN_199,DL-8538,Magenta Line Train 199,Magenta Line,2200,Dashrathpuri,Idle,80,BEML,RS2,2018
+TRN_200,DL-7560,Pink Line Train 200,Pink Line,1500,IP Extension,Idle,80,Bombardier,RS2,2017

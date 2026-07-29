@@ -1,31 +1,56 @@
 /**
- * crowdService — Crowd monitoring API calls.
- * Wraps the /crowd endpoints of the Metro CMS REST API.
+ * crowdService — Crowd monitoring & AI prediction API calls.
+ * Wraps the /crowd and /crowd-predictions endpoints.
  */
-import api from './api'
+
+import api from "./api";
 
 export const crowdService = {
   /**
    * Get crowd data for all stations.
-   * @returns {Promise<{data: {data: Array}}>}
    */
-  getAllStations: () => api.get('/crowd'),
+  getAllStations: () => api.get("/crowd"),
 
   /**
-   * Get detailed crowd data for a single station.
-   * @param {string|number} stationId
-   * @returns {Promise<{data: {data: Object}}>}
+   * Get crowd data for one station.
    */
-  getStation: (stationId) => api.get(`/crowd/${stationId}`),
+  getStation: (stationId) =>
+    api.get(`/crowd/${stationId}`),
 
   /**
-   * Get crowd history for a station (for analytics graphs).
-   * @param {string|number} stationId
-   * @param {string} period — 'today' | 'week' | 'month'
-   * @returns {Promise}
+   * Get historical crowd data.
    */
-  getStationHistory: (stationId, period = 'today') =>
-    api.get(`/crowd/${stationId}/history`, { params: { period } }),
-}
+  getStationHistory: (
+    stationId,
+    period = "today"
+  ) =>
+    api.get(
+      `/crowd/${stationId}/history`,
+      {
+        params: { period },
+      }
+    ),
 
-export default crowdService
+  // ======================================================
+  // AI Crowd Prediction
+  // ======================================================
+
+  /**
+   * Get all stations from database.
+   */
+  getStations: () =>
+    api.get("/stations"),
+
+  /**
+   * Predict crowd using AI model.
+   *
+   * @param {Object} data
+   */
+  predictCrowd: (data) =>
+    api.post(
+      "/crowd-predictions/predict",
+      data
+    ),
+};
+
+export default crowdService;
