@@ -1,60 +1,50 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import "../styles/Sidebar.css";
 
 function Sidebar() {
-  const linkStyle = {
-    display: "block",
-    color: "white",
-    textDecoration: "none",
-    margin: "18px 0",
-    fontSize: "18px",
-  };
 
-  return (
-    <div
-      style={{
-        width: "240px",
-        background: "#263238",
-        color: "white",
-        minHeight: "100vh",
-        padding: "20px",
-      }}
-    >
-      <h2>Navigation</h2>
+    return (
 
-      <hr />
+        <div className="sidebar">
 
-      <Link to="/" style={linkStyle}>
-        🏠 Dashboard
-      </Link>
+            <h2>MetroFlow</h2>
 
-      <Link to="/prediction" style={linkStyle}>
-        📊 Crowd Prediction
-      </Link>
+            <NavLink to="/dashboard">Dashboard</NavLink>
 
-      <Link to="/forecast" style={linkStyle}>
-        🚉 Demand Forecast
-      </Link>
+            <NavLink to="/prediction">Prediction</NavLink>
+            <NavLink to="/monitoring">Monitoring</NavLink>
 
-      <Link to="/schedule" style={linkStyle}>
-        🚆 Train Schedule
-      </Link>
+            <NavLink to="/reports">Reports</NavLink>
 
-      <Link to="/frequency" style={linkStyle}>
-        🚄 Frequency Adjustment
-      </Link>
+            <NavLink to="/schedule">Schedule</NavLink>
 
-      <Link to="/monitoring" style={linkStyle}>
-        📡 Live Monitoring
-      </Link>
+            <NavLink to="/frequency">Frequency</NavLink>
 
-      <Link to="/reports" style={linkStyle}>
-        📈 Traffic Reports
-      </Link>
-      <Link to="/history" style={linkStyle}>
-        🕘 Prediction History
-      </Link>
-    </div>
-  );
+            <NavLink to="/history">Prediction History</NavLink>
+
+            <NavLink to="/emergency-announcement">
+                Emergency Announcement
+            </NavLink>
+
+            <NavLink to="/smart-alerts">
+                Smart Alerts
+            </NavLink>
+
+            <NavLink to="/schedule-updates">
+                Schedule Updates
+            </NavLink>
+            <NavLink to="/analytics-dashboard">
+                Analytics Dashboard
+            </NavLink>
+
+            <NavLink to="/heatmap">
+                Congestion Heatmap
+            </NavLink>
+
+        </div>
+
+    );
+
 }
 
 export default Sidebar;

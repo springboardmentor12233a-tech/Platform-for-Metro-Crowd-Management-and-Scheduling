@@ -13,6 +13,13 @@ from app.routers.history import router as history_router
 from app.routers.monitoring import router as monitoring_router
 from app.routers.report import router as report_router
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers.ai import router as ai_router
+from app.routers.announcements import router as announcement_router
+from app.routers.alerts import router as alerts_router
+from app.routers.schedule_updates import router as schedule_updates_router
+from app.routers.operational_insights import router as operational_router
+from app.routers.analytics import router as analytics_router
+from app.routers.heatmap import router as heatmap_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -36,6 +43,13 @@ app.include_router(frequency_router)
 app.include_router(monitoring_router)
 app.include_router(report_router)
 app.include_router(history_router)
+app.include_router(ai_router)
+app.include_router(announcement_router)
+app.include_router(alerts_router)
+app.include_router(schedule_updates_router)
+app.include_router(operational_router)
+app.include_router(analytics_router)
+app.include_router(heatmap_router)
 
 # ---------------- HOME ----------------
 

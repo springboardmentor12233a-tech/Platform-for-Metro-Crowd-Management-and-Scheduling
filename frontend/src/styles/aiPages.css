@@ -1,0 +1,315 @@
+/* ===== Page ===== */
+
+.ai-page {
+    padding: 30px;
+    background: #f4f7fb;
+    min-height: 100vh;
+}
+
+/* ===== Header ===== */
+
+.ai-header {
+    margin-bottom: 25px;
+}
+
+.ai-header h2 {
+    color: #1e3a8a;
+    margin-bottom: 5px;
+    font-size: 28px;
+}
+
+.ai-header p {
+    color: #64748b;
+    font-size: 15px;
+}
+
+/* ===== Cards ===== */
+
+.ai-card {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    margin-bottom: 25px;
+}
+
+/* ===== Section Title ===== */
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 20px;
+}
+
+/* ===== Form ===== */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    transition: .2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+
+    border-color: #2563eb;
+
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+
+}
+
+/* ===== Button ===== */
+
+.primary-btn {
+
+    width: 100%;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+}
+
+.primary-btn:hover {
+
+    background: #1d4ed8;
+
+}
+
+/* ===== Result ===== */
+
+.result-box {
+
+    background: #f8fafc;
+
+    border-left: 5px solid #2563eb;
+
+    padding: 18px;
+
+    border-radius: 8px;
+
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+
+}
+
+/* ===== Chips ===== */
+
+.info-row {
+
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 18px;
+
+}
+
+.chip {
+
+    background: #e2e8f0;
+
+    padding: 8px 14px;
+
+    border-radius: 30px;
+
+    font-size: 14px;
+
+}
+
+/* ===== Actions ===== */
+
+.action-buttons {
+
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+}
+
+.action-buttons button {
+
+    flex: 1;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 12px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+}
+
+.copy-btn {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+.download-btn {
+
+    background: #16a34a;
+
+    color: white;
+
+}
+
+.clear-btn {
+
+    background: #ef4444;
+
+    color: white;
+
+}
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:20px;
+
+    margin-bottom:25px;
+
+}
+
+.stat-card{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+    text-align:center;
+
+}
+
+.stat-card h3{
+
+    color:#2563eb;
+
+    margin-bottom:10px;
+
+}
+
+.stat-card p{
+
+    font-size:26px;
+
+    font-weight:bold;
+
+    color:#1f2937;
+
+}
+.heatmap-grid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+gap:20px;
+
+margin-top:20px;
+
+}
+
+.heatmap-card{
+
+background:#fff;
+
+padding:20px;
+
+border-radius:14px;
+
+box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+transition:.3s;
+
+}
+
+.heatmap-card:hover{
+
+transform:translateY(-5px);
+
+}
+
+.heatmap-card h3{
+
+margin-bottom:15px;
+
+color:#1e3a8a;
+
+}
+
+.heatmap-card p{
+
+margin:8px 0;
+
+}
+
+.heat-badge{
+
+display:inline-block;
+
+padding:8px 16px;
+
+border-radius:30px;
+
+color:white;
+
+font-weight:bold;
+
+margin-top:10px;
+
+}

@@ -9,42 +9,44 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [summary, setSummary] = useState({
+    total_records: 0,
     total_stations: 0,
-    high_demand: 0,
-    medium_demand: 0,
-    low_demand: 0,
+    high_crowd: 0,
+    medium_crowd: 0,
+    low_crowd: 0,
   });
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch dashboard summary
+  // Fetch Dashboard Summary
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchDashboard = async () => {
       try {
-        const response = await api.get(
-          "/reports/traffic-analysis?day_type=Weekday"
-        );
-
-        if (response.data && response.data.summary) {
-          setSummary(response.data.summary);
-        }
+        const response = await api.get("/dashboard/summary");
+        setSummary(response.data);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Dashboard Error:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
+    fetchDashboard();
   }, []);
 
-  // Fetch logged-in user
+  // Fetch Logged-in User
   useEffect(() => {
-    api
-      .get("/me")
-      .then((res) => setUser(res.data))
-      .catch((err) => console.error("User Error:", err));
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/me");
+        setUser(response.data);
+      } catch (error) {
+        console.error("User Error:", error);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   // Logout
@@ -57,7 +59,11 @@ function Dashboard() {
     <>
       <Navbar />
 
-      <div style={{ display: "flex" }}>
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
         <Sidebar />
 
         <div
@@ -72,18 +78,26 @@ function Dashboard() {
             style={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
+              alignItems: "flex-start",
+              marginBottom: "30px",
             }}
           >
             <div>
-              <h1>Dashboard</h1>
+              <h1 style={{ color: "#1565C0" }}>
+                Dashboard
+              </h1>
 
               {user && (
                 <>
                   <h3>Welcome, {user.name}</h3>
-                  <p>Email: {user.email}</p>
-                  <p>Role: {user.role}</p>
+
+                  <p>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+
+                  <p>
+                    <strong>Role:</strong> {user.role}
+                  </p>
                 </>
               )}
             </div>
@@ -104,39 +118,127 @@ function Dashboard() {
           </div>
 
           {loading ? (
-            <h2>Loading...</h2>
+            <h2>Loading Dashboard...</h2>
           ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "20px",
-              }}
-            >
-              <DashboardCard
-                title="Stations"
-                value={summary.total_stations}
-                color="#1976D2"
-              />
+            <>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: "20px",
+                }}
+              >
+                <DashboardCard
+                  title="Stations"
+                  value={summary.total_stations}
+                  color="#1976D2"
+                />
 
-              <DashboardCard
-                title="High Demand"
-                value={summary.high_demand}
-                color="#E53935"
-              />
+                <DashboardCard
+                  title="High Crowd"
+                  value={summary.high_crowd}
+                  color="#E53935"
+                />
 
-              <DashboardCard
-                title="Medium Demand"
-                value={summary.medium_demand}
-                color="#FB8C00"
-              />
+                <DashboardCard
+                  title="Medium Crowd"
+                  value={summary.medium_crowd}
+                  color="#FB8C00"
+                />
 
-              <DashboardCard
-                title="Low Demand"
-                value={summary.low_demand}
-                color="#43A047"
-              />
-            </div>
+                <DashboardCard
+                  title="Low Crowd"
+                  value={summary.low_crowd}
+                  color="#43A047"
+                />
+
+                <DashboardCard
+                  title="Total Records"
+                  value={summary.total_records}
+                  color="#6A1B9A"
+                />
+              </div>
+
+              <div
+                style={{
+                  marginTop: "35px",
+                  background: "white",
+                  padding: "20px",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 10px rgba(0,0,0,.1)",
+                }}
+              >
+                <h2>Dashboard Summary</h2>
+
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginTop: "15px",
+                  }}
+                >
+                  <thead>
+                    <tr
+                      style={{
+                        background: "#1976D2",
+                        color: "white",
+                      }}
+                    >
+                      <th style={{ padding: "12px" }}>
+                        Metric
+                      </th>
+
+                      <th style={{ padding: "12px" }}>
+                        Value
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: "12px" }}>
+                        Total Stations
+                      </td>
+
+                      <td>{summary.total_stations}</td>
+                    </tr>
+
+                    <tr>
+                      <td style={{ padding: "12px" }}>
+                        High Crowd
+                      </td>
+
+                      <td>{summary.high_crowd}</td>
+                    </tr>
+
+                    <tr>
+                      <td style={{ padding: "12px" }}>
+                        Medium Crowd
+                      </td>
+
+                      <td>{summary.medium_crowd}</td>
+                    </tr>
+
+                    <tr>
+                      <td style={{ padding: "12px" }}>
+                        Low Crowd
+                      </td>
+
+                      <td>{summary.low_crowd}</td>
+                    </tr>
+
+                    <tr>
+                      <td style={{ padding: "12px" }}>
+                        Total Records
+                      </td>
+
+                      <td>{summary.total_records}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

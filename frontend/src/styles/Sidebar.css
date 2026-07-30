@@ -1,0 +1,41 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: #1e3a8a;
+    color: white;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 20px 0;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: #2563eb;
+}
+
+.sidebar .active {
+    background: #3b82f6;
+}
+
+.dashboard-content {
+    margin-left: 250px;
+    min-height: 100vh;
+    padding: 25px;
+    background: #f5f7fb;
+}

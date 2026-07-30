@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 
 function Login() {
@@ -107,6 +107,15 @@ function Login() {
             cursor: "pointer",
           }}
         >
+          <p
+          style={{
+         textAlign: "center",
+        marginTop: "15px",
+        }}
+        >
+        Don't have an account?{" "}
+        <Link to="/signup">Register</Link>
+        </p>
           Login
         </button>
       </div>
