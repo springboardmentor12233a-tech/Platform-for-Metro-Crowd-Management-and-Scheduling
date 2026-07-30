@@ -1,211 +1,413 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
+// import axios from "axios";
+
+// function ChatBot() {
+
+//   const [open, setOpen] = useState(false);
+//   const [question, setQuestion] = useState("");
+//   const [messages, setMessages] = useState([]);
+
+//   const sendMessage = async () => {
+
+//     if (question.trim() === "") return;
+
+//     const userMessage = {
+//       sender: "You",
+//       text: question
+//     };
+
+//     setMessages(prev => [...prev, userMessage]);
+
+//     try {
+
+//       const res = await axios.post(
+//         "http://127.0.0.1:5000/chat",
+//         {
+//           question: question
+//         }
+//       );
+
+//       const botMessage = {
+//         sender: "Metro AI",
+//         text: res.data.reply
+//       };
+
+//       setMessages(prev => [...prev, botMessage]);
+
+//     } catch (err) {
+
+//       const botMessage = {
+//         sender: "Metro AI",
+//         text: "Unable to connect to AI."
+//       };
+
+//       setMessages(prev => [...prev, botMessage]);
+
+//     }
+
+//     setQuestion("");
+
+//   };
+
+//   return (
+
+//     <>
+
+//       {/* Floating Button */}
+
+//       <button
+
+//         onClick={() => setOpen(!open)}
+
+//         style={{
+//           position: "fixed",
+//           bottom: "20px",
+//           right: "20px",
+//           width: "65px",
+//           height: "65px",
+//           borderRadius: "50%",
+//           border: "none",
+//           background: "#0d6efd",
+//           color: "white",
+//           fontSize: "28px",
+//           cursor: "pointer",
+//           zIndex: 9999
+//         }}
+
+//       >
+
+//         💬
+
+//       </button>
+
+//       {open && (
+
+//         <div
+
+//           style={{
+//             position: "fixed",
+//             bottom: "100px",
+//             right: "20px",
+//             width: "350px",
+//             height: "500px",
+//             background: "white",
+//             borderRadius: "12px",
+//             boxShadow: "0 0 15px gray",
+//             display: "flex",
+//             flexDirection: "column",
+//             zIndex: 9999
+//           }}
+
+//         >
+
+//           {/* Header */}
+
+//           <div
+
+//             style={{
+//               background: "#0d6efd",
+//               color: "white",
+//               padding: "15px",
+//               fontWeight: "bold",
+//               textAlign: "center"
+//             }}
+
+//           >
+
+//             🤖 Metro AI Assistant
+
+//           </div>
+
+//           {/* Messages */}
+
+//           <div
+
+//             style={{
+//               flex: 1,
+//               overflowY: "auto",
+//               padding: "10px"
+//             }}
+
+//           >
+
+//             {messages.map((msg, index) => (
+
+//               <div key={index} style={{ marginBottom: "15px" }}>
+
+//                 <b>{msg.sender}</b>
+
+//                 <br />
+
+//                 {msg.text}
+
+//               </div>
+
+//             ))}
+
+//           </div>
+
+//           {/* Input */}
+
+//           <div
+
+//             style={{
+//               display: "flex",
+//               padding: "10px"
+//             }}
+
+//           >
+
+//             <input
+
+//               type="text"
+
+//               value={question}
+
+//               placeholder="Ask about Metro..."
+
+//               onChange={(e) => setQuestion(e.target.value)}
+
+//               onKeyDown={(e) => {
+
+//                 if (e.key === "Enter") {
+
+//                   sendMessage();
+
+//                 }
+
+//               }}
+
+//               style={{
+//                 flex: 1,
+//                 padding: "10px"
+//               }}
+
+//             />
+
+//             <button
+
+//               onClick={sendMessage}
+
+//               className="btn btn-primary ms-2"
+
+//             >
+
+//               Send
+
+//             </button>
+
+//           </div>
+
+//         </div>
+
+//       )}
+
+//     </>
+
+//   );
+
+// }
+
+// export default ChatBot;
+
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import "./ChatBot.css";
 
 function ChatBot() {
-
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [typing, setTyping] = useState(false);
 
-  const sendMessage = async () => {
+  const [messages, setMessages] = useState([
+    {
+      sender: "Metro AI",
+      text:
+        "👋 Welcome to MetroFlow AI Assistant.\nAsk me anything about crowd levels, delays, stations, schedules or forecasts."
+    }
+  ]);
 
-    if (question.trim() === "") return;
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }, [messages]);
+
+  const sendMessage = async (msg = question) => {
+    if (msg.trim() === "") return;
 
     const userMessage = {
       sender: "You",
-      text: question
+      text: msg
     };
 
-    setMessages(prev => [...prev, userMessage]);
-
-    try {
-
-      const res = await axios.post(
-        "http://127.0.0.1:5000/chat",
-        {
-          question: question
-        }
-      );
-
-      const botMessage = {
-        sender: "Metro AI",
-        text: res.data.reply
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
-    } catch (err) {
-
-      const botMessage = {
-        sender: "Metro AI",
-        text: "Unable to connect to AI."
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
-    }
+    setMessages((prev) => [...prev, userMessage]);
 
     setQuestion("");
 
+    setTyping(true);
+
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:5000/chat",
+        {
+          question: msg
+        }
+      );
+
+      setTyping(false);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "Metro AI",
+          text: res.data.reply
+        }
+      ]);
+    } catch {
+      setTyping(false);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "Metro AI",
+          text: "⚠ Unable to connect with AI."
+        }
+      ]);
+    }
   };
 
+  const suggestions = [
+    "Current crowd status",
+    "Train delay",
+    "Peak hour",
+    "Passenger count",
+    "Occupancy",
+    "Should I travel now?"
+  ];
+
   return (
-
     <>
-
-      {/* Floating Button */}
-
       <button
-
+        className="chatButton"
         onClick={() => setOpen(!open)}
-
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          width: "65px",
-          height: "65px",
-          borderRadius: "50%",
-          border: "none",
-          background: "#0d6efd",
-          color: "white",
-          fontSize: "28px",
-          cursor: "pointer",
-          zIndex: 9999
-        }}
-
       >
-
-        💬
-
+        🤖
       </button>
 
       {open && (
+        <div className="chatWindow">
 
-        <div
+          <div className="chatHeader">
 
-          style={{
-            position: "fixed",
-            bottom: "100px",
-            right: "20px",
-            width: "350px",
-            height: "500px",
-            background: "white",
-            borderRadius: "12px",
-            boxShadow: "0 0 15px gray",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 9999
-          }}
+            <div>
 
-        >
+              <h5>MetroFlow AI</h5>
 
-          {/* Header */}
+              <small>● Online</small>
 
-          <div
+            </div>
 
-            style={{
-              background: "#0d6efd",
-              color: "white",
-              padding: "15px",
-              fontWeight: "bold",
-              textAlign: "center"
-            }}
-
-          >
-
-            🤖 Metro AI Assistant
+            <button
+              className="closeBtn"
+              onClick={() => setOpen(false)}
+            >
+              ✖
+            </button>
 
           </div>
 
-          {/* Messages */}
-
-          <div
-
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              padding: "10px"
-            }}
-
-          >
+          <div className="chatBody">
 
             {messages.map((msg, index) => (
 
-              <div key={index} style={{ marginBottom: "15px" }}>
+              <div
+                key={index}
+                className={
+                  msg.sender === "You"
+                    ? "userMessage"
+                    : "botMessage"
+                }
+              >
 
-                <b>{msg.sender}</b>
+                <div className="avatar">
 
-                <br />
+                  {msg.sender === "You" ? "👤" : "🤖"}
 
-                {msg.text}
+                </div>
+
+                <div className="bubble">
+
+                  {msg.text}
+
+                </div>
 
               </div>
 
             ))}
 
+            {typing && (
+
+              <div className="botMessage">
+
+                <div className="avatar">🤖</div>
+
+                <div className="bubble">
+
+                  <span className="typing"></span>
+                  <span className="typing"></span>
+                  <span className="typing"></span>
+
+                </div>
+
+              </div>
+
+            )}
+
+            <div ref={chatEndRef}></div>
+
           </div>
 
-          {/* Input */}
+          <div className="suggestions">
 
-          <div
+            {suggestions.map((item, index) => (
 
-            style={{
-              display: "flex",
-              padding: "10px"
-            }}
+              <button
+                key={index}
+                onClick={() => sendMessage(item)}
+              >
+                {item}
+              </button>
 
-          >
+            ))}
+
+          </div>
+
+          <div className="chatInput">
 
             <input
-
-              type="text"
-
               value={question}
-
-              placeholder="Ask about Metro..."
-
+              placeholder="Ask Metro AI..."
               onChange={(e) => setQuestion(e.target.value)}
-
-              onKeyDown={(e) => {
-
-                if (e.key === "Enter") {
-
-                  sendMessage();
-
-                }
-
-              }}
-
-              style={{
-                flex: 1,
-                padding: "10px"
-              }}
-
+              onKeyDown={(e) =>
+                e.key === "Enter" && sendMessage()
+              }
             />
 
             <button
-
-              onClick={sendMessage}
-
-              className="btn btn-primary ms-2"
-
+              onClick={() => sendMessage()}
             >
-
-              Send
-
+              ➤
             </button>
 
           </div>
 
         </div>
-
       )}
-
     </>
-
   );
-
 }
 
 export default ChatBot;

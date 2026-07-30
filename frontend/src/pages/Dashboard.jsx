@@ -2072,7 +2072,7 @@ function Dashboard() {
                 className="btn btn-success btn-lg"
                 onClick={() =>
                   window.open(
-                    "http://127.0.0.1:5000/report",
+                    "http://127.0.0.1:5000/report/pdf",
                     "_blank"
                   )
                 }

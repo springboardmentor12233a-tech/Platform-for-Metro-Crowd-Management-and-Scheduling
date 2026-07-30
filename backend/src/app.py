@@ -10,6 +10,8 @@ from gemini_service import (
 from chatbot_service import metro_chat
 from prediction_history import save_prediction, get_prediction_history
 from system_test import run_system_tests
+from pdf_report import generate_pdf
+from flask import make_response
 app = Flask(
     __name__,
     template_folder="../templates"
@@ -40,6 +42,16 @@ for col in categorical_columns:
 crowd_model = joblib.load("../models/crowd_model.pkl")
 forecast_model = joblib.load("../models/forecast_model.pkl")
 scaler = joblib.load("../models/scaler.pkl")
+# -----------------------------
+# Latest AI Prediction
+# -----------------------------
+latest_prediction = {
+    "Station": "",
+    "Passenger_Count": 0,
+    "Crowd_Level": "",
+    "Delay_Minutes": 0,
+    "Occupancy_Percent": 0
+}
 
 # -------------------------------------------------
 # HOME PAGE
@@ -219,6 +231,15 @@ def predict():
         }
 
         crowd = labels.get(int(prediction), "Unknown")
+        global latest_prediction
+
+        latest_prediction = {
+    "Station": "Predicted Station",
+    "Passenger_Count": data["Passenger_Count"],
+    "Crowd_Level": crowd_level,
+    "Delay_Minutes": data["Delay_Minutes"],
+    "Occupancy_Percent": data["Occupancy_Percent"]
+}
 
         recommendation = {
 
@@ -360,8 +381,9 @@ def monitor():
 # -------------------------------------------------
 # REPORT API
 # -------------------------------------------------
+from flask import render_template, make_response
 
-from flask import render_template
+# ================= HTML REPORT =================
 
 @app.route("/report")
 def report():
@@ -371,13 +393,13 @@ def report():
         "Total_Passengers": int(df["Passenger_Count"].sum()),
 
         "Average_Passenger_Count":
-        round(float(df["Passenger_Count"].mean()),2),
+        round(float(df["Passenger_Count"].mean()), 2),
 
         "Average_Delay":
-        round(float(df["Delay_Minutes"].mean()),2),
+        round(float(df["Delay_Minutes"].mean()), 2),
 
         "Maximum_Occupancy":
-        round(float(df["Occupancy_Percent"].max()),2),
+        round(float(df["Occupancy_Percent"].max()), 2),
 
         "Most_Crowded_Station":
         str(
@@ -399,6 +421,53 @@ def report():
         "report.html",
         report=report
     )
+
+
+# ================= PDF REPORT =================
+
+@app.route("/report/pdf")
+def download_pdf_report():
+
+    report = {
+
+        "Total_Passengers": int(df["Passenger_Count"].sum()),
+
+        "Average_Passenger_Count":
+        round(float(df["Passenger_Count"].mean()), 2),
+
+        "Average_Delay":
+        round(float(df["Delay_Minutes"].mean()), 2),
+
+        "Maximum_Occupancy":
+        round(float(df["Occupancy_Percent"].max()), 2),
+
+        "Most_Crowded_Station":
+        str(
+            df.groupby("Station")["Passenger_Count"]
+            .mean()
+            .idxmax()
+        ),
+
+        "Peak_Hour":
+        str(
+            df.groupby("Peak_Hour")["Passenger_Count"]
+            .mean()
+            .idxmax()
+        )
+
+    }
+
+    pdf = generate_pdf(report)
+
+    response = make_response(pdf)
+
+    response.headers["Content-Type"] = "application/pdf"
+
+    response.headers["Content-Disposition"] = (
+        "attachment; filename=MetroFlow_Traffic_Report.pdf"
+    )
+
+    return response
 # -------------------------------------------------
 # DASHBOARD API
 # -------------------------------------------------
@@ -854,48 +923,45 @@ def notifications():
 def system_test():
 
     return jsonify(run_system_tests())
-# AI METRO CHATBOT API
 # -------------------------------------------------
-
+# AI CHATBOT
+# -------------------------------------------------
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
 
     if request.method == "GET":
         return jsonify({
-            "message": "Chat API is working. Use POST to send questions."
+            "message": "Chat API is working. Use POST."
         })
 
-    data = request.json
-    question = data.get("question", "")
-
-    # remaining code...
     try:
 
         data = request.json
-
         question = data.get("question", "")
 
         latest = df.iloc[-1]
 
         metro_data = {
-
             "Station": str(latest["Station"]),
             "Passenger_Count": int(latest["Passenger_Count"]),
             "Crowd_Level": str(latest["Crowd_Level"]),
             "Delay_Minutes": int(latest["Delay_Minutes"]),
             "Occupancy_Percent": float(latest["Occupancy_Percent"])
-
         }
+
+        # Use latest ML prediction if available
+        if latest_prediction["Crowd_Level"] != "":
+            metro_data["Crowd_Level"] = latest_prediction["Crowd_Level"]
 
         answer = metro_chat(question, metro_data)
 
         return jsonify(answer)
 
     except Exception as e:
-
         return jsonify({
             "reply": str(e)
         })
+
 if __name__ == "__main__":
 
     app.run(debug=True)
