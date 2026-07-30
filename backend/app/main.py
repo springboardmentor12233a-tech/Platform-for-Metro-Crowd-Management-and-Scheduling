@@ -1,6 +1,8 @@
+from app.auth.auth import router as auth_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.dashboard import router
+from app.ai.ai_router import router as ai_router
 
 app = FastAPI(
     title="Metro Crowd Management API",
@@ -16,6 +18,8 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(auth_router)
+app.include_router(ai_router)
 
 @app.get("/")
 def home():

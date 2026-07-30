@@ -8,3 +8,9 @@ __pycache__/
 # Ignore Jupyter checkpoints
 .ipynb_checkpoints/
 backend/outputs/
+
+node_modules/
+backend/node_modules/
+
+backend/ml/models/
+*.pkl
