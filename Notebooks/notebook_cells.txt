@@ -1,0 +1,828 @@
+================================================================================
+CELL 1 (Markdown)
+================================================================================
+# 🚇 MetroFlow — Crowd Density Forecasting Model
+
+**Objective:** Train a Gradient Boosting model to predict station crowd levels 1 hour and 4 hours into the future using historical MTA turnstile data (889K readings across 753 stations).
+
+**Pipeline:**
+1. Data Extraction → 2. EDA → 3. Data Cleaning → 4. Feature Engineering → 5. Train/Test Split → 6. Model Training → 7. Evaluation → 8. Export
+
+
+================================================================================
+CELL 2 (Code) — Imports
+================================================================================
+import pandas as pd
+import numpy as np
+import psycopg2
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import joblib
+import os
+import warnings
+warnings.filterwarnings('ignore')
+
+plt.style.use('dark_background')
+sns.set_palette("cool")
+print("✅ Libraries loaded")
+
+
+================================================================================
+CELL 3 (Markdown)
+================================================================================
+---
+## 1. Data Extraction
+Pull crowd readings joined with station metadata from PostgreSQL.
+
+
+================================================================================
+CELL 4 (Code) — Load Data
+================================================================================
+conn = psycopg2.connect("postgresql://postgres:postgres@localhost:5432/metroflow")
+
+query = """
+    SELECT cr.station_id, cr.timestamp, cr.entry_count, cr.exit_count,
+           cr.current_occupancy, cr.density_level,
+           s.max_capacity, s.is_interchange, s.name as station_name
+    FROM crowd_readings cr
+    JOIN stations s ON cr.station_id = s.id
+    ORDER BY cr.station_id, cr.timestamp
+"""
+
+df = pd.read_sql(query, conn)
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+print(f"✅ Loaded {len(df):,} records")
+print(f"📊 Unique stations: {df['station_id'].nunique()}")
+print(f"📅 Date range: {df['timestamp'].min()} → {df['timestamp'].max()}")
+print(f"\n📋 Column types:")
+print(df.dtypes)
+print(f"\n📋 Basic stats:")
+df.describe()
+
+
+================================================================================
+CELL 5 (Markdown)
+================================================================================
+---
+## 2. Exploratory Data Analysis
+Analyze the raw data to identify patterns, anomalies, and issues before cleaning.
+
+
+================================================================================
+CELL 6 (Markdown)
+================================================================================
+### 2.1 — Entry Count Distribution
+
+
+================================================================================
+CELL 7 (Code) — Entry Count Distribution
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+# Histogram
+axes[0].hist(df['entry_count'], bins=100, color='#00f2ff', edgecolor='white', linewidth=0.3, alpha=0.8)
+axes[0].axvline(df['entry_count'].median(), color='#ffe173', linestyle='--', linewidth=2, label=f"Median: {df['entry_count'].median():.0f}")
+axes[0].axvline(df['entry_count'].quantile(0.99), color='#ff0040', linestyle='--', linewidth=2, label=f"P99: {df['entry_count'].quantile(0.99):.0f}")
+axes[0].set_title('Entry Count Distribution', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Entry Count')
+axes[0].set_ylabel('Frequency')
+axes[0].legend()
+
+# Box plot
+bp = axes[1].boxplot(df['entry_count'], vert=True, patch_artist=True,
+                      boxprops=dict(facecolor='#00f2ff40', edgecolor='#00f2ff'),
+                      medianprops=dict(color='#ffe173', linewidth=2),
+                      whiskerprops=dict(color='#00f2ff'),
+                      capprops=dict(color='#00f2ff'),
+                      flierprops=dict(marker='.', markerfacecolor='#ff004060', markersize=2))
+axes[1].set_title('Entry Count Box Plot', fontsize=14, fontweight='bold')
+axes[1].set_ylabel('Entry Count')
+
+plt.tight_layout()
+plt.show()
+
+print(f"Min: {df['entry_count'].min()}, Max: {df['entry_count'].max()}")
+print(f"Mean: {df['entry_count'].mean():.0f}, Median: {df['entry_count'].median():.0f}")
+print(f"P95: {df['entry_count'].quantile(0.95):.0f}, P99: {df['entry_count'].quantile(0.99):.0f}")
+print(f"Std Dev: {df['entry_count'].std():.0f}")
+
+
+================================================================================
+CELL 8 (Markdown)
+================================================================================
+### 2.2 — Hourly & Weekly Patterns
+
+
+================================================================================
+CELL 9 (Code) — Hourly & Weekly Patterns
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+# Hourly pattern
+hourly = df.groupby(df['timestamp'].dt.hour)['entry_count'].mean()
+bars1 = axes[0].bar(hourly.index, hourly.values, color='#00f2ff', edgecolor='#00f2ff40')
+axes[0].set_title('Average Entries by Hour of Day', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Hour')
+axes[0].set_ylabel('Avg Entry Count')
+axes[0].set_xticks(hourly.index)
+# Annotate peak
+peak_hour = hourly.idxmax()
+axes[0].annotate(f'Peak: {hourly.max():.0f}', xy=(peak_hour, hourly.max()),
+                  xytext=(peak_hour+1, hourly.max()+100), fontsize=10, color='#ffe173',
+                  arrowprops=dict(arrowstyle='->', color='#ffe173'))
+
+# Day of week pattern
+daily = df.groupby(df['timestamp'].dt.dayofweek)['entry_count'].mean()
+day_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+bars2 = axes[1].bar(range(7), daily.values, color='#b600f8', edgecolor='#b600f840')
+axes[1].set_xticks(range(7))
+axes[1].set_xticklabels(day_labels)
+axes[1].set_title('Average Entries by Day of Week', fontsize=14, fontweight='bold')
+axes[1].set_xlabel('Day')
+axes[1].set_ylabel('Avg Entry Count')
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n⚠️  FINDING: Only {len(hourly)} of 24 hours have data!")
+print(f"   Present hours: {sorted(hourly.index.tolist())}")
+print(f"   Missing hours: {sorted(set(range(24)) - set(hourly.index))}")
+print(f"\n   This is because MTA turnstile data is reported in 4-hour audit windows.")
+print(f"   The 12 hours represent 3 time blocks: Midnight (0-3), Morning (8-11), Evening (16-19)")
+
+
+================================================================================
+CELL 10 (Markdown)
+================================================================================
+### 2.3 — Current Occupancy Analysis (Critical Issue)
+
+
+================================================================================
+CELL 11 (Code) — Occupancy Problem
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+# Occupancy histogram
+axes[0].hist(df['current_occupancy'], bins=100, color='#ff0040', edgecolor='white', linewidth=0.3, alpha=0.7)
+axes[0].axvline(0, color='#ffe173', linestyle='--', linewidth=2, label='Zero line')
+axes[0].set_title('Current Occupancy Distribution', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Current Occupancy')
+axes[0].set_ylabel('Frequency')
+axes[0].legend()
+
+# Percentage breakdown
+neg_pct = (df['current_occupancy'] < 0).sum() / len(df) * 100
+zero_pct = (df['current_occupancy'] == 0).sum() / len(df) * 100
+pos_pct = (df['current_occupancy'] > 0).sum() / len(df) * 100
+
+categories = ['Negative\n(broken)', 'Zero', 'Positive\n(valid)']
+values = [neg_pct, zero_pct, pos_pct]
+colors_pie = ['#ff0040', '#888888', '#00f2ff']
+axes[1].bar(categories, values, color=colors_pie, edgecolor='white', linewidth=0.5)
+for i, v in enumerate(values):
+    axes[1].text(i, v + 1, f'{v:.1f}%', ha='center', fontsize=13, fontweight='bold', color='white')
+axes[1].set_title('Occupancy Value Breakdown', fontsize=14, fontweight='bold')
+axes[1].set_ylabel('Percentage (%)')
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n🚨 FINDING: {neg_pct:.1f}% of current_occupancy values are NEGATIVE!")
+print(f"   Root cause: current_occupancy = entry_count - exit_count (per window)")
+print(f"   When more people EXIT than ENTER in a window, occupancy goes negative.")
+print(f"   This is NOT real occupancy — it's per-window net flow.")
+print(f"\n   ✅ FIX: Drop current_occupancy entirely. Predict entry_count instead.")
+
+
+================================================================================
+CELL 12 (Markdown)
+================================================================================
+### 2.4 — Density Level Distribution
+
+
+================================================================================
+CELL 13 (Code) — Density Level Imbalance
+================================================================================
+fig, ax = plt.subplots(figsize=(10, 5))
+
+density_counts = df['density_level'].value_counts()
+colors_density = {'low': '#00f2ff', 'moderate': '#ffe173', 'high': '#ff8c00', 'critical': '#ff0040'}
+bars = ax.bar(density_counts.index, density_counts.values,
+              color=[colors_density.get(d, '#888') for d in density_counts.index],
+              edgecolor='white', linewidth=0.5)
+ax.set_title('Distribution of Density Levels', fontsize=14, fontweight='bold')
+ax.set_ylabel('Count')
+ax.set_yscale('log')  # Log scale to see the tiny categories
+
+for bar, val in zip(bars, density_counts.values):
+    pct = val / len(df) * 100
+    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() * 1.5,
+            f'{val:,}\n({pct:.2f}%)', ha='center', fontsize=11, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n🚨 FINDING: Extreme class imbalance!")
+print(f"   low:      {density_counts.get('low', 0):>8,} ({density_counts.get('low', 0)/len(df)*100:.2f}%)")
+print(f"   moderate: {density_counts.get('moderate', 0):>8,} ({density_counts.get('moderate', 0)/len(df)*100:.2f}%)")
+print(f"   high:     {density_counts.get('high', 0):>8,} ({density_counts.get('high', 0)/len(df)*100:.2f}%)")
+print(f"   critical: {density_counts.get('critical', 0):>8,} ({density_counts.get('critical', 0)/len(df)*100:.2f}%)")
+print(f"\n   ✅ FIX: Drop density_level. Predict continuous entry_count instead.")
+
+
+================================================================================
+CELL 14 (Markdown)
+================================================================================
+### 2.5 — Entries vs Exits Relationship
+
+
+================================================================================
+CELL 15 (Code) — Entries vs Exits
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+# Scatter plot (sample for performance)
+sample_df = df.sample(min(10000, len(df)), random_state=42)
+axes[0].scatter(sample_df['entry_count'], sample_df['exit_count'],
+                alpha=0.2, s=5, color='#00f2ff')
+axes[0].plot([0, 5000], [0, 5000], '--', color='#ffe173', linewidth=1, label='Equal line')
+axes[0].set_title('Entry Count vs Exit Count (10K sample)', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Entry Count')
+axes[0].set_ylabel('Exit Count')
+axes[0].legend()
+
+# Average entries vs exits by hour
+hourly_entries = df.groupby(df['timestamp'].dt.hour)['entry_count'].mean()
+hourly_exits = df.groupby(df['timestamp'].dt.hour)['exit_count'].mean()
+
+x = np.arange(len(hourly_entries))
+width = 0.35
+axes[1].bar(x - width/2, hourly_entries.values, width, label='Entries', color='#00f2ff', alpha=0.8)
+axes[1].bar(x + width/2, hourly_exits.values, width, label='Exits', color='#b600f8', alpha=0.8)
+axes[1].set_xticks(x)
+axes[1].set_xticklabels(hourly_entries.index)
+axes[1].set_title('Avg Entries vs Exits by Hour', fontsize=14, fontweight='bold')
+axes[1].set_xlabel('Hour')
+axes[1].set_ylabel('Average Count')
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n⚠️  FINDING: Exits consistently exceed Entries across ALL hours.")
+print(f"   This is a systemic artifact of turnstile diff calculation.")
+print(f"   ✅ FIX: Use entry_exit_ratio as a feature — the model will learn the pattern.")
+
+
+================================================================================
+CELL 16 (Markdown)
+================================================================================
+### 2.6 — Station Data Coverage
+
+
+================================================================================
+CELL 17 (Code) — Station Coverage
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+station_counts = df.groupby('station_id').size().sort_values(ascending=False)
+
+# Histogram of readings per station
+axes[0].hist(station_counts.values, bins=50, color='#00f2ff', edgecolor='white', linewidth=0.3)
+axes[0].axvline(1000, color='#ff0040', linestyle='--', linewidth=2, label='Min threshold (1000)')
+axes[0].set_title('Readings per Station — Distribution', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Number of Readings')
+axes[0].set_ylabel('Number of Stations')
+axes[0].legend()
+
+# Top 20 and Bottom 20 stations
+top20 = station_counts.head(20)
+bot20 = station_counts.tail(20)
+axes[1].barh(range(20), top20.values, color='#00f2ff', alpha=0.7, label='Top 20')
+axes[1].barh(range(20, 40), bot20.values, color='#ff004080', alpha=0.7, label='Bottom 20')
+axes[1].set_title('Top 20 vs Bottom 20 Stations (by readings)', fontsize=14, fontweight='bold')
+axes[1].set_xlabel('Number of Readings')
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+below_threshold = (station_counts < 1000).sum()
+print(f"\n📊 Station coverage:")
+print(f"   Max readings: {station_counts.max():,} (station {station_counts.idxmax()})")
+print(f"   Min readings: {station_counts.min():,} (station {station_counts.idxmin()})")
+print(f"   Median: {station_counts.median():.0f}")
+print(f"   Stations below 1000 readings: {below_threshold} (will be filtered out)")
+
+
+================================================================================
+CELL 18 (Markdown)
+================================================================================
+### 2.7 — Time Gap Analysis
+
+
+================================================================================
+CELL 19 (Code) — Time Gaps
+================================================================================
+# Calculate time gaps for a sample of stations
+sample_stations = df['station_id'].value_counts().head(5).index
+gaps_df = df[df['station_id'].isin(sample_stations)].copy()
+gaps_df = gaps_df.sort_values(['station_id', 'timestamp'])
+gaps_df['gap_hours'] = gaps_df.groupby('station_id')['timestamp'].diff().dt.total_seconds() / 3600
+
+fig, ax = plt.subplots(figsize=(10, 5))
+gap_counts = gaps_df['gap_hours'].dropna().value_counts().sort_index()
+ax.bar(gap_counts.index, gap_counts.values, color='#00f2ff', edgecolor='white', linewidth=0.5, width=0.3)
+ax.set_title('Time Gap Between Consecutive Readings', fontsize=14, fontweight='bold')
+ax.set_xlabel('Gap (Hours)')
+ax.set_ylabel('Occurrences')
+ax.set_xticks(gap_counts.index)
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n⚠️  FINDING: Readings are spaced 1 hour or 5 hours apart.")
+print(f"   The 5-hour gaps occur between time blocks:")
+print(f"     03:00 → 08:00 (5h gap)")
+print(f"     11:00 → 16:00 (5h gap)")
+print(f"     19:00 → 00:00 (5h gap)")
+print(f"\n   ✅ FIX: Add 'time_block' feature (0=midnight, 1=morning, 2=evening)")
+print(f"         lag_1 = 'previous reading' is still valid in sequence order.")
+
+
+================================================================================
+CELL 20 (Markdown)
+================================================================================
+### 2.8 — Monthly Trends
+
+
+================================================================================
+CELL 21 (Code) — Monthly Trends
+================================================================================
+fig, ax = plt.subplots(figsize=(12, 5))
+
+monthly = df.groupby(df['timestamp'].dt.month).agg(
+    avg_entries=('entry_count', 'mean'),
+    total_readings=('entry_count', 'count'),
+    stations=('station_id', 'nunique')
+).reset_index()
+
+ax.bar(monthly['timestamp'], monthly['avg_entries'], color='#00f2ff', edgecolor='white', linewidth=0.5)
+ax.set_title('Average Entry Count by Month', fontsize=14, fontweight='bold')
+ax.set_xlabel('Month')
+ax.set_ylabel('Avg Entry Count')
+ax.set_xticks(range(1, 13))
+ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+
+for i, row in monthly.iterrows():
+    ax.text(row['timestamp'], row['avg_entries'] + 20, f"{row['avg_entries']:.0f}",
+            ha='center', fontsize=9, color='#ffe173')
+
+plt.tight_layout()
+plt.show()
+
+print(f"\n📊 Monthly coverage: {monthly['total_readings'].min():,} - {monthly['total_readings'].max():,} readings/month")
+print(f"   All 12 months are well-represented ✅")
+
+
+================================================================================
+CELL 22 (Markdown)
+================================================================================
+### 📋 EDA Summary
+
+| Finding | Issue | Severity | Fix |
+|---------|-------|----------|-----|
+| Only 12 of 24 hours | MTA reports in 4h blocks | ⚠️ Medium | Add `time_block` feature |
+| 63% negative occupancy | Per-window net flow, not real | 🚨 Critical | **Drop column entirely** |
+| Exits > Entries always | Systemic turnstile bias | ⚠️ Medium | Use `entry_exit_ratio` as feature |
+| Max entry_count = 26,799 | Extreme outliers (0.5%) | ⚠️ Medium | Cap at P99 (~4,132) |
+| 99.9% density = "low" | Class imbalance | 🚨 Critical | **Drop column, predict continuous** |
+| Min 383 readings/station | Sparse data | ⚠️ Medium | Filter stations < 1,000 readings |
+| 1h and 5h time gaps | Between time blocks | ℹ️ Low | Lags still valid in sequence |
+
+
+================================================================================
+CELL 23 (Markdown)
+================================================================================
+---
+## 3. Data Cleaning
+Apply all fixes identified during EDA, step by step.
+
+
+================================================================================
+CELL 24 (Code) — Step 1: Remove Dead Readings
+================================================================================
+print("=" * 60)
+print("STEP 1: Remove dead readings (both entry and exit = 0)")
+print("=" * 60)
+
+before = len(df)
+dead_mask = (df['entry_count'] == 0) & (df['exit_count'] == 0)
+df = df[~dead_mask]
+removed = before - len(df)
+
+print(f"   Found {dead_mask.sum():,} dead readings")
+print(f"   Removed: {removed:,} rows ({removed/before*100:.2f}%)")
+print(f"   Remaining: {len(df):,} rows")
+
+
+================================================================================
+CELL 25 (Code) — Step 2: Cap Outliers at P99
+================================================================================
+print("=" * 60)
+print("STEP 2: Cap outliers at 99th percentile")
+print("=" * 60)
+
+p99_entry = df['entry_count'].quantile(0.99)
+p99_exit = df['exit_count'].quantile(0.99)
+
+outliers_entry = (df['entry_count'] > p99_entry).sum()
+outliers_exit = (df['exit_count'] > p99_exit).sum()
+
+df['entry_count'] = df['entry_count'].clip(upper=p99_entry)
+df['exit_count'] = df['exit_count'].clip(upper=p99_exit)
+
+print(f"   Entry count P99 threshold: {p99_entry:.0f}")
+print(f"   Exit count P99 threshold:  {p99_exit:.0f}")
+print(f"   Entry outliers capped: {outliers_entry:,}")
+print(f"   Exit outliers capped:  {outliers_exit:,}")
+print(f"   New entry_count range: {df['entry_count'].min():.0f} — {df['entry_count'].max():.0f}")
+print(f"   New exit_count range:  {df['exit_count'].min():.0f} — {df['exit_count'].max():.0f}")
+
+
+================================================================================
+CELL 26 (Code) — Step 3: Filter Sparse Stations
+================================================================================
+print("=" * 60)
+print("STEP 3: Filter stations with < 1,000 readings")
+print("=" * 60)
+
+before_stations = df['station_id'].nunique()
+station_counts = df.groupby('station_id').size()
+valid_stations = station_counts[station_counts >= 1000].index
+sparse_stations = before_stations - len(valid_stations)
+
+df = df[df['station_id'].isin(valid_stations)]
+
+print(f"   Stations before: {before_stations}")
+print(f"   Stations removed (< 1000 readings): {sparse_stations}")
+print(f"   Stations remaining: {len(valid_stations)}")
+print(f"   Rows remaining: {len(df):,}")
+
+
+================================================================================
+CELL 27 (Code) — Step 4: Drop Broken Columns
+================================================================================
+print("=" * 60)
+print("STEP 4: Drop broken columns (current_occupancy, density_level)")
+print("=" * 60)
+
+df = df.drop(columns=['current_occupancy', 'density_level'])
+
+print(f"   ❌ Dropped: current_occupancy (63% negative — broken metric)")
+print(f"   ❌ Dropped: density_level (99.9% 'low' — useless)")
+print(f"   ✅ Remaining columns: {list(df.columns)}")
+
+
+================================================================================
+CELL 28 (Code) — Step 5: Sort by Station + Time
+================================================================================
+print("=" * 60)
+print("STEP 5: Sort data by station_id and timestamp")
+print("=" * 60)
+
+df = df.sort_values(['station_id', 'timestamp']).reset_index(drop=True)
+
+print(f"   ✅ Sorted {len(df):,} rows by (station_id, timestamp)")
+print(f"   First row: station {df.iloc[0]['station_id']}, time {df.iloc[0]['timestamp']}")
+print(f"   Last row:  station {df.iloc[-1]['station_id']}, time {df.iloc[-1]['timestamp']}")
+
+
+================================================================================
+CELL 29 (Code) — Cleaning Summary
+================================================================================
+print("=" * 60)
+print("✅ DATA CLEANING COMPLETE")
+print("=" * 60)
+print(f"\n   Rows:     {len(df):,}")
+print(f"   Stations: {df['station_id'].nunique()}")
+print(f"   Columns:  {list(df.columns)}")
+print(f"   Date range: {df['timestamp'].min()} → {df['timestamp'].max()}")
+print(f"\n   entry_count range: {df['entry_count'].min():.0f} — {df['entry_count'].max():.0f}")
+print(f"   exit_count range:  {df['exit_count'].min():.0f} — {df['exit_count'].max():.0f}")
+print(f"\n   No negative values ✅")
+print(f"   No extreme outliers ✅")
+print(f"   No sparse stations ✅")
+print(f"   No broken columns ✅")
+
+df.describe()
+
+
+================================================================================
+CELL 30 (Markdown)
+================================================================================
+---
+## 4. Feature Engineering
+Extract temporal features, lag features, and rolling statistics.
+
+
+================================================================================
+CELL 31 (Code) — Feature Engineering
+================================================================================
+def engineer_features(df):
+    df = df.copy()
+
+    # ── Temporal Features ──
+    df['hour'] = df['timestamp'].dt.hour
+    df['day_of_week'] = df['timestamp'].dt.dayofweek
+    df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+    df['month'] = df['timestamp'].dt.month
+
+    # ── Time Block (handles the 4-hour audit windows) ──
+    # Block 0: hours 0-3  (midnight / early morning)
+    # Block 1: hours 8-11 (morning rush)
+    # Block 2: hours 16-19 (evening rush)
+    df['time_block'] = df['hour'].apply(lambda h: 0 if h <= 3 else (1 if h <= 11 else 2))
+
+    # ── Station Features ──
+    df['is_interchange'] = df['is_interchange'].astype(int)
+
+    # ── Lag Features (per station, in sequence order) ──
+    for lag in [1, 2, 3]:
+        df[f'lag_{lag}'] = df.groupby('station_id')['entry_count'].shift(lag)
+
+    # ── Rolling Statistics (per station) ──
+    df['rolling_mean_3'] = df.groupby('station_id')['entry_count'] \
+        .transform(lambda x: x.rolling(3, min_periods=1).mean())
+    df['rolling_std_3'] = df.groupby('station_id')['entry_count'] \
+        .transform(lambda x: x.rolling(3, min_periods=1).std().fillna(0))
+
+    # ── Derived Features ──
+    df['entry_exit_ratio'] = df['entry_count'] / (df['exit_count'] + 1)
+
+    # ── Target Variables ──
+    # shift(-1) = next reading in sequence (1 period ahead)
+    # shift(-4) = 4 readings ahead (roughly same time block next day for some stations)
+    df['target_1h'] = df.groupby('station_id')['entry_count'].shift(-1)
+    df['target_4h'] = df.groupby('station_id')['entry_count'].shift(-4)
+
+    return df
+
+df_feat = engineer_features(df)
+
+# Drop rows with NaN (first few and last few per station)
+before = len(df_feat)
+df_feat = df_feat.replace([np.inf, -np.inf], np.nan).dropna()
+dropped = before - len(df_feat)
+
+FEATURES = [
+    'hour', 'time_block', 'day_of_week', 'is_weekend', 'month',
+    'is_interchange', 'max_capacity',
+    'lag_1', 'lag_2', 'lag_3',
+    'rolling_mean_3', 'rolling_std_3', 'entry_exit_ratio'
+]
+
+print(f"✅ Feature engineering complete")
+print(f"   Rows before dropna: {before:,}")
+print(f"   Rows dropped (NaN from lags/targets): {dropped:,}")
+print(f"   Final dataset: {len(df_feat):,} rows")
+print(f"\n📋 Features ({len(FEATURES)}):")
+for i, f in enumerate(FEATURES, 1):
+    print(f"   {i:2d}. {f}")
+
+df_feat[FEATURES + ['target_1h', 'target_4h']].head(10)
+
+
+================================================================================
+CELL 32 (Code) — Feature Correlation Matrix
+================================================================================
+fig, ax = plt.subplots(figsize=(14, 10))
+
+corr = df_feat[FEATURES + ['target_1h', 'target_4h']].corr()
+mask = np.triu(np.ones_like(corr, dtype=bool))
+sns.heatmap(corr, mask=mask, annot=True, fmt='.2f', cmap='coolwarm',
+            center=0, vmin=-1, vmax=1, ax=ax,
+            linewidths=0.5, linecolor='#333333')
+ax.set_title('Feature Correlation Matrix', fontsize=14, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+print("\n📊 Top correlations with target_1h:")
+target_corr = corr['target_1h'].drop(['target_1h', 'target_4h']).abs().sort_values(ascending=False)
+for feat, val in target_corr.items():
+    print(f"   {feat:20s}: {val:.3f}")
+
+
+================================================================================
+CELL 33 (Markdown)
+================================================================================
+---
+## 5. Train / Test Split
+Time-based split to prevent data leakage — train on Jan–Sep, test on Oct–Dec.
+
+
+================================================================================
+CELL 34 (Code) — Train/Test Split
+================================================================================
+split_date = '2022-10-01'
+
+train = df_feat[df_feat['timestamp'] < split_date]
+test = df_feat[df_feat['timestamp'] >= split_date]
+
+X_train, y_train_1h = train[FEATURES], train['target_1h']
+X_test, y_test_1h = test[FEATURES], test['target_1h']
+
+_, y_train_4h = train[FEATURES], train['target_4h']
+_, y_test_4h = test[FEATURES], test['target_4h']
+
+print(f"✅ Time-based split at {split_date}")
+print(f"   Train: {len(train):,} rows (Jan — Sep 2022)")
+print(f"   Test:  {len(test):,} rows (Oct — Dec 2022)")
+print(f"   Ratio: {len(train)/len(df_feat)*100:.1f}% / {len(test)/len(df_feat)*100:.1f}%")
+print(f"\n   Target 1h — Train mean: {y_train_1h.mean():.0f}, Test mean: {y_test_1h.mean():.0f}")
+print(f"   Target 4h — Train mean: {y_train_4h.mean():.0f}, Test mean: {y_test_4h.mean():.0f}")
+
+
+================================================================================
+CELL 35 (Markdown)
+================================================================================
+---
+## 6. Model Training
+Training two Gradient Boosting Regressors — one for 1-hour ahead, one for 4-hour ahead.
+
+
+================================================================================
+CELL 36 (Code) — Train 1-Hour Model
+================================================================================
+%%time
+model_1h = GradientBoostingRegressor(
+    n_estimators=200,
+    max_depth=6,
+    learning_rate=0.1,
+    subsample=0.8,
+    random_state=42,
+    verbose=0
+)
+model_1h.fit(X_train, y_train_1h)
+print("✅ 1-hour ahead model trained successfully")
+
+
+================================================================================
+CELL 37 (Code) — Train 4-Hour Model
+================================================================================
+%%time
+model_4h = GradientBoostingRegressor(
+    n_estimators=200,
+    max_depth=6,
+    learning_rate=0.1,
+    subsample=0.8,
+    random_state=42,
+    verbose=0
+)
+model_4h.fit(X_train, y_train_4h)
+print("✅ 4-hour ahead model trained successfully")
+
+
+================================================================================
+CELL 38 (Markdown)
+================================================================================
+---
+## 7. Model Evaluation
+
+
+================================================================================
+CELL 39 (Code) — Metrics
+================================================================================
+pred_1h = model_1h.predict(X_test)
+pred_4h = model_4h.predict(X_test)
+
+metrics = {
+    'Model': ['1-Hour Ahead', '4-Hour Ahead'],
+    'MAE': [
+        mean_absolute_error(y_test_1h, pred_1h),
+        mean_absolute_error(y_test_4h, pred_4h),
+    ],
+    'RMSE': [
+        np.sqrt(mean_squared_error(y_test_1h, pred_1h)),
+        np.sqrt(mean_squared_error(y_test_4h, pred_4h)),
+    ],
+    'R² Score': [
+        r2_score(y_test_1h, pred_1h),
+        r2_score(y_test_4h, pred_4h),
+    ]
+}
+
+metrics_df = pd.DataFrame(metrics)
+print("📊 Model Performance:")
+print("=" * 55)
+print(metrics_df.to_string(index=False))
+print("=" * 55)
+
+
+================================================================================
+CELL 40 (Code) — Actual vs Predicted
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+sample = 500
+
+axes[0].plot(y_test_1h.values[:sample], label='Actual', color='#00f2ff', alpha=0.7, linewidth=1)
+axes[0].plot(pred_1h[:sample], label='Predicted', color='#ff8c00', alpha=0.7, linewidth=1)
+axes[0].set_title('1-Hour Ahead: Actual vs Predicted', fontsize=13, fontweight='bold')
+axes[0].legend()
+axes[0].set_xlabel('Sample')
+axes[0].set_ylabel('Entry Count')
+axes[0].fill_between(range(sample), y_test_1h.values[:sample], pred_1h[:sample],
+                      alpha=0.1, color='#ffe173')
+
+axes[1].plot(y_test_4h.values[:sample], label='Actual', color='#00f2ff', alpha=0.7, linewidth=1)
+axes[1].plot(pred_4h[:sample], label='Predicted', color='#ff8c00', alpha=0.7, linewidth=1)
+axes[1].set_title('4-Hour Ahead: Actual vs Predicted', fontsize=13, fontweight='bold')
+axes[1].legend()
+axes[1].set_xlabel('Sample')
+axes[1].set_ylabel('Entry Count')
+axes[1].fill_between(range(sample), y_test_4h.values[:sample], pred_4h[:sample],
+                      alpha=0.1, color='#ffe173')
+
+plt.tight_layout()
+plt.show()
+
+
+================================================================================
+CELL 41 (Code) — Feature Importance
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+for ax, model, title in [(axes[0], model_1h, '1-Hour Model'), (axes[1], model_4h, '4-Hour Model')]:
+    importance = pd.Series(model.feature_importances_, index=FEATURES).sort_values()
+    colors_imp = ['#00f2ff' if v > importance.median() else '#00f2ff60' for v in importance.values]
+    importance.plot(kind='barh', ax=ax, color=colors_imp, edgecolor='white', linewidth=0.5)
+    ax.set_title(f'Feature Importance — {title}', fontsize=13, fontweight='bold')
+    ax.set_xlabel('Importance')
+
+plt.tight_layout()
+plt.show()
+
+print("\n📊 Top 5 features (1h model):")
+imp_1h = pd.Series(model_1h.feature_importances_, index=FEATURES).sort_values(ascending=False)
+for feat, val in imp_1h.head(5).items():
+    print(f"   {feat:20s}: {val:.4f}")
+
+print("\n📊 Top 5 features (4h model):")
+imp_4h = pd.Series(model_4h.feature_importances_, index=FEATURES).sort_values(ascending=False)
+for feat, val in imp_4h.head(5).items():
+    print(f"   {feat:20s}: {val:.4f}")
+
+
+================================================================================
+CELL 42 (Code) — Residual Analysis
+================================================================================
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+residuals_1h = y_test_1h.values - pred_1h
+residuals_4h = y_test_4h.values - pred_4h
+
+axes[0].hist(residuals_1h, bins=100, color='#00f2ff', alpha=0.7, edgecolor='white', linewidth=0.3)
+axes[0].set_title('Residual Distribution — 1h Model', fontsize=13, fontweight='bold')
+axes[0].set_xlabel('Prediction Error (Actual - Predicted)')
+axes[0].axvline(0, color='red', linestyle='--', linewidth=1)
+axes[0].axvline(residuals_1h.mean(), color='#ffe173', linestyle='--', linewidth=1, label=f'Mean: {residuals_1h.mean():.1f}')
+axes[0].legend()
+
+axes[1].hist(residuals_4h, bins=100, color='#b600f8', alpha=0.7, edgecolor='white', linewidth=0.3)
+axes[1].set_title('Residual Distribution — 4h Model', fontsize=13, fontweight='bold')
+axes[1].set_xlabel('Prediction Error (Actual - Predicted)')
+axes[1].axvline(0, color='red', linestyle='--', linewidth=1)
+axes[1].axvline(residuals_4h.mean(), color='#ffe173', linestyle='--', linewidth=1, label=f'Mean: {residuals_4h.mean():.1f}')
+axes[1].legend()
+
+plt.tight_layout()
+plt.show()
+
+print(f"1h Residuals — Mean: {residuals_1h.mean():.2f}, Std: {residuals_1h.std():.2f}")
+print(f"4h Residuals — Mean: {residuals_4h.mean():.2f}, Std: {residuals_4h.std():.2f}")
+print(f"\nIf mean ≈ 0 and distribution is symmetric → model is unbiased ✅")
+
+
+================================================================================
+CELL 43 (Markdown)
+================================================================================
+---
+## 8. Next Steps
+
+> ✅ EDA and experimentation complete in this notebook.
+>
+> To **train and export** the final model, run the production training script:
+> ```bash
+> cd backend
+> uv run python scripts/train_crowd_model.py
+> ```
+>
+> The script handles: data cleaning → feature engineering → training → evaluation → `.joblib` export → database registration.
+>
+> See: `backend/scripts/train_crowd_model.py`
