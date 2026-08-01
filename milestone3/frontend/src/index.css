@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --background-mesh: none;
+    --card: #ffffff;
+    --card-solid: #ffffff;
+    --text: #09090b;
+    --text-muted: #71717a;
+    --border: #e4e4e7;
+    --primary: #18181b; 
+    --primary-hover: #27272a;
+    --accent: #0ea5e9; 
+    --glass-bg: #ffffff;
+    --glass-border: #e4e4e7;
+    --glow: rgba(0, 0, 0, 0.05);
+  }
+
+  :root.dark {
+    --background: #09090b; 
+    --background-mesh: none;
+    --card: #09090b; 
+    --card-solid: #09090b;
+    --text: #fafafa;
+    --text-muted: #a1a1aa;
+    --border: #27272a; 
+    --primary: #fafafa; 
+    --primary-hover: #f4f4f5;
+    --accent: #38bdf8; 
+    --glass-bg: #09090b;
+    --glass-border: #27272a;
+    --glow: rgba(255, 255, 255, 0.05);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+}
+
+/* Clean UI Styles */
+.glass-panel {
+  background: var(--background);
+  border: 1px solid var(--border);
+}
+
+.glass-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem; /* xl */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--text-muted);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Pulse animation for crowd density levels */
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(34, 197, 94, 0.4); }
+}
+@keyframes pulse-yellow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(234, 179, 8, 0.4); }
+}
+@keyframes pulse-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(249, 115, 22, 0.4); }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.4); }
+}
+
+.pulse-green { animation: pulse-green 2s infinite; }
+.pulse-yellow { animation: pulse-yellow 2s infinite; }
+.pulse-orange { animation: pulse-orange 2s infinite; }
+.pulse-red { animation: pulse-red 2s infinite; }
+
+/* Custom Leaflet Map styling */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  background-color: #0b0f19 !important;
+}
+
+.custom-map-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Floating animations to simulate anti-gravity weightlessness */
+@keyframes antigravity-float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes antigravity-float-medium {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes antigravity-float-fast {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-float-slow {
+  animation: antigravity-float-slow 6s ease-in-out infinite;
+}
+.animate-float-medium {
+  animation: antigravity-float-medium 4.5s ease-in-out infinite;
+}
+.animate-float-fast {
+  animation: antigravity-float-fast 3s ease-in-out infinite;
+}
+
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
