@@ -5,8 +5,12 @@ const gradientMap = {
   cyan: 'from-cyan-500 to-blue-500',
   emerald: 'from-emerald-500 to-teal-500',
   blue: 'from-blue-500 to-indigo-500',
+  purple: 'from-purple-500 to-fuchsia-500',
+  fuchsia: 'from-fuchsia-500 to-pink-500',
   amber: 'from-amber-500 to-orange-500',
+  orange: 'from-orange-500 to-red-500',
   red: 'from-red-500 to-rose-500',
+  rose: 'from-rose-500 to-pink-500',
   pink: 'from-pink-500 to-rose-500',
   primary: 'from-violet-500 to-cyan-500',
   warm: 'from-amber-500 to-red-500',
@@ -18,8 +22,12 @@ const glowMap = {
   cyan: 'hover:shadow-cyan-500/10',
   emerald: 'hover:shadow-emerald-500/10',
   blue: 'hover:shadow-blue-500/10',
+  purple: 'hover:shadow-purple-500/10',
+  fuchsia: 'hover:shadow-fuchsia-500/10',
   amber: 'hover:shadow-amber-500/10',
+  orange: 'hover:shadow-orange-500/10',
   red: 'hover:shadow-red-500/10',
+  rose: 'hover:shadow-rose-500/10',
   primary: 'hover:shadow-violet-500/10',
 };
 
@@ -29,7 +37,7 @@ const GlassmorphicCard = ({ children, className = '', hoverEffect = true, gradie
 
   return (
     <div className={`
-      glass-card p-6 text-[var(--text)] transition-all duration-300
+      glass-card p-6 text-[var(--text)] transition-all duration-300 relative
       ${hoverEffect ? '' : ''}
       ${glow ? `hover:shadow-lg ${glowClass}` : ''}
       ${className}

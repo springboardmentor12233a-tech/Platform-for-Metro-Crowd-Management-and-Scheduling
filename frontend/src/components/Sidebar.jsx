@@ -59,11 +59,10 @@ const Sidebar = ({ isOpen, closeMenu }) => {
         />
       )}
 
-      {/* Sidebar Container */}
       <aside 
-        className={`fixed inset-y-0 left-0 w-64 bg-[var(--card)]/80 backdrop-blur-xl border-r border-[var(--border)] z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 w-64 bg-[var(--card)]/80 backdrop-blur-2xl border-r border-[var(--border)] z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } flex flex-col h-screen`}
+        } flex flex-col h-screen shadow-[0_20px_60px_-20px_rgba(109,40,217,0.35)] overflow-hidden`}
       >
       {/* Brand Header */}
       <div className="p-6 border-b border-[var(--border)] flex items-center gap-3 relative">
@@ -92,7 +91,7 @@ const Sidebar = ({ isOpen, closeMenu }) => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 relative ${
                   isActive
-                    ? 'bg-gradient-to-r from-violet-600/90 via-purple-600/90 to-indigo-600/90 text-white shadow-lg shadow-violet-500/25'
+                    ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 text-white shadow-lg shadow-violet-500/25 ring-1 ring-white/20'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-violet-500/10 hover:to-cyan-500/10 hover:text-violet-600 dark:hover:text-cyan-400 hover:shadow-md hover:shadow-violet-500/5'
                 }`
               }

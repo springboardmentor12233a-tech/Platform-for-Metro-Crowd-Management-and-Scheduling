@@ -7,7 +7,7 @@ const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   return (
-    <div className="min-h-screen bg-[var(--background)] text-slate-800 dark:text-slate-100 transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] text-slate-800 dark:text-slate-100 transition-colors duration-300 relative overflow-hidden colorful-app-shell">
       {/* Animated Gradient Mesh Background */}
       <div className="gradient-mesh-bg">
         <div className="blob blob-1"></div>
@@ -25,7 +25,7 @@ const Layout = () => {
         <Navbar toggleMobileMenu={toggleMobileMenu} />
 
         {/* Dynamic page content */}
-        <main className="flex-1 p-8 mt-16 overflow-y-auto">
+        <main className="flex-1 p-8 overflow-y-auto">
           <Outlet />
         </main>
       </div>

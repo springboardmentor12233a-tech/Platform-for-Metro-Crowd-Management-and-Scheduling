@@ -135,19 +135,19 @@ export const WebSocketProvider = ({ children }) => {
             onClick={() => removeToast(toast.id)}
             className={`cursor-pointer p-4 rounded-xl shadow-lg border backdrop-blur-md flex flex-col gap-1 transition-all duration-300 transform translate-x-0 hover:scale-[1.02] ${
               toast.level === 'Critical'
-                ? 'bg-red-950/45 border-red-500 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse'
+                ? 'bg-red-50/95 border-red-300 text-red-900 shadow-[0_10px_28px_-16px_rgba(239,68,68,0.8)] dark:bg-red-950/70 dark:border-red-500/60 dark:text-red-100 animate-pulse'
                 : toast.level === 'Warning'
-                ? 'bg-orange-950/30 border-orange-500/50 text-orange-100 shadow-[0_0_10px_rgba(249,115,22,0.15)] animate-pulse'
-                : 'bg-slate-900/65 border-white/5 text-slate-100 animate-pulse'
+                ? 'bg-amber-50/95 border-amber-300 text-amber-900 shadow-[0_10px_28px_-16px_rgba(245,158,11,0.8)] dark:bg-amber-950/70 dark:border-amber-500/60 dark:text-amber-100 animate-pulse'
+                : 'bg-sky-50/95 border-sky-300 text-sky-900 shadow-[0_10px_28px_-16px_rgba(14,165,233,0.8)] dark:bg-slate-900/80 dark:border-slate-700 dark:text-slate-100 animate-pulse'
             }`}
           >
             <div className="flex justify-between items-center">
               <span className={`text-xs font-bold uppercase tracking-wider ${
-                toast.level === 'Critical' ? 'text-red-400' : toast.level === 'Warning' ? 'text-orange-400' : 'text-blue-400'
+                toast.level === 'Critical' ? 'text-red-700 dark:text-red-300' : toast.level === 'Warning' ? 'text-amber-700 dark:text-amber-300' : 'text-sky-700 dark:text-sky-300'
               }`}>
                 {toast.type} - {toast.level}
               </span>
-              <span className="text-[10px] opacity-60">
+              <span className="text-[10px] opacity-70">
                 {new Date(toast.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
               </span>
             </div>

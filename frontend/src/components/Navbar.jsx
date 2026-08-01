@@ -12,7 +12,7 @@ const Navbar = ({ toggleMobileMenu }) => {
   const activeAlerts = realTimeData?.alerts || [];
 
   return (
-    <header className="navbar-gradient-border h-16 bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] flex items-center justify-start gap-8 px-4 sm:px-8 fixed top-0 right-0 left-0 md:left-64 z-20">
+    <header className="navbar-gradient-border h-16 bg-[var(--card)]/80 backdrop-blur-2xl border-b border-[var(--border)] flex items-center justify-start gap-8 px-4 sm:px-8 sticky top-0 z-20">
       {/* Mobile Menu Toggle & Title */}
       <div className="flex items-center gap-3">
         <button 
