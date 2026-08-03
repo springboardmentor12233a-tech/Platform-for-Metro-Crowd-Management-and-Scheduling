@@ -10,7 +10,7 @@ class Settings:
     PROJECT_NAME: str = "MetroFlow"
     API_PREFIX: str = "/api"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./metroflow.db")
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "metroflow-milestone1-secret-key")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "metroflow-milestone1-3-secret-key")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "120"))
     MAX_IMPORT_ROWS: int = int(os.getenv("MAX_IMPORT_ROWS", "30000"))

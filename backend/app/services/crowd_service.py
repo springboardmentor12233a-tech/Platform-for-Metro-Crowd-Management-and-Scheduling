@@ -1,13 +1,13 @@
 from datetime import date
 from typing import Iterable
 
-from sqlalchemy import desc, func, or_
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 
 from app.models import PassengerFlow, Station
 
 
-def _status_from_percentage(percentage: float) -> str:
+def status_from_percentage(percentage: float) -> str:
     if percentage >= 90:
         return "Overcrowded"
     if percentage >= 70:
@@ -48,8 +48,8 @@ def get_summary(db: Session) -> dict:
     ]
 
     cards = [
-        {"label": "Total passengers", "value": f"{total_passengers:,}", "helper": "Imported passenger records"},
-        {"label": "Total trips", "value": f"{total_trips:,}", "helper": "Trips loaded into backend"},
+        {"label": "Total passengers", "value": f"{total_passengers:,}", "helper": "Imported Delhi Metro passenger records"},
+        {"label": "Total trips", "value": f"{total_trips:,}", "helper": "Trips loaded into FastAPI backend"},
         {"label": "Stations", "value": f"{total_stations:,}", "helper": "Unique stations monitored"},
         {"label": "Busiest station", "value": busiest_station, "helper": "Based on outbound passenger volume"},
     ]
@@ -98,7 +98,7 @@ def get_station_crowd(db: Session, target_date: date | None = None, limit: int =
                 "outbound_passengers": int(outbound),
                 "current_load": current_load,
                 "crowd_percentage": crowd_percentage,
-                "congestion_status": _status_from_percentage(crowd_percentage),
+                "congestion_status": status_from_percentage(crowd_percentage),
             }
         )
 

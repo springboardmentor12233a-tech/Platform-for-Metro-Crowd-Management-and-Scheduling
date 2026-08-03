@@ -1,10 +1,12 @@
-# MetroFlow Frontend
+# MetroFlow Frontend - Milestones 1 to 3
 
-React dashboard for Milestone 1.
+React + Vite frontend for MetroFlow.
 
-## Run locally
+## Run frontend
 
-```bash
+Keep the backend running first, then open a new terminal:
+
+```powershell
 cd frontend
 npm install
 npm run dev
@@ -13,12 +15,18 @@ npm run dev
 Open:
 
 ```text
-http://127.0.0.1:5173
+http://localhost:5173
 ```
 
-## Login
+## Dashboard features
 
-```text
-admin / admin123
-operator / operator123
-```
+- Login page with admin and operator credentials.
+- Role-aware dashboard message.
+- Crowd monitoring charts.
+- Station-wise crowd status table.
+- Congestion heatmap.
+- Train schedule management section.
+- AI demand forecasting section.
+- Frequency recommendation section.
+- Alerts and emergency announcement section.
+- Analytics and operational insights section.

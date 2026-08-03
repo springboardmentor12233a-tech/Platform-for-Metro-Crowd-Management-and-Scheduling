@@ -13,18 +13,34 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { AlertTriangle, Database, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Database, RefreshCw, ShieldCheck, UserCog } from 'lucide-react';
 import { apiRequest } from '../api/client.js';
+import AlertPanel from '../components/AlertPanel.jsx';
+import AnalyticsPanel from '../components/AnalyticsPanel.jsx';
 import HeatmapGrid from '../components/HeatmapGrid.jsx';
 import Navbar from '../components/Navbar.jsx';
+import PredictionPanel from '../components/PredictionPanel.jsx';
+import RecommendationList from '../components/RecommendationList.jsx';
+import ScheduleTable from '../components/ScheduleTable.jsx';
 import StatCard from '../components/StatCard.jsx';
 import StationTable from '../components/StationTable.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [summary, setSummary] = useState(null);
   const [stations, setStations] = useState([]);
   const [trend, setTrend] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [operations, setOperations] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [trafficReport, setTrafficReport] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [updates, setUpdates] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -32,16 +48,48 @@ export default function Dashboard() {
     setLoading(true);
     setError('');
     try {
-      const [summaryData, stationData, trendData, heatmapData] = await Promise.all([
+      const [
+        summaryData,
+        stationData,
+        trendData,
+        heatmapData,
+        scheduleData,
+        recommendationData,
+        operationData,
+        predictionData,
+        trafficData,
+        alertData,
+        updateData,
+        announcementData,
+        analyticsData,
+      ] = await Promise.all([
         apiRequest('/dashboard/summary'),
         apiRequest('/dashboard/station-crowd?limit=20'),
         apiRequest('/dashboard/passenger-trend?days=30'),
         apiRequest('/dashboard/heatmap?limit=12'),
+        apiRequest('/scheduling/schedules'),
+        apiRequest('/scheduling/frequency-recommendations?limit=8'),
+        apiRequest('/scheduling/operational-monitoring'),
+        apiRequest('/prediction/demand-forecast?days=7'),
+        apiRequest('/prediction/traffic-report'),
+        apiRequest('/alerts'),
+        apiRequest('/alerts/real-time-updates'),
+        apiRequest('/alerts/announcements'),
+        apiRequest('/analytics/report'),
       ]);
       setSummary(summaryData);
       setStations(stationData);
       setTrend(trendData.map((item) => ({ ...item, dateLabel: item.date.slice(5) })));
       setHeatmap(heatmapData);
+      setSchedules(scheduleData);
+      setRecommendations(recommendationData);
+      setOperations(operationData);
+      setPrediction(predictionData);
+      setTrafficReport(trafficData);
+      setAlerts(alertData);
+      setUpdates(updateData);
+      setAnnouncements(announcementData);
+      setAnalytics(analyticsData);
     } catch (err) {
       setError(err.message || 'Unable to load dashboard data');
     } finally {
@@ -59,10 +107,10 @@ export default function Dashboard() {
       <main className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wider text-cyan-700">Milestone 1</p>
-            <h1 className="mt-2 text-4xl font-black text-slate-950">Crowd Monitoring Dashboard</h1>
+            <p className="text-sm font-bold uppercase tracking-wider text-cyan-700">Milestones 1 to 3</p>
+            <h1 className="mt-2 text-4xl font-black text-slate-950">MetroFlow Operations Dashboard</h1>
             <p className="mt-2 text-slate-500">
-              Authentication, role based access, station monitoring, and congestion tracking using Delhi Metro passenger data.
+              Crowd monitoring, train scheduling, AI demand forecasting, alerts, analytics, and operational reporting using Delhi Metro passenger data.
             </p>
           </div>
           <button
@@ -72,6 +120,30 @@ export default function Dashboard() {
             <RefreshCw size={18} /> Refresh
           </button>
         </div>
+
+        <section className="mb-8 rounded-3xl border border-cyan-100 bg-white p-5 card-shadow">
+          {user?.role === 'admin' ? (
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="mt-1 text-cyan-600" size={24} />
+              <div>
+                <p className="font-bold text-slate-950">Admin access enabled</p>
+                <p className="text-sm text-slate-500">
+                  Admin can view all station data, review schedules, monitor alerts, and validate operator-level workflows.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start gap-3">
+              <UserCog className="mt-1 text-cyan-600" size={24} />
+              <div>
+                <p className="font-bold text-slate-950">Operator monitoring view</p>
+                <p className="text-sm text-slate-500">
+                  Operator can monitor crowd status, passenger trends, congestion alerts, schedule updates, and station-level recommendations.
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
 
         {loading && (
           <div className="rounded-3xl bg-white p-8 text-center font-semibold text-slate-500 card-shadow">Loading dashboard...</div>
@@ -91,10 +163,19 @@ export default function Dashboard() {
               ))}
             </section>
 
+            {operations && (
+              <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                {operations.metrics.map((card) => (
+                  <StatCard key={card.label} label={card.label} value={card.value} helper={card.helper} />
+                ))}
+              </section>
+            )}
+
             <section className="mt-8 grid gap-6 lg:grid-cols-3">
               <div className="rounded-3xl bg-white p-6 card-shadow lg:col-span-2">
                 <div className="mb-5 flex items-center justify-between">
                   <div>
+                    <p className="text-sm font-bold uppercase tracking-wide text-cyan-700">Milestone 1</p>
                     <h2 className="text-xl font-bold text-slate-950">Passenger trend</h2>
                     <p className="text-sm text-slate-500">Daily passenger volume from imported records.</p>
                   </div>
@@ -114,6 +195,7 @@ export default function Dashboard() {
               </div>
 
               <div className="rounded-3xl bg-white p-6 card-shadow">
+                <p className="text-sm font-bold uppercase tracking-wide text-cyan-700">Milestone 1</p>
                 <h2 className="text-xl font-bold text-slate-950">Ticket type split</h2>
                 <p className="text-sm text-slate-500">Passenger volume by ticket category.</p>
                 <div className="mt-5 h-80">
@@ -132,8 +214,11 @@ export default function Dashboard() {
             </section>
 
             <section className="mt-8 rounded-3xl bg-white p-6 card-shadow">
-              <h2 className="text-xl font-bold text-slate-950">Passenger context by remarks</h2>
-              <p className="text-sm text-slate-500">Peak, off-peak, weekend, festival, and maintenance records.</p>
+              <p className="text-sm font-bold uppercase tracking-wide text-cyan-700">Milestone 2</p>
+              <h2 className="text-xl font-bold text-slate-950">Traffic analysis report</h2>
+              <p className="text-sm text-slate-500">
+                Peak context: {trafficReport?.peak_context || 'Loading'} | Busiest station: {trafficReport?.busiest_station || 'Loading'}
+              </p>
               <div className="mt-5 h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={summary.remarks_split} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
@@ -148,7 +233,27 @@ export default function Dashboard() {
             </section>
 
             <section className="mt-8">
+              <ScheduleTable schedules={schedules} />
+            </section>
+
+            <section className="mt-8">
+              <RecommendationList recommendations={recommendations} />
+            </section>
+
+            <section className="mt-8">
+              <PredictionPanel prediction={prediction} />
+            </section>
+
+            <section className="mt-8">
+              <AlertPanel alerts={alerts} updates={updates} announcements={announcements} />
+            </section>
+
+            <section className="mt-8">
               <HeatmapGrid heatmap={heatmap} />
+            </section>
+
+            <section className="mt-8">
+              <AnalyticsPanel analytics={analytics} />
             </section>
 
             <section className="mt-8">

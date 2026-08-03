@@ -1,27 +1,53 @@
 # MetroFlow: AI Platform for Metro Crowd Management and Scheduling
 
-Milestone 1 project submitted by **Muni Pujitha Punugoti** for the Infosys Springboard Virtual Internship.
+Submitted by: **Muni Pujitha Punugoti**
 
-This project implements the Week 1 and Week 2 milestone scope:
+This repository contains the completed implementation for **Milestone 1, Milestone 2, and Milestone 3** of the Infosys Springboard Virtual Internship project.
 
+## Completed scope
+
+### Milestone 1: Project Initialization, Design Process and Core Setup
+
+- Project objective and workflow planning
 - React frontend setup
-- FastAPI backend setup
-- JWT based authentication
-- Admin and operator roles
+- Python FastAPI backend setup
+- JWT authentication
+- Admin and operator role-based access
 - Crowd monitoring dashboard
-- Station wise congestion tracking
-- Dataset loading from Delhi Metro passenger data
-- Architecture, database schema, UI wireframes, and milestone report
+- Congestion tracking and heatmap
+- Database schema and documentation
 
-## Selected dataset
+### Milestone 2: Scheduling System and AI Prediction
 
-Dataset used for Milestone 1:
+- Train scheduling workflow
+- Frequency adjustment recommendations
+- Real-time operational monitoring
+- AI crowd prediction using passenger dataset
+- Passenger demand forecasting using Scikit-learn
+- Traffic analysis report
 
-```text
-Delhi Metro Dataset - EDA & Data Visualization
-```
+### Milestone 3: Alerts, Notifications and Analytics
 
-The dataset file is included at:
+- Overcrowding and delay alerts
+- Emergency announcement workflow
+- Real-time schedule update view
+- Analytics dashboard
+- Congestion heatmaps
+- Operational insights and reporting
+
+## Tech stack used
+
+- Frontend: React.js, Vite, Tailwind CSS, Recharts
+- Backend: Python, FastAPI
+- Authentication: JWT
+- Database: SQLite for local demo, PostgreSQL-ready configuration
+- Analytics and AI: Pandas, NumPy, Scikit-learn
+- API testing: Swagger UI and Postman collection
+- Version control: Git and GitHub
+
+## Dataset used
+
+The project uses the Delhi Metro ridership dataset file:
 
 ```text
 backend/data/delhi_metro_updated.csv
@@ -30,144 +56,90 @@ backend/data/delhi_metro_updated.csv
 Columns used:
 
 ```text
-TripID, Date, From_Station, To_Station, Distance_km, Fare, Cost_per_passenger, Passengers, Ticket_Type, Remarks
+TripID, Date, From_Station, To_Station, Distance_km, Fare,
+Cost_per_passenger, Passengers, Ticket_Type, Remarks
 ```
 
-## Folder structure
 
-```text
-metroflow-milestone1/
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── database.py
-│   │   ├── models.py
-│   │   ├── schemas.py
-│   │   ├── auth.py
-│   │   ├── seed.py
-│   │   ├── routes/
-│   │   └── services/
-│   ├── data/
-│   │   └── delhi_metro_updated.csv
-│   ├── requirements.txt
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-├── docs/
-├── postman/
-├── docker-compose.yml
-├── .gitignore
-└── README.md
+## Important note before running updated milestones
+
+If you already ran the older Milestone 1 backend, delete the old database file before running this updated version:
+
+```powershell
+del backend\metroflow.db
 ```
 
-## Backend setup
+If the file does not exist, ignore the message and continue. The new backend will create updated tables for scheduling, prediction, alerts, announcements, and analytics.
 
-Open a terminal inside the project folder.
+## How to run backend
 
-```bash
+```powershell
 cd backend
 python -m venv venv
+.\venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
 ```
 
-Activate the virtual environment.
-
-Windows PowerShell:
-
-```bash
-venv\Scripts\activate
-```
-
-Mac or Linux:
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies.
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the backend.
-
-```bash
-uvicorn app.main:app --reload
-```
-
-Backend URL:
-
-```text
-http://127.0.0.1:8000
-```
-
-Swagger API docs:
+Open:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-The backend automatically creates a local SQLite database named `metroflow.db` and imports a sample from the Delhi Metro dataset on first run.
+## How to run frontend
 
-## Frontend setup
+Open a new terminal:
 
-Open a second terminal.
-
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend URL:
+Open:
 
 ```text
-http://127.0.0.1:5173
+http://localhost:5173
 ```
 
-## Demo login credentials
-
-Admin:
+## Demo credentials
 
 ```text
-Username: admin
-Password: admin123
+Admin
+username: admin
+password: admin123
+
+Operator
+username: operator
+password: operator123
 ```
 
-Operator:
+## Main API groups
 
 ```text
-Username: operator
-Password: operator123
+/api/auth
+/api/dashboard
+/api/stations
+/api/scheduling
+/api/prediction
+/api/alerts
+/api/analytics
 ```
 
-## GitHub branch commands
+## GitHub branch
 
-Use the branch name decided for this project:
+Use branch name:
+
+```text
+muni-pujitha
+```
+
+## Recommended commit message
 
 ```bash
-git checkout -b muni-pujitha
 git add .
-git commit -m "Add Milestone 1 MetroFlow project setup"
+git commit -m "Add Milestones 2 and 3 MetroFlow modules"
 git push -u origin muni-pujitha
 ```
-
-## Milestone 1 deliverables included
-
-- Working React UI
-- Working FastAPI API
-- Authentication and role based access
-- Crowd monitoring dashboard
-- Congestion status logic
-- Dataset loading script
-- Architecture documentation
-- Database schema documentation
-- UI wireframes
-- Milestone 1 report
-- Postman collection
-
-## Notes
-
-This milestone intentionally focuses on initialization, authentication, dashboard, and congestion tracking. Scheduling optimization, AI forecasting, alerts, cloud deployment, and Docker deployment are prepared structurally, but they belong to later milestones.

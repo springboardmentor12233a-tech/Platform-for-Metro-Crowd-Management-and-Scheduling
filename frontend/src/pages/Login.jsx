@@ -31,7 +31,7 @@ export default function Login() {
           </div>
           <h1 className="text-5xl font-black leading-tight">MetroFlow Crowd Monitoring Dashboard</h1>
           <p className="mt-5 max-w-xl text-lg text-slate-300">
-            Milestone 1 platform for metro passenger density tracking, station congestion monitoring, and operator access control.
+            Milestones 1 to 3 platform for metro crowd monitoring, train scheduling, AI forecasting, alerts, analytics, and operator access control.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
@@ -41,8 +41,8 @@ export default function Login() {
             </div>
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
               <Activity className="text-cyan-300" />
-              <h3 className="mt-3 font-bold">Live crowd view</h3>
-              <p className="mt-1 text-sm text-slate-300">Station load, passenger trends, and congestion status.</p>
+              <h3 className="mt-3 font-bold">Operations view</h3>
+              <p className="mt-1 text-sm text-slate-300">Station load, train schedules, AI predictions, and alerts.</p>
             </div>
           </div>
         </section>

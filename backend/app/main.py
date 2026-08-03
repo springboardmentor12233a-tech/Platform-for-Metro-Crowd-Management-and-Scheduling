@@ -3,15 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import Base, SessionLocal, engine
-from app.routes import auth_routes, dashboard_routes, station_routes
+from app.routes import alert_routes, analytics_routes, auth_routes, dashboard_routes, prediction_routes, scheduling_routes, station_routes
 from app.seed import seed_database
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="MetroFlow API",
-    description="Milestone 1 backend for metro crowd monitoring and management.",
-    version="1.0.0",
+    description="Milestones 1 to 3 for AI Metro Crowd Management and Scheduling Platform",
+    version="1.3.0",
 )
 
 app.add_middleware(
@@ -25,10 +25,14 @@ app.add_middleware(
 app.include_router(auth_routes.router, prefix=settings.API_PREFIX)
 app.include_router(dashboard_routes.router, prefix=settings.API_PREFIX)
 app.include_router(station_routes.router, prefix=settings.API_PREFIX)
+app.include_router(scheduling_routes.router, prefix=settings.API_PREFIX)
+app.include_router(prediction_routes.router, prefix=settings.API_PREFIX)
+app.include_router(alert_routes.router, prefix=settings.API_PREFIX)
+app.include_router(analytics_routes.router, prefix=settings.API_PREFIX)
 
 
 @app.on_event("startup")
-def startup_event() -> None:
+def startup_event():
     db = SessionLocal()
     try:
         seed_database(db)
@@ -41,10 +45,5 @@ def root():
     return {
         "message": "MetroFlow API is running",
         "docs": "/docs",
-        "milestone": "Milestone 1",
+        "completed_milestones": "Milestone 1, Milestone 2, Milestone 3",
     }
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}

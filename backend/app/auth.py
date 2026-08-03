@@ -59,7 +59,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
-def require_roles(roles: Iterable[str]) -> Callable:
+def require_roles(*roles: str) -> Callable:
     allowed_roles = set(roles)
 
     def dependency(current_user: User = Depends(get_current_user)) -> User:

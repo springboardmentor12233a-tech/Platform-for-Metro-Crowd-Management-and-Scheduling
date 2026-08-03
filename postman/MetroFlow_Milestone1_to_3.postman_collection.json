@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "MetroFlow Milestones 1 to 3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for MetroFlow Milestone 1, Milestone 2 and Milestone 3 APIs."
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Login Admin",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}" },
+        "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "Milestone 1 - Dashboard Summary",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/dashboard/summary", "host": ["{{base_url}}"], "path": ["dashboard", "summary"] } }
+    },
+    {
+      "name": "Milestone 1 - Station Crowd",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/dashboard/station-crowd?limit=20", "host": ["{{base_url}}"], "path": ["dashboard", "station-crowd"], "query": [{ "key": "limit", "value": "20" }] } }
+    },
+    {
+      "name": "Milestone 2 - Train Schedules",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/scheduling/schedules", "host": ["{{base_url}}"], "path": ["scheduling", "schedules"] } }
+    },
+    {
+      "name": "Milestone 2 - Frequency Recommendations",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/scheduling/frequency-recommendations", "host": ["{{base_url}}"], "path": ["scheduling", "frequency-recommendations"] } }
+    },
+    {
+      "name": "Milestone 2 - Demand Forecast",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/prediction/demand-forecast?days=7", "host": ["{{base_url}}"], "path": ["prediction", "demand-forecast"], "query": [{ "key": "days", "value": "7" }] } }
+    },
+    {
+      "name": "Milestone 3 - Alerts",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/alerts", "host": ["{{base_url}}"], "path": ["alerts"] } }
+    },
+    {
+      "name": "Milestone 3 - Real Time Updates",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/alerts/real-time-updates", "host": ["{{base_url}}"], "path": ["alerts", "real-time-updates"] } }
+    },
+    {
+      "name": "Milestone 3 - Analytics Report",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/analytics/report", "host": ["{{base_url}}"], "path": ["analytics", "report"] } }
+    }
+  ]
+}

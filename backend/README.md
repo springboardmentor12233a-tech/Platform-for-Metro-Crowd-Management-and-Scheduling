@@ -1,38 +1,39 @@
-# MetroFlow Backend
+# MetroFlow Backend - Milestones 1 to 3
 
-FastAPI backend for Milestone 1.
+FastAPI backend for MetroFlow, an AI Metro Crowd Management and Scheduling Platform.
 
-## Run locally
+## Completed modules
 
-```bash
+- Milestone 1: JWT login, admin/operator roles, station crowd dashboard APIs, congestion heatmap APIs.
+- Milestone 2: train schedule APIs, frequency recommendation APIs, real-time operational monitoring APIs, AI demand forecasting APIs, traffic report APIs.
+- Milestone 3: alert APIs, emergency announcement APIs, real-time update APIs, analytics report APIs, operational insight APIs.
+
+## Run backend
+
+```powershell
 cd backend
 python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+.\venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
 ```
 
-## API docs
+Open:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-## Default users
+## Login credentials
 
 ```text
-admin / admin123
-operator / operator123
+Admin: admin / admin123
+Operator: operator / operator123
 ```
 
-## Important endpoints
+## Dataset
 
-```text
-POST /api/auth/login
-GET /api/auth/me
-GET /api/dashboard/summary
-GET /api/dashboard/station-crowd
-GET /api/dashboard/passenger-trend
-GET /api/dashboard/heatmap
-GET /api/stations
-```
+The backend imports `backend/data/delhi_metro_updated.csv` during startup and creates a local SQLite database named `metroflow.db`.
+
+If you change models or want fresh data, stop the server and delete `metroflow.db`, then run the backend again.
