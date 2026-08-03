@@ -100,3 +100,60 @@ def login_user(email: str, password: str):
         return {"error": "Invalid email or password"}
     access_token = create_access_token(data={"sub": user.email, "role": user.role})
     return {"message": "Login successful", "username": user.username, "role": user.role, "access_token": access_token, "token_type": "bearer"}
+
+@app.post("/schedules")
+def add_schedule(station_name: str, departure_time: str, frequency_minutes: int = 10, status: str = "On Time"):
+    db = SessionLocal()
+    schedule = models.Schedule(
+        station_name=station_name,
+        departure_time=departure_time,
+        frequency_minutes=frequency_minutes,
+        status=status
+    )
+    db.add(schedule)
+    db.commit()
+    db.refresh(schedule)
+    db.close()
+    return schedule
+
+
+@app.get("/schedules")
+def get_schedules():
+    db = SessionLocal()
+    schedules = db.query(models.Schedule).all()
+    db.close()
+    return schedules
+
+
+@app.put("/schedules/{schedule_id}")
+def update_schedule(schedule_id: int, station_name: str = None, departure_time: str = None, frequency_minutes: int = None, status: str = None):
+    db = SessionLocal()
+    schedule = db.query(models.Schedule).filter(models.Schedule.id == schedule_id).first()
+    if not schedule:
+        db.close()
+        return {"error": "Schedule not found"}
+    if station_name:
+        schedule.station_name = station_name
+    if departure_time:
+        schedule.departure_time = departure_time
+    if frequency_minutes:
+        schedule.frequency_minutes = frequency_minutes
+    if status:
+        schedule.status = status
+    db.commit()
+    db.refresh(schedule)
+    db.close()
+    return schedule
+
+
+@app.delete("/schedules/{schedule_id}")
+def delete_schedule(schedule_id: int):
+    db = SessionLocal()
+    schedule = db.query(models.Schedule).filter(models.Schedule.id == schedule_id).first()
+    if not schedule:
+        db.close()
+        return {"error": "Schedule not found"}
+    db.delete(schedule)
+    db.commit()
+    db.close()
+    return {"message": f"Schedule {schedule_id} deleted"}
