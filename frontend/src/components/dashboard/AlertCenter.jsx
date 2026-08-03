@@ -393,7 +393,7 @@ function AlertCenter({
 
             <p className="mt-3 text-slate-500">
 
-              No active operational alerts. MetroFlow AI is continuously
+              No active operational alerts. MetroVision AI is continuously
               monitoring all stations.
 
             </p>

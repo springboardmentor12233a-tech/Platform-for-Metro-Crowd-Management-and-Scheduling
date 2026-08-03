@@ -14,6 +14,9 @@ from app.services.history_service import save_prediction
 router = APIRouter(
     prefix="/prediction",
     tags=["Prediction"],
+    dependencies=[
+        Depends(require_roles("Admin", "Operator", "Analyst"))
+    ],
 )
 
 
@@ -24,13 +27,6 @@ router = APIRouter(
 def predict(
     request: PassengerPredictionRequest,
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
 
     prediction = predict_passengers(request.model_dump())

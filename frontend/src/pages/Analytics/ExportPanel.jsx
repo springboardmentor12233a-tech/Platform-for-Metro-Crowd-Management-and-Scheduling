@@ -200,17 +200,17 @@ function ExportPanel({
 
         case "PDF":
           response = await exportPdfReport(report.id);
-          downloadBlob(response, `MetroFlow_Report_${report.id}.pdf`);
+          downloadBlob(response, `MetroVision_Report_${report.id}.pdf`);
           break;
 
         case "CSV":
           response = await exportCsvReport(report.id);
-          downloadBlob(response, `MetroFlow_Report_${report.id}.csv`);
+          downloadBlob(response, `MetroVision_Report_${report.id}.csv`);
           break;
 
         case "Excel":
           response = await exportExcelReport(report.id);
-          downloadBlob(response, `MetroFlow_Report_${report.id}.xlsx`);
+          downloadBlob(response, `MetroVision_Report_${report.id}.xlsx`);
           break;
 
         default:
@@ -659,7 +659,7 @@ function ExportPanel({
                   "
                 >
 
-                  MetroFlow AI is analyzing operational data...
+                  MetroVision AI is analyzing operational data...
 
                 </p>
 
@@ -1230,7 +1230,7 @@ function ExportPanel({
 
                       <h3 className="font-bold">
 
-                        MetroFlow Enterprise Reporting System
+                        MetroVision Enterprise Reporting System
 
                       </h3>
 
@@ -1391,7 +1391,7 @@ function ExportPanel({
 
               <input
                 type="email"
-                placeholder="analytics@metroflow.ai"
+                placeholder="analytics@metrovision.ai"
                 className="
                   w-full
                   rounded-2xl
@@ -1503,7 +1503,7 @@ function ExportPanel({
               "
             >
 
-              MetroFlow AI has analyzed current
+              MetroVision AI has analyzed current
               passenger demand, operational
               efficiency, revenue trends, and
               station utilization. The generated

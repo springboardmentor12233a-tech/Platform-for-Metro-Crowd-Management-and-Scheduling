@@ -205,7 +205,7 @@ function TrainOptimizer({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously analyzes
+              MetroVision AI continuously analyzes
               passenger demand, train movement,
               platform availability, and network
               congestion to optimize schedules,
@@ -485,7 +485,7 @@ function TrainOptimizer({
               "
             >
               Live operational metrics generated
-              by MetroFlow AI to evaluate train
+              by MetroVision AI to evaluate train
               scheduling efficiency and overall
               network performance.
             </p>
@@ -946,7 +946,7 @@ function TrainOptimizer({
                 text-slate-500
               "
             >
-              MetroFlow AI continuously evaluates
+              MetroVision AI continuously evaluates
               every running train to optimize
               schedules, minimize delays and improve
               network efficiency.
@@ -1336,7 +1336,7 @@ function TrainOptimizer({
                   text-blue-100
                 "
               >
-                MetroFlow AI recommends increasing
+                MetroVision AI recommends increasing
                 train frequency on the Blue and
                 Yellow Lines over the next 30
                 minutes while prioritizing recovery
@@ -1422,7 +1422,7 @@ function TrainOptimizer({
                   text-slate-500
                 "
               >
-                MetroFlow AI dynamically adjusts
+                MetroVision AI dynamically adjusts
                 train intervals based on passenger
                 demand, congestion, and live
                 operational conditions.
@@ -1824,7 +1824,7 @@ function TrainOptimizer({
               text-slate-300
             "
           >
-            MetroFlow AI continuously predicts
+            MetroVision AI continuously predicts
             passenger arrivals and automatically
             adjusts train intervals to maximize
             throughput while preventing platform
@@ -1933,7 +1933,7 @@ function TrainOptimizer({
                 text-slate-500
               "
             >
-              MetroFlow AI continuously balances
+              MetroVision AI continuously balances
               platform utilization to reduce
               congestion, improve train turnaround,
               and maintain smooth passenger flow.
@@ -2284,7 +2284,7 @@ function TrainOptimizer({
                   text-slate-300
                 "
               >
-                MetroFlow AI predicts increased
+                MetroVision AI predicts increased
                 congestion on Platform 1 during the
                 next operational cycle. Reassigning
                 Train T-315 to Platform 4 and
@@ -2370,7 +2370,7 @@ function TrainOptimizer({
                   text-slate-500
                 "
               >
-                MetroFlow AI predicts network delays,
+                MetroVision AI predicts network delays,
                 estimates passenger impact, and
                 generates recovery strategies before
                 disruptions propagate across the
@@ -2686,7 +2686,7 @@ function TrainOptimizer({
               text-slate-300
             "
           >
-            MetroFlow AI continuously evaluates
+            MetroVision AI continuously evaluates
             disruption scenarios and recommends
             recovery actions that minimize network
             delay while maintaining passenger safety
@@ -2920,7 +2920,7 @@ function TrainOptimizer({
                 font-black
               "
             >
-              MetroFlow AI Optimization Report
+              MetroVision AI Optimization Report
             </h2>
 
             <p
@@ -2931,7 +2931,7 @@ function TrainOptimizer({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously optimizes
+              MetroVision AI continuously optimizes
               train scheduling, platform allocation,
               and fleet utilization using predictive
               analytics. The current optimization
@@ -3247,7 +3247,7 @@ function TrainOptimizer({
                   text-slate-300
                 "
               >
-                MetroFlow AI concludes that the
+                MetroVision AI concludes that the
                 current optimization strategy has
                 significantly improved operational
                 efficiency by reducing delays,
@@ -3343,7 +3343,7 @@ function TrainOptimizer({
                 font-black
               "
             >
-              MetroFlow AI Optimization Report
+              MetroVision AI Optimization Report
             </h2>
 
             <p
@@ -3354,7 +3354,7 @@ function TrainOptimizer({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously optimizes
+              MetroVision AI continuously optimizes
               train scheduling, platform allocation,
               and fleet utilization using predictive
               analytics. The current optimization
@@ -3670,7 +3670,7 @@ function TrainOptimizer({
                   text-slate-300
                 "
               >
-                MetroFlow AI concludes that the
+                MetroVision AI concludes that the
                 current optimization strategy has
                 significantly improved operational
                 efficiency by reducing delays,

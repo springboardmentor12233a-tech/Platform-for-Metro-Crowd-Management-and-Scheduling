@@ -130,7 +130,7 @@ export default function AuthLayout({ left, right }) {
         "
       >
         <h1 className="text-xl font-bold tracking-wide text-white">
-          MetroFlow
+          MetroVision
         </h1>
 
         <p className="mt-1 text-center text-xs text-slate-400">

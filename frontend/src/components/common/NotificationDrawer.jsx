@@ -87,7 +87,7 @@ function NotificationDrawer({
               </h2>
 
               <p className="text-sm text-slate-500">
-                MetroFlow AI Control Center
+                MetroVision AI Control Center
               </p>
 
             </div>
@@ -164,7 +164,7 @@ function NotificationDrawer({
 
             <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500">
                 Everything is running smoothly.
-                MetroFlow AI hasn't detected any
+                MetroVision AI hasn't detected any
                 incidents that require your
                 attention.
             </p>
@@ -199,7 +199,7 @@ function NotificationDrawer({
               </p>
 
               <p className="text-xs text-slate-500">
-                Live updates from MetroFlow AI
+                Live updates from MetroVision AI
               </p>
 
             </div>

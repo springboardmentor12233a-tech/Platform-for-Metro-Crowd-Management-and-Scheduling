@@ -60,7 +60,7 @@ function CrowdMonitoring() {
           <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
 
           <h2 className="text-3xl font-bold text-slate-700">
-            Initializing MetroFlow...
+            Initializing MetroVision...
           </h2>
 
           <p className="text-slate-500 mt-3">
@@ -89,7 +89,7 @@ function CrowdMonitoring() {
               </p>
 
               <h1 className="mt-3 text-5xl font-extrabold">
-                MetroFlow Command Center
+                MetroVision Command Center
               </h1>
 
               <p className="mt-5 max-w-3xl text-slate-300 text-lg leading-8">
@@ -456,7 +456,7 @@ function CrowdMonitoring() {
 
               <h2 className="text-2xl font-bold">
 
-                MetroFlow AI Crowd Management Platform
+                MetroVision AI Crowd Management Platform
 
               </h2>
 
@@ -512,7 +512,7 @@ function CrowdMonitoring() {
 
             <p className="text-slate-400">
 
-              © 2026 MetroFlow AI • Built with React, FastAPI & AI Analytics
+              © 2026 MetroVision AI • Built with React, FastAPI & AI Analytics
 
             </p>
 

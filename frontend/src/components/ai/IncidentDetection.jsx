@@ -203,7 +203,7 @@ function IncidentDetection({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously monitors the
+              MetroVision AI continuously monitors the
               metro network using predictive analytics,
               anomaly detection, and operational data
               to identify incidents before they impact
@@ -2989,7 +2989,7 @@ function IncidentDetection({
                   font-semibold
                 "
               >
-                MetroFlow Executive Report
+                MetroVision Executive Report
               </span>
 
             </div>
@@ -3012,7 +3012,7 @@ function IncidentDetection({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously evaluates the
+              MetroVision AI continuously evaluates the
               health of the metro network by combining
               operational telemetry, predictive
               analytics, infrastructure monitoring,
@@ -3275,7 +3275,7 @@ function IncidentDetection({
                 text-slate-300
               "
             >
-              MetroFlow AI indicates that the metro
+              MetroVision AI indicates that the metro
               network is operating within expected
               performance thresholds. Predictive
               analytics successfully identified the

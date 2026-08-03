@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.station import Station
 from app.schemas.station import StationCreate
 from app.auth.permissions import require_roles
+
 from app.services.station_service import (
     create_station,
     get_all_stations,
@@ -18,58 +18,47 @@ router = APIRouter(
     tags=["Stations"],
 )
 
-
-# -------------------------
-# Create Station (Admin Only)
-# -------------------------
-@router.post("/")
-def add_station(
-    request: StationCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(require_roles("Admin")),
-):
-    station = Station(
-        station_name=request.station_name,
-        line=request.line,
-        capacity=request.capacity,
-    )
-
-    return create_station(db, station)
-
-
-# -------------------------
+# -------------------------------------------------
 # Get All Stations
-# Admin | Operator | Analyst
-# -------------------------
-@router.get("/")
+# -------------------------------------------------
+
+@router.get(
+    "/",
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+            )
+        )
+    ],
+)
 def all_stations(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     return get_all_stations(db)
 
 
-# -------------------------
+# -------------------------------------------------
 # Get Station By ID
-# Admin | Operator | Analyst
-# -------------------------
-@router.get("/{station_id}")
+# -------------------------------------------------
+
+@router.get(
+    "/{station_id}",
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+            )
+        )
+    ],
+)
 def station_by_id(
     station_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     station = get_station(db, station_id)
 
@@ -82,46 +71,79 @@ def station_by_id(
     return station
 
 
-# -------------------------
-# Update Station (Admin Only)
-# -------------------------
-@router.put("/{station_id}")
+# -------------------------------------------------
+# Create Station
+# -------------------------------------------------
+
+@router.post(
+    "/",
+    dependencies=[
+        Depends(
+            require_roles("Admin")
+        )
+    ],
+)
+def add_station(
+    station: StationCreate,
+    db: Session = Depends(get_db),
+):
+    return create_station(db, station)
+
+
+# -------------------------------------------------
+# Update Station
+# -------------------------------------------------
+
+@router.put(
+    "/{station_id}",
+    dependencies=[
+        Depends(
+            require_roles("Admin")
+        )
+    ],
+)
 def edit_station(
     station_id: int,
-    request: StationCreate,
+    station: StationCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(require_roles("Admin")),
 ):
-    station = update_station(
+    updated = update_station(
         db,
         station_id,
-        request,
+        station,
     )
 
-    if not station:
+    if not updated:
         raise HTTPException(
             status_code=404,
             detail="Station not found",
         )
 
-    return station
+    return updated
 
 
-# -------------------------
-# Delete Station (Admin Only)
-# -------------------------
-@router.delete("/{station_id}")
+# -------------------------------------------------
+# Delete Station
+# -------------------------------------------------
+
+@router.delete(
+    "/{station_id}",
+    dependencies=[
+        Depends(
+            require_roles("Admin")
+        )
+    ],
+)
 def remove_station(
     station_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_roles("Admin")),
 ):
-    station = delete_station(
+    deleted = delete_station(
         db,
         station_id,
     )
 
-    if not station:
+    if not deleted:
         raise HTTPException(
             status_code=404,
             detail="Station not found",

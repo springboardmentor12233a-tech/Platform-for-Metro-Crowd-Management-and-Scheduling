@@ -95,7 +95,7 @@ function Analytics() {
           </h2>
 
           <p className="mt-3 text-slate-500">
-            Connecting to MetroFlow Analytics Engine
+            Connecting to MetroVision Analytics Engine
           </p>
 
         </div>
@@ -313,11 +313,11 @@ function Analytics() {
             <div className="max-w-3xl">
 
               <h2 className="text-4xl font-black">
-                MetroFlow Executive Analytics
+                MetroVision Executive Analytics
               </h2>
 
               <p className="mt-6 leading-8 text-slate-300">
-                MetroFlow combines AI-powered crowd prediction,
+                MetroVision combines AI-powered crowd prediction,
                 passenger analytics, revenue intelligence,
                 operational monitoring, forecasting and executive
                 reporting into one intelligent metro management
@@ -415,7 +415,7 @@ function Analytics() {
               text-slate-400
             "
           >
-            © {new Date().getFullYear()} MetroFlow •
+            © {new Date().getFullYear()} MetroVision •
             AI Metro Crowd Management & Scheduling Platform
           </div>
 

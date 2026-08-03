@@ -94,7 +94,11 @@ function AIHero({
 
     <section className="space-y-8">
 
-      {/* Hero */}
+      {/* Hero — this gradient wrapper now stays open for the whole
+          section, since every panel below it (Executive Intelligence
+          Panel, Recommendation Highlights, Live AI Monitoring) is
+          designed with bg-white/10 + light text that only reads
+          correctly against this indigo -> cyan gradient. */}
 
       <motion.div
 
@@ -179,7 +183,7 @@ function AIHero({
                 text-indigo-100
               "
             >
-              MetroFlow AI continuously analyzes
+              MetroVision AI continuously analyzes
               passenger demand, congestion,
               operational efficiency,
               incidents, and revenue to
@@ -250,12 +254,17 @@ function AIHero({
                 <div
                   className="
                     rounded-2xl
-                    bg-white/15
+                    bg-white
                     p-4
+                    shadow-lg
                   "
                 >
 
-                  <Brain size={30} />
+                  <Brain
+                    size={30}
+                    className="text-indigo-600"
+                    strokeWidth={2.2}
+                  />
 
                 </div>
 
@@ -314,12 +323,17 @@ function AIHero({
                 <div
                   className="
                     rounded-2xl
-                    bg-white/15
+                    bg-white
                     p-4
+                    shadow-lg
                   "
                 >
 
-                  <Activity size={30} />
+                  <Activity
+                    size={30}
+                    className="text-blue-600"
+                    strokeWidth={2.2}
+                  />
 
                 </div>
 
@@ -378,12 +392,17 @@ function AIHero({
                 <div
                   className="
                     rounded-2xl
-                    bg-white/15
+                    bg-white
                     p-4
+                    shadow-lg
                   "
                 >
 
-                  <Cpu size={30} />
+                  <Cpu
+                    size={30}
+                    className="text-cyan-600"
+                    strokeWidth={2.2}
+                  />
 
                 </div>
 
@@ -443,12 +462,17 @@ function AIHero({
                 <div
                   className="
                     rounded-2xl
-                    bg-white/15
+                    bg-white
                     p-4
+                    shadow-lg
                   "
                 >
 
-                  <ShieldCheck size={30} />
+                  <ShieldCheck
+                    size={30}
+                    className="text-emerald-600"
+                    strokeWidth={2.2}
+                  />
 
                 </div>
 
@@ -459,8 +483,6 @@ function AIHero({
           </div>
 
         </div>
-
-      </motion.div>
               {/* Executive Intelligence Panel */}
 
         <div
@@ -524,7 +546,7 @@ function AIHero({
               "
             >
 
-              MetroFlow AI continuously evaluates
+              MetroVision AI continuously evaluates
               passenger demand, train movement,
               congestion levels, operational
               efficiency, revenue trends, and
@@ -862,7 +884,7 @@ function AIHero({
                 "
               >
 
-                MetroFlow AI predicts passenger
+                MetroVision AI predicts passenger
                 demand will exceed optimal capacity
                 within the next 45 minutes.
                 Increasing train frequency by
@@ -1098,7 +1120,7 @@ function AIHero({
                   text-indigo-100
                 "
               >
-                Real-time status of MetroFlow AI
+                Real-time status of MetroVIsion AI
                 services and inference pipeline.
               </p>
 
@@ -1378,7 +1400,10 @@ function AIHero({
           </div>
 
         </motion.div>
-        </section>
+
+      </motion.div>
+
+    </section>
 
   );
 

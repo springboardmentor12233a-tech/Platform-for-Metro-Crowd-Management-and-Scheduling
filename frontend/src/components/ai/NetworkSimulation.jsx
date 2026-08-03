@@ -203,7 +203,7 @@ function NetworkSimulation({
                 text-slate-300
               "
             >
-              MetroFlow AI continuously simulates
+              MetroVision AI continuously simulates
               passenger demand, train movement,
               infrastructure performance, and network
               resilience to evaluate operational
@@ -483,7 +483,7 @@ function NetworkSimulation({
               "
             >
               Executive metrics generated from the
-              MetroFlow AI Digital Twin, evaluating
+              MetroVisionAI Digital Twin, evaluating
               network resilience, prediction quality,
               and simulation effectiveness.
             </p>
@@ -2054,7 +2054,7 @@ function NetworkSimulation({
             >
               Evaluate timetable adjustments,
               platform allocation, headway optimization,
-              and delay recovery using MetroFlow's
+              and delay recovery using MetroVision's
               AI-powered scheduling engine.
             </p>
 
@@ -3189,7 +3189,7 @@ function NetworkSimulation({
                   font-semibold
                 "
               >
-                MetroFlow Executive AI Report
+                MetroVision Executive AI Report
               </span>
 
             </div>
@@ -3212,7 +3212,7 @@ function NetworkSimulation({
                 text-slate-300
               "
             >
-              MetroFlow AI Digital Twin has analyzed
+              MetroVision AI Digital Twin has analyzed
               multiple operational scenarios and
               recommends optimized scheduling,
               passenger flow management, predictive
@@ -3590,7 +3590,7 @@ function NetworkSimulation({
             "
           >
             Based on AI-powered Digital Twin simulations,
-            MetroFlow predicts significant improvements in
+            MetroVision predicts significant improvements in
             operational efficiency, passenger movement,
             service reliability, and financial performance.
             The recommended optimization strategies reduce

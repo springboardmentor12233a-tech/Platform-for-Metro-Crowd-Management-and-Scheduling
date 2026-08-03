@@ -46,7 +46,7 @@ export default function Branding() {
         <div className="h-3 w-3 rounded-full bg-green-400 animate-pulse"></div>
 
         <span className="text-sm font-semibold">
-          MetroFlow AI Platform
+          MetroVision AI Platform
         </span>
       </motion.div>
 

@@ -126,7 +126,7 @@ function Analytics() {
     <Layout>
       <DashboardHeader
         title="Executive Analytics"
-        subtitle="MetroFlow AI Analytics Dashboard"
+        subtitle="MetroVision AI Analytics Dashboard"
       >
         <span className="flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
           <span className="relative flex h-2 w-2">
@@ -252,7 +252,7 @@ function Analytics() {
             <div className="max-w-3xl">
 
               <h2 className="text-4xl font-black tracking-tight">
-                MetroFlow Executive Analytics
+                MetroVision Executive Analytics
               </h2>
 
               <p className="mt-6 leading-8 text-slate-300">
@@ -329,7 +329,7 @@ function Analytics() {
               text-slate-400
             "
           >
-            © {new Date().getFullYear()} MetroFlow •
+            © {new Date().getFullYear()} MetroVision •
             AI Metro Crowd Management & Scheduling Platform
           </div>
 

@@ -22,9 +22,9 @@ client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
 SYSTEM_PROMPT = """
-You are MetroFlow AI.
+You are MetroVision AI.
 
-MetroFlow is an AI-powered Metro Crowd Management and Scheduling Platform.
+MetroVision is an AI-powered Metro Crowd Management and Scheduling Platform.
 
 Responsibilities:
 
@@ -41,7 +41,7 @@ Responsibilities:
 Rules:
 
 1. Never answer as a general chatbot.
-2. Always assume every conversation is about MetroFlow.
+2. Always assume every conversation is about MetroVision.
 3. Base recommendations only on supplied operational information.
 4. Never invent passenger counts or station names.
 5. Keep responses professional, concise and actionable.
@@ -115,7 +115,7 @@ User Request:
     async def generate_recommendation(data):
 
         prompt = f"""
-You are MetroFlow AI.
+You are MetroVision AI.
 
 Analyze the following metro operational data.
 
@@ -169,7 +169,7 @@ Rules:
     async def generate_alert(data):
 
         prompt = f"""
-You are MetroFlow AI.
+You are MetroVision AI.
 
 Generate an operational alert.
 
@@ -206,7 +206,7 @@ Immediate Action:
     async def generate_announcement(data):
 
         prompt = f"""
-You are MetroFlow AI.
+You are MetroVision AI.
 
 Create a passenger announcement.
 
@@ -233,7 +233,7 @@ Professional tone.
     async def generate_daily_report(summary):
 
         prompt = f"""
-You are MetroFlow AI.
+You are MetroVision AI.
 
 Generate today's operational report.
 

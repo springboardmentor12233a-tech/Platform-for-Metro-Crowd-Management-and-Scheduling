@@ -56,7 +56,7 @@ export default function Logo({ size = "lg" }) {
           text-cyan-300
         `}
       >
-        MetroFlow
+        MetroVision
       </h3>
     </div>
   );

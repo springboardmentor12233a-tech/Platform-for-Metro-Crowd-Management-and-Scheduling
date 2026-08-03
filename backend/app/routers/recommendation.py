@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.auth.permissions import require_roles
 
 from app.schemas.recommendation import (
     RecommendationRequest,
@@ -17,6 +18,9 @@ from app.services.ai_history_service import (
 router = APIRouter(
     prefix="/ai",
     tags=["AI Recommendation"],
+    dependencies=[
+        Depends(require_roles("Admin", "Operator", "Analyst"))
+    ],
 )
 
 

@@ -203,7 +203,7 @@ function RecommendationCenter({
                 text-slate-300
               "
             >
-              MetroFlow AI consolidates insights
+              MetroVision AI consolidates insights
               from crowd monitoring, demand
               forecasting, train optimization,
               incident detection, and network
@@ -485,7 +485,7 @@ function RecommendationCenter({
             >
               Real-time metrics showing the
               effectiveness and operational impact
-              of MetroFlow AI recommendations.
+              of MetroVision AI recommendations.
             </p>
 
           </div>
@@ -3069,7 +3069,7 @@ function RecommendationCenter({
                 font-black
               "
             >
-              MetroFlow AI Strategic Decision Report
+              MetroVision AI Strategic Decision Report
             </h2>
 
             <p
@@ -3080,7 +3080,7 @@ function RecommendationCenter({
                 text-slate-300
               "
             >
-              MetroFlow AI has analyzed live operational
+              MetroVision AI has analyzed live operational
               data across passenger demand, crowd
               density, train scheduling, platform
               allocation, and active incidents. The
@@ -3408,7 +3408,7 @@ function RecommendationCenter({
                   text-slate-300
                 "
               >
-                MetroFlow AI recommends a proactive,
+                MetroVision AI recommends a proactive,
                 data-driven operating strategy that
                 combines predictive scheduling, intelligent
                 crowd management, adaptive platform

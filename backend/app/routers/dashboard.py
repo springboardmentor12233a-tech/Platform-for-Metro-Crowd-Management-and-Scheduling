@@ -15,20 +15,22 @@ from app.services.dashboard_service import (
 router = APIRouter(
     prefix="/dashboard",
     tags=["Dashboard"],
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+                "Member",
+            )
+        )
+    ],
 )
 
 
 @router.get("/summary")
 def summary(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_dashboard_summary(db)
 
@@ -36,14 +38,6 @@ def summary(
 @router.get("/busiest-stations")
 def busiest_stations(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_busiest_stations(db)
 
@@ -51,14 +45,6 @@ def busiest_stations(
 @router.get("/passenger-trend")
 def passenger_trend(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_passenger_trend(db)
 
@@ -66,14 +52,6 @@ def passenger_trend(
 @router.get("/ticket-distribution")
 def ticket_distribution(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_ticket_distribution(db)
 
@@ -81,14 +59,6 @@ def ticket_distribution(
 @router.get("/revenue-analysis")
 def revenue_analysis(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_revenue_analysis(db)
 
@@ -96,13 +66,5 @@ def revenue_analysis(
 @router.get("/top-routes")
 def top_routes(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-            "Member",
-        )
-    ),
 ):
     return get_top_routes(db)

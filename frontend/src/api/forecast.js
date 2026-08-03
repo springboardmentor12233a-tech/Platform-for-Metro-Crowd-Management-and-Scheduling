@@ -1,6 +1,14 @@
 import api from "./axios";
 
-export const getForecast = async (data) => {
-  const response = await api.post("/forecast/predict", data);
-  return response.data;
+export const getForecastDashboard = async () => {
+  const res = await api.get("/forecast/dashboard");
+  return res.data;
+};
+
+export const getForecast = async ({ station, forecast_date }) => {
+  const res = await api.post("/forecast", {
+    station,
+    forecast_date,
+  });
+  return res.data;
 };

@@ -6,20 +6,12 @@ from app.services.alert_service import get_alerts
 router = APIRouter(
     prefix="/alerts",
     tags=["AI Alerts"],
-)
-
-
-@router.get(
-    "/",
     dependencies=[
-        Depends(
-            require_roles(
-                "Admin",
-                "Operator",
-                "Analyst",
-            )
-        )
+        Depends(require_roles("Admin", "Operator", "Analyst"))
     ],
 )
+
+
+@router.get("/")
 def alerts():
     return get_alerts()

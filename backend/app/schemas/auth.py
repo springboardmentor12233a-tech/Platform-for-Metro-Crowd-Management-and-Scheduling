@@ -1,11 +1,11 @@
 from datetime import datetime
+from typing import Literal
 from pydantic import BaseModel, EmailStr
 
 
 # ===========================
 # Login
 # ===========================
-
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
@@ -17,9 +17,18 @@ class Token(BaseModel):
 
 
 # ===========================
+# Register
+# ===========================
+class RegisterRequest(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: Literal["Admin", "Operator", "Analyst", "Member"]
+
+
+# ===========================
 # Profile
 # ===========================
-
 class ProfileResponse(BaseModel):
     id: int
     name: str
@@ -40,7 +49,6 @@ class UpdateProfileRequest(BaseModel):
 # ===========================
 # Password Reset
 # ===========================
-
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 

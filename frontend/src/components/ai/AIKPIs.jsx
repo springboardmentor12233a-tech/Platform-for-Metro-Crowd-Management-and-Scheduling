@@ -175,7 +175,7 @@ function AIKPIs({ summary = {} }) {
         <p className="mt-2 text-slate-500">
 
           Executive indicators measuring the
-          effectiveness of MetroFlow's
+          effectiveness of MetroVision's
           artificial intelligence engine.
 
         </p>
@@ -446,7 +446,7 @@ function AIKPIs({ summary = {} }) {
               "
             >
               Overall health and operational
-              efficiency of the MetroFlow AI
+              efficiency of the MetroVision AI
               ecosystem.
             </p>
 
@@ -656,7 +656,7 @@ function AIKPIs({ summary = {} }) {
               "
             >
               Live intelligence generated from
-              MetroFlow's AI optimization engine.
+              MetroVision's AI optimization engine.
             </p>
 
           </div>
@@ -918,7 +918,7 @@ function AIKPIs({ summary = {} }) {
                 "
               >
 
-                MetroFlow AI predicts that
+                MetroVision AI predicts that
                 increasing train frequency on
                 the Blue and Yellow Lines during
                 the evening peak window can
@@ -1000,7 +1000,7 @@ function AIKPIs({ summary = {} }) {
               "
             >
               Latest actions performed by the
-              MetroFlow AI engine.
+              MetroVision AI engine.
             </p>
 
           </div>

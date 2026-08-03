@@ -768,7 +768,7 @@ function LiveNetworkHeader({
 
             <p className="leading-8 text-slate-300">
 
-              MetroFlow continuously receives operational data from
+              MetroVision continuously receives operational data from
               connected stations and updates crowd analytics, alerts,
               and AI predictions in real time to support faster
               operational decision-making.

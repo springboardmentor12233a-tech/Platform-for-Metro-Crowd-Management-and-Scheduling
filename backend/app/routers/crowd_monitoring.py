@@ -12,6 +12,15 @@ from app.services.crowd_monitoring_service import (
 router = APIRouter(
     prefix="/crowd-monitoring",
     tags=["Crowd Monitoring"],
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+            )
+        )
+    ],
 )
 
 
@@ -22,13 +31,6 @@ router = APIRouter(
 @router.get("/live")
 def live_crowd_monitoring(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     """
     Returns real-time crowd monitoring data
@@ -44,13 +46,6 @@ def live_crowd_monitoring(
 @router.get("/summary")
 def crowd_summary(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     """
     Returns AI-generated network summary.

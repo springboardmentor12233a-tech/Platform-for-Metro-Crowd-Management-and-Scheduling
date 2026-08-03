@@ -52,7 +52,7 @@ export default function Hero() {
         <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
 
         <span className="text-sm font-semibold text-cyan-300">
-          MetroFlow AI Platform
+          MetroVision AI Platform
         </span>
       </motion.div>
 
@@ -68,7 +68,7 @@ export default function Hero() {
         </h1>
 
         <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-300">
-          MetroFlow combines artificial intelligence, predictive analytics,
+          MetroVoision combines artificial intelligence, predictive analytics,
           and real-time monitoring to help modern metro systems improve
           passenger experience, operational efficiency, and transportation
           safety.

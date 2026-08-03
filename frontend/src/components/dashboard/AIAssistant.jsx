@@ -57,7 +57,7 @@ export default function AIAssistant({
       id: Date.now(),
       role: "assistant",
       text:
-        "👋 Hello! I'm the MetroFlow AI Assistant.\n\nAsk me anything about passenger flow, congestion, schedules, revenue, operations, or metro analytics.",
+        "👋 Hello! I'm the MetroVision AI Assistant.\n\nAsk me anything about passenger flow, congestion, schedules, revenue, operations, or metro analytics.",
       time: new Date(),
     },
   ]);
@@ -206,7 +206,7 @@ export default function AIAssistant({
         {
           id: Date.now() + 1,
           role: "assistant",
-          text: "❌ Unable to connect to MetroFlow AI.",
+          text: "❌ Unable to connect to MetroVision AI.",
           time: new Date(),
         },
       ]);
@@ -273,7 +273,7 @@ export default function AIAssistant({
                   <div>
 
                     <h2 className="text-lg font-bold">
-                      MetroFlow AI
+                      MetroVision AI
                     </h2>
 
                     <div className="mt-1 flex items-center gap-2">
@@ -326,7 +326,7 @@ export default function AIAssistant({
                     </div>
 
                     <h2 className="text-3xl font-bold text-slate-800">
-                      Welcome to MetroFlow AI
+                      Welcome to MetroVision AI
                     </h2>
 
                     <p className="mt-4 max-w-sm leading-7 text-slate-500">
@@ -407,7 +407,7 @@ export default function AIAssistant({
                             </div>
 
                             <span className="text-sm font-semibold text-slate-700">
-                              MetroFlow AI
+                              MetroVision AI
                             </span>
                           </>
                         ) : (
@@ -613,7 +613,7 @@ export default function AIAssistant({
                         </div>
 
                         <span className="font-semibold text-slate-700">
-                          MetroFlow AI
+                          MetroVision AI
                         </span>
 
                       </div>
@@ -710,7 +710,7 @@ export default function AIAssistant({
                   rows={1}
                   value={input}
                   disabled={loading}
-                  placeholder="Ask MetroFlow AI about congestion, revenue, scheduling..."
+                  placeholder="Ask MetroVision AI about congestion, revenue, scheduling..."
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {

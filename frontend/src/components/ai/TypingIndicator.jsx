@@ -32,7 +32,7 @@ export default function TypingIndicator() {
 
       <div className="max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-violet-600">
-          MetroFlow AI
+          MetroVision AI
         </p>
 
         <div className="flex items-center gap-2">

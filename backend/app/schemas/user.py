@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
-
+from typing import Literal
 # ======================================================
 # Registration
 # ======================================================
@@ -12,7 +12,7 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: Optional[str] = "Analyst"
+    role: Literal["Admin", "Operator", "Analyst", "Member"] = "Member"
 
 
 # ======================================================

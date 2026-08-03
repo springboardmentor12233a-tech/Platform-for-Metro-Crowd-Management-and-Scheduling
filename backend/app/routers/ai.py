@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 import json
 
 from app.database.database import get_db
+from app.core.role_checker import require_roles
 
 from app.schemas.ai import AIRequest, AIResponse
 from app.schemas.ai_history import (
@@ -19,6 +20,9 @@ from app.services.ai_history_service import (
 router = APIRouter(
     prefix="/ai",
     tags=["AI"],
+    dependencies=[
+        Depends(require_roles("Admin", "Analyst"))
+    ],
 )
 
 

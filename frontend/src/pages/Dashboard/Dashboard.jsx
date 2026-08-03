@@ -157,22 +157,88 @@ const Dashboard = () => {
         getRecommendationHistory(),
       ]);
 
-      setSummary(summaryData);
-      setBusiestStations(stationsData);
-      setTrendData(trend);
-      setTicketData(tickets);
-      setRevenueData(revenue);
-      setTopRoutes(routes);
+      // ==========================
+      // Debug Logs
+      // ==========================
+      console.log("========== DASHBOARD ==========");
+      console.log("Summary:", summaryData);
+      console.log("Stations:", stationsData);
+      console.log("Trend:", trend);
+      console.log("Tickets:", tickets);
+      console.log("Revenue:", revenue);
+      console.log("Top Routes:", routes);
+      console.log("Live Dashboard:", live);
+      console.log("Recommendation History:", history);
 
+      // ==========================
+      // Safe Summary
+      // ==========================
+      setSummary({
+        total_passengers:
+          Number(summaryData?.total_passengers) || 0,
+        total_trips:
+          Number(summaryData?.total_trips) || 0,
+        total_stations:
+          Number(summaryData?.total_stations) || 0,
+        total_revenue:
+          Number(summaryData?.total_revenue) || 0,
+      });
+
+      // ==========================
+      // Safe Dashboard Data
+      // ==========================
+      setBusiestStations(
+        Array.isArray(stationsData) ? stationsData : []
+      );
+      setTrendData(
+        Array.isArray(trend) ? trend : []
+      );
+      setTicketData(
+        Array.isArray(tickets) ? tickets : []
+      );
+      setRevenueData(
+        Array.isArray(revenue) ? revenue : []
+      );
+      setTopRoutes(
+        Array.isArray(routes) ? routes : []
+      );
+
+      // ==========================
+      // Live Dashboard
+      // ==========================
       setLatestPrediction(live?.latest_prediction ?? null);
-      setRecentAlerts(live?.recent_alerts ?? []);
-      setRecentHistory(live?.recent_history ?? []);
+      setRecentAlerts(
+        Array.isArray(live?.recent_alerts) ? live.recent_alerts : []
+      );
+      setRecentHistory(
+        Array.isArray(live?.recent_history) ? live.recent_history : []
+      );
 
-      setRecommendationHistory(history ?? []);
+      // ==========================
+      // AI History
+      // ==========================
+      setRecommendationHistory(
+        Array.isArray(history) ? history : []
+      );
 
       setLastUpdated(new Date());
     } catch (error) {
-      console.error("Dashboard Data Fetch Error:", error);
+      console.error("Dashboard Error:", error);
+
+      setSummary({
+        total_passengers: 0,
+        total_trips: 0,
+        total_stations: 0,
+        total_revenue: 0,
+      });
+      setBusiestStations([]);
+      setTrendData([]);
+      setTicketData([]);
+      setRevenueData([]);
+      setTopRoutes([]);
+      setRecentAlerts([]);
+      setRecentHistory([]);
+      setRecommendationHistory([]);
     } finally {
       setLoading(false);
     }
@@ -226,11 +292,11 @@ const Dashboard = () => {
       // ---------------------------------------
 
       const summaryText = `
-Total Passengers Today: ${summaryData.total_passengers.toLocaleString()}
+Total Passengers Today: ${(summaryData.total_passengers ?? 0).toLocaleString()}
 
-Total Trips: ${summaryData.total_trips.toLocaleString()}
+Total Trips: ${(summaryData.total_trips ?? 0).toLocaleString()}
 
-Total Revenue: ₹${summaryData.total_revenue.toLocaleString()}
+Total Revenue: ₹${(summaryData.total_revenue ?? 0).toLocaleString()}
 
 Highest Traffic Station:
 ${topStation?.station ?? "Rajiv Chowk"}
@@ -324,7 +390,7 @@ Generate operational recommendations.
       ===================================================== */}
 
       <DashboardHeader
-        title="MetroFlow AI Dashboard"
+        title="MetroVision AI Dashboard"
         subtitle="Real-time AI-powered metro operations monitoring"
       />
 
@@ -358,7 +424,7 @@ Generate operational recommendations.
 
         <MetricCard
           title="Total Passengers"
-          value={summary.total_passengers.toLocaleString()}
+          value={(summary.total_passengers ?? 0).toLocaleString()}
           icon={Users}
           iconColor="text-indigo-600"
           iconBg="bg-indigo-100"
@@ -368,7 +434,7 @@ Generate operational recommendations.
 
         <MetricCard
           title="Metro Trips"
-          value={summary.total_trips.toLocaleString()}
+          value={(summary.total_trips ?? 0).toLocaleString()}
           icon={TrainFront}
           iconColor="text-cyan-600"
           iconBg="bg-cyan-100"
@@ -378,7 +444,7 @@ Generate operational recommendations.
 
         <MetricCard
           title="Stations"
-          value={summary.total_stations.toLocaleString()}
+          value={(summary.total_stations ?? 0).toLocaleString()}
           icon={MapPinned}
           iconColor="text-orange-600"
           iconBg="bg-orange-100"
@@ -388,7 +454,7 @@ Generate operational recommendations.
 
         <MetricCard
           title="Revenue"
-          value={`₹ ${summary.total_revenue.toLocaleString()}`}
+          value={`₹ ${(summary.total_revenue ?? 0).toLocaleString()}`}
           icon={IndianRupee}
           iconColor="text-green-600"
           iconBg="bg-green-100"
@@ -595,7 +661,7 @@ Generate operational recommendations.
           <div>
 
             <h2 className="text-3xl font-bold tracking-tight">
-              🤖 MetroFlow AI Operations Center
+              🤖 MetroVision AI Operations Center
             </h2>
 
             <p className="mt-2 text-slate-500">
@@ -782,7 +848,7 @@ Generate operational recommendations.
 
         <p>
 
-          MetroFlow AI • Smart Metro Crowd Management Platform
+          MetroVision AI • Smart Metro Crowd Management Platform
 
         </p>
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getUsers,
   createUser,
@@ -9,9 +9,10 @@ import {
 export default function useUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -23,34 +24,61 @@ export default function useUsers() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const addUser = async (userData) => {
-    const newUser = await createUser(userData);
-    setUsers((prev) => [...prev, newUser]);
-  };
+  const addUser = useCallback(
+    async (userData) => {
+      try {
+        setProcessing(true);
+        await createUser(userData);
+        await fetchUsers();
+      } catch (err) {
+        throw err;
+      } finally {
+        setProcessing(false);
+      }
+    },
+    [fetchUsers]
+  );
 
-  const editUser = async (id, userData) => {
-    const updated = await updateUser(id, userData);
+  const editUser = useCallback(
+    async (id, userData) => {
+      try {
+        setProcessing(true);
+        await updateUser(id, userData);
+        await fetchUsers();
+      } catch (err) {
+        throw err;
+      } finally {
+        setProcessing(false);
+      }
+    },
+    [fetchUsers]
+  );
 
-    setUsers((prev) =>
-      prev.map((user) => (user.id === id ? updated : user))
-    );
-  };
-
-  const removeUser = async (id) => {
-    await deleteUser(id);
-
-    setUsers((prev) => prev.filter((user) => user.id !== id));
-  };
+  const removeUser = useCallback(
+    async (id) => {
+      try {
+        setProcessing(true);
+        await deleteUser(id);
+        setUsers((prev) => prev.filter((user) => user.id !== id));
+      } catch (err) {
+        throw err;
+      } finally {
+        setProcessing(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   return {
     users,
     loading,
+    processing,
     error,
     fetchUsers,
     addUser,

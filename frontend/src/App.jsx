@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CrowdMonitoring from "./pages/CrowdMonitoring/CrowdMonitoring";
 import Schedule from "./pages/Schedule";
@@ -9,6 +10,7 @@ import Settings from "./pages/Settings/Settings";
 import Prediction from "./pages/Prediction/Prediction";
 import Forecast from "./pages/Forecast/Forecast";
 import PredictionHistory from "./pages/PredictionHistory/PredictionHistory";
+import Forbidden from "./pages/Forbidden";
 import SmartSchedule from "./pages/SmartSchedule/SmartSchedule";
 import AIAlerts from "./pages/AIAlerts/AIAlerts";
 import AI from "./pages/AI";
@@ -17,11 +19,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
 import UserManagement from "./pages/UserManagement";
+import ActivityLogs from "./pages/ActivityLogs";
 import Unauthorized from "./pages/Unauthorized/Unauthorized";
 
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RoleGuard from "./components/RoleGuard";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -71,6 +73,15 @@ function App() {
       />
 
       <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+
+      <Route
         path="/forgot-password"
         element={
           <PublicRoute>
@@ -80,7 +91,7 @@ function App() {
       />
 
       <Route
-        path="/reset-password"
+        path="/reset-password/:token"
         element={
           <PublicRoute>
             <ResetPassword />
@@ -92,15 +103,29 @@ function App() {
 
       <Route element={<ProtectedLayout />}>
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              allowedRoles={[
+                "Admin",
+                "Operator",
+                "Analyst",
+                "Member",
+              ]}
+            >
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Crowd Monitoring */}
         <Route
           path="/crowd"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <CrowdMonitoring />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -108,27 +133,27 @@ function App() {
         <Route
           path="/prediction"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <Prediction />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/forecast"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <Forecast />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/prediction-history"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <PredictionHistory />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -136,18 +161,18 @@ function App() {
         <Route
           path="/schedule"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator"]}>
               <Schedule />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/smart-schedule"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator"]}>
               <SmartSchedule />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -155,9 +180,9 @@ function App() {
         <Route
           path="/alerts"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <AIAlerts />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -165,9 +190,9 @@ function App() {
         <Route
           path="/analytics"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <Analytics />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -175,9 +200,9 @@ function App() {
         <Route
           path="/ai"
           element={
-            <RoleGuard allowedRoles={["Admin", "Operator", "Analyst"]}>
+            <ProtectedRoute allowedRoles={["Admin", "Operator", "Analyst"]}>
               <AI />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -185,9 +210,9 @@ function App() {
         <Route
           path="/settings"
           element={
-            <RoleGuard allowedRoles={["Admin"]}>
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <Settings />
-            </RoleGuard>
+            </ProtectedRoute>
           }
         />
 
@@ -195,9 +220,19 @@ function App() {
         <Route
           path="/users"
           element={
-            <RoleGuard allowedRoles={["Admin"]}>
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <UserManagement />
-            </RoleGuard>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Activity Logs */}
+        <Route
+          path="/activity-logs"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <ActivityLogs />
+            </ProtectedRoute>
           }
         />
       </Route>
@@ -205,6 +240,8 @@ function App() {
       {/* ================= OTHER ROUTES ================= */}
 
       <Route path="/unauthorized" element={<Unauthorized />} />
+
+      <Route path="/403" element={<Forbidden />} />
 
       {/* Temporary fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

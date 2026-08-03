@@ -10,6 +10,16 @@ import {
   BarChart3,
   Sparkles,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 function DemandForecast({
   forecastData = [],
@@ -76,6 +86,18 @@ function DemandForecast({
       progress: "bg-red-600",
     },
   };
+
+  const trendData = forecastData.length
+    ? forecastData
+    : [
+        { day: "Mon", historical: 43000, predicted: 45500, confidence: 98 },
+        { day: "Tue", historical: 44800, predicted: 47200, confidence: 97 },
+        { day: "Wed", historical: 46200, predicted: 48800, confidence: 97 },
+        { day: "Thu", historical: 47900, predicted: 50300, confidence: 96 },
+        { day: "Fri", historical: 49500, predicted: 53400, confidence: 98 },
+        { day: "Sat", historical: 35600, predicted: 38100, confidence: 95 },
+        { day: "Sun", historical: 30200, predicted: 32100, confidence: 95 },
+      ];
 
   return (
     <div className="space-y-8">
@@ -155,7 +177,7 @@ function DemandForecast({
                 "
               >
                 Predict passenger demand before it happens using
-                MetroFlow AI. Analyze historical travel patterns,
+                MetroVision AI. Analyze historical travel patterns,
                 forecast upcoming rush hours, and optimize operations
                 proactively.
               </p>
@@ -655,7 +677,7 @@ function DemandForecast({
                 text-slate-500
               "
             >
-              Compare historical passenger movement with MetroFlow AI
+              Compare historical passenger movement with MetroVision AI
               demand predictions.
             </p>
           </div>
@@ -676,255 +698,63 @@ function DemandForecast({
         </div>
 
         {/* Trend Comparison */}
-        <div
-          className="
-            mt-10
-            grid
-            gap-6
-            lg:grid-cols-7
-          "
-        >
-          {(forecastData.length
-            ? forecastData
-            : [
-                {
-                  day: "Mon",
-                  historical: 43000,
-                  predicted: 45500,
-                  confidence: 98,
-                },
-                {
-                  day: "Tue",
-                  historical: 44800,
-                  predicted: 47200,
-                  confidence: 97,
-                },
-                {
-                  day: "Wed",
-                  historical: 46200,
-                  predicted: 48800,
-                  confidence: 97,
-                },
-                {
-                  day: "Thu",
-                  historical: 47900,
-                  predicted: 50300,
-                  confidence: 96,
-                },
-                {
-                  day: "Fri",
-                  historical: 49500,
-                  predicted: 53400,
-                  confidence: 98,
-                },
-                {
-                  day: "Sat",
-                  historical: 35600,
-                  predicted: 38100,
-                  confidence: 95,
-                },
-                {
-                  day: "Sun",
-                  historical: 30200,
-                  predicted: 32100,
-                  confidence: 95,
-                },
-              ]
-          ).map((item, index) => {
-            const historicalHeight = item.historical / 600;
-
-            const forecastHeight = item.predicted / 600;
-
-            return (
-              <motion.div
-                key={item.day}
-                initial={{
-                  opacity: 0,
-                  y: 30,
+        <div className="mt-10">
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart
+              data={trendData}
+              margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+              barGap={6}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#e2e8f0"
+              />
+              <XAxis
+                dataKey="day"
+                tick={{ fill: "#475569", fontSize: 13, fontWeight: 600 }}
+                axisLine={{ stroke: "#e2e8f0" }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip
+                cursor={{ fill: "#f1f5f9" }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                 }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                viewport={{
-                  once: true,
-                }}
-                transition={{
-                  delay: index * 0.08,
-                }}
-                className="
-                  rounded-2xl
-                  bg-slate-50
-                  p-5
-                "
-              >
-                <div
-                  className="
-                    flex
-                    h-64
-                    items-end
-                    justify-center
-                    gap-3
-                  "
-                >
-                  <motion.div
-                    initial={{
-                      height: 0,
-                    }}
-                    whileInView={{
-                      height: historicalHeight,
-                    }}
-                    viewport={{
-                      once: true,
-                    }}
-                    transition={{
-                      duration: 0.8,
-                    }}
-                    className="
-                      w-6
-                      rounded-full
-                      bg-slate-300
-                    "
-                  />
-
-                  <motion.div
-                    initial={{
-                      height: 0,
-                    }}
-                    whileInView={{
-                      height: forecastHeight,
-                    }}
-                    viewport={{
-                      once: true,
-                    }}
-                    transition={{
-                      duration: 1,
-                    }}
-                    className="
-                      w-6
-                      rounded-full
-                      bg-indigo-600
-                    "
-                  />
-                </div>
-
-                <div className="mt-5 text-center">
-                  <h5
-                    className="
-                      text-lg
-                      font-bold
-                      text-slate-900
-                    "
-                  >
-                    {item.day}
-                  </h5>
-
-                  <p
-                    className="
-                      mt-3
-                      text-xs
-                      text-slate-500
-                    "
-                  >
-                    Historical
-                  </p>
-
-                  <p
-                    className="
-                      font-semibold
-                      text-slate-700
-                    "
-                  >
-                    {item.historical.toLocaleString()}
-                  </p>
-
-                  <p
-                    className="
-                      mt-3
-                      text-xs
-                      text-slate-500
-                    "
-                  >
-                    Forecast
-                  </p>
-
-                  <p
-                    className="
-                      font-bold
-                      text-indigo-700
-                    "
-                  >
-                    {item.predicted.toLocaleString()}
-                  </p>
-
-                  <span
-                    className="
-                      mt-4
-                      inline-flex
-                      rounded-full
-                      bg-emerald-100
-                      px-3
-                      py-1
-                      text-xs
-                      font-semibold
-                      text-emerald-700
-                    "
-                  >
-                    {item.confidence}% Confidence
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Chart Legend */}
-        <div
-          className="
-            mt-10
-            flex
-            flex-wrap
-            justify-center
-            gap-8
-          "
-        >
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <span
-              className="
-                h-4
-                w-4
-                rounded-full
-                bg-slate-300
-              "
-            />
-
-            <span className="text-slate-600">Historical Demand</span>
-          </div>
-
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <span
-              className="
-                h-4
-                w-4
-                rounded-full
-                bg-indigo-600
-              "
-            />
-
-            <span className="text-slate-600">AI Forecast</span>
-          </div>
+                formatter={(value, name) => [
+                  value.toLocaleString(),
+                  name === "historical" ? "Historical" : "Forecast",
+                ]}
+              />
+              <Legend
+                formatter={(value) =>
+                  value === "historical" ? "Historical Demand" : "AI Forecast"
+                }
+                wrapperStyle={{ paddingTop: 20 }}
+              />
+              <Bar
+                dataKey="historical"
+                fill="#cbd5e1"
+                radius={[8, 8, 0, 0]}
+                maxBarSize={28}
+              />
+              <Bar
+                dataKey="predicted"
+                fill="#4f46e5"
+                radius={[8, 8, 0, 0]}
+                maxBarSize={28}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </motion.div>
 
@@ -986,7 +816,7 @@ function DemandForecast({
                   text-slate-500
                 "
               >
-                MetroFlow AI predicts hourly passenger movement
+                MetroVision AI predicts hourly passenger movement
                 throughout the day.
               </p>
             </div>
@@ -1255,7 +1085,7 @@ function DemandForecast({
               Evening passenger demand is expected to exceed
               historical averages by approximately
               <span className="font-bold text-white"> 14%</span>.
-              MetroFlow AI recommends increasing train frequency
+              MetroVision AI recommends increasing train frequency
               between
               <span className="font-bold text-white">
                 {" "}
@@ -1316,7 +1146,7 @@ function DemandForecast({
                 text-slate-500
               "
             >
-              MetroFlow AI analyzes passenger demand across major
+              MetroVision AI analyzes passenger demand across major
               routes to identify capacity constraints before peak
               hours.
             </p>
@@ -1610,7 +1440,7 @@ function DemandForecast({
               >
                 Blue Line is projected to experience the highest
                 passenger growth over the next forecast window.
-                MetroFlow AI recommends increasing train frequency,
+                MetroVision AI recommends increasing train frequency,
                 optimizing turnaround schedules, and reallocating
                 standby trains to improve passenger throughput while
                 reducing platform congestion.
@@ -1678,7 +1508,7 @@ function DemandForecast({
                   text-slate-500
                 "
               >
-                MetroFlow AI continuously monitors demand patterns to
+                MetroVision AI continuously monitors demand patterns to
                 identify future peak periods across the metro
                 network.
               </p>
@@ -1979,7 +1809,7 @@ function DemandForecast({
               text-slate-300
             "
           >
-            MetroFlow AI forecasts a significant increase in weekday
+            MetroVision AI forecasts a significant increase in weekday
             passenger demand, particularly across interchange
             stations and the Blue Line corridor. Based on current
             travel trends, proactive train scheduling and platform
@@ -2081,7 +1911,7 @@ function DemandForecast({
                 font-black
               "
             >
-              MetroFlow AI Demand Outlook
+              MetroVision AI Demand Outlook
             </h2>
 
             <p
@@ -2092,7 +1922,7 @@ function DemandForecast({
                 text-slate-300
               "
             >
-              MetroFlow AI predicts sustained passenger demand growth
+              MetroVision AI predicts sustained passenger demand growth
               throughout the upcoming week. Historical travel
               behavior, seasonal trends and live operational signals
               indicate higher passenger volumes during weekday
@@ -2315,7 +2145,7 @@ function DemandForecast({
                   text-slate-300
                 "
               >
-                MetroFlow AI estimates that implementing the
+                MetroVision AI estimates that implementing the
                 recommended scheduling, staffing and capacity
                 optimization strategies can reduce platform crowding,
                 improve passenger throughput, and increase operational

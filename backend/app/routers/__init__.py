@@ -11,3 +11,4 @@ from . import prediction_history
 from . import alert
 from . import live_dashboard
 from . import crowd_monitoring
+from . import activity_logs

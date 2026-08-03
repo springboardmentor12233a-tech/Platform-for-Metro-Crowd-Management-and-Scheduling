@@ -189,7 +189,7 @@ function AIOperationsCenter({
       className="rounded-3xl"
     >
       {/* =====================================================
-          METROFLOW AI HEADER
+          METROVision AI HEADER
       ===================================================== */}
 
       <div className="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
@@ -216,7 +216,7 @@ function AIOperationsCenter({
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="text-4xl font-extrabold text-slate-900">
-                MetroFlow AI
+                MetroVision AI
               </h2>
 
               <div className="flex items-center gap-2 rounded-full bg-green-100 px-4 py-2">
@@ -946,7 +946,7 @@ function AIOperationsCenter({
               <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse" />
 
               <span className="font-semibold">
-                MetroFlow AI Engine Active
+                MetroVision AI Engine Active
               </span>
             </div>
 
@@ -998,7 +998,7 @@ function AIOperationsCenter({
 
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              MetroFlow AI Engine
+              MetroVision AI Engine
             </h2>
 
             <p className="mt-2 text-slate-500">
@@ -1105,7 +1105,7 @@ function AIOperationsCenter({
         <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="font-semibold text-slate-700">
-              MetroFlow AI Operations Center v2.0
+              MetroVision AI Operations Center v2.0
             </p>
 
             <p className="text-sm text-slate-500">

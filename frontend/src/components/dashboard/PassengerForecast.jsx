@@ -610,7 +610,7 @@ function PassengerForecast({
             <p className="mt-4 text-sm leading-7 text-slate-600">
 
               Passenger demand predictions are continuously refreshed
-              using the latest operational data received from the MetroFlow
+              using the latest operational data received from the MetroVision
               AI backend.
 
             </p>

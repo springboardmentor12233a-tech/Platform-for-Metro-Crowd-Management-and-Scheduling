@@ -422,7 +422,7 @@ function NetworkHealthAnalytics({
 
             <p className="leading-8 text-slate-300">
 
-              MetroFlow continuously monitors station availability,
+              MetroVision continuously monitors station availability,
               backend services, AI prediction pipelines, and operational
               alerts to ensure uninterrupted metro operations.
 

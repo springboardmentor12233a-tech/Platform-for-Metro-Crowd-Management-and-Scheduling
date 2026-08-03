@@ -16,10 +16,19 @@ from app.database import get_db
 from app.models.station import Station
 from app.models.trip_record import TripRecord
 from app.models.report import Report
+from app.auth.permissions import require_roles
 
 router = APIRouter(
     prefix="/reports",
-    tags=["Reports"]
+    tags=["Reports"],
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Analyst",
+            )
+        )
+    ],
 )
 
 

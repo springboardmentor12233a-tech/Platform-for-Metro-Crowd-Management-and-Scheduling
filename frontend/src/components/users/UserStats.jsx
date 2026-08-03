@@ -57,21 +57,21 @@ export default function UserStats({ users }) {
         return (
           <div
             key={item.key}
-            className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-slate-500">
                   {item.title}
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold">
+                <h2 className="mt-2 text-3xl font-bold text-slate-900">
                   {counts[item.key]}
                 </h2>
               </div>
 
               <div
-                className={`rounded-xl bg-gray-100 p-3 dark:bg-gray-800 ${item.color}`}
+                className={`rounded-xl bg-slate-100 p-3 ${item.color}`}
               >
                 <Icon size={28} />
               </div>

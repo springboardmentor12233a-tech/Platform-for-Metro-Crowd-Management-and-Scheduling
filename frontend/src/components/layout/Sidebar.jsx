@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import {
   MdDashboard,
@@ -14,6 +14,9 @@ import {
   MdHistory,
   MdAltRoute,
   MdNotificationImportant,
+  MdLogout,
+  MdAdminPanelSettings,
+  MdSmartToy,
 } from "react-icons/md";
 
 const menus = [
@@ -72,15 +75,39 @@ const menus = [
     roles: ["Admin", "Operator", "Analyst"],
   },
   {
+    name: "Metro AI",
+    path: "/ai",
+    icon: <MdSmartToy />,
+    roles: ["Admin", "Operator", "Analyst"],
+  },
+  {
     name: "Settings",
     path: "/settings",
     icon: <MdSettings />,
     roles: ["Admin"],
   },
+  {
+    name: "User Management",
+    path: "/users",
+    icon: <MdAdminPanelSettings />,
+    roles: ["Admin"],
+  },
+  {
+    name: "Activity Logs",
+    path: "/activity-logs",
+    icon: <MdHistory size={20} />,
+    roles: ["Admin"],
+  },
 ];
 
 export default function Sidebar({ collapsed, setCollapsed }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const filteredMenus = menus.filter((menu) =>
     menu.roles.includes(user?.role)
@@ -150,7 +177,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             `}
           >
             <h1 className="text-3xl font-bold whitespace-nowrap">
-              MetroFlow
+              MetroVision
             </h1>
 
             <p className="text-xs text-slate-400 mt-1 whitespace-nowrap">
@@ -292,6 +319,32 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Sign Out */}
+
+      <div className="px-4 pb-4">
+        <button
+          onClick={handleLogout}
+          className="
+            w-full
+            flex
+            items-center
+            justify-center
+            gap-3
+            rounded-xl
+            py-3
+            bg-red-600
+            hover:bg-red-700
+            transition-all
+            duration-300
+            text-white
+            font-medium
+          "
+        >
+          <MdLogout size={22} />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
       </div>
 
       {/* Collapse Button */}

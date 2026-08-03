@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-# MetroFlow Dataset Preprocessing Script
+# MetroVision Dataset Preprocessing Script
 
 RAW_FOLDER = "datasets/raw"
 PROCESSED_FOLDER = "datasets/processed"
@@ -154,7 +154,7 @@ else:
 # Finished
 
 print("\n" + "=" * 60)
-print("MetroFlow Dataset Preprocessing Completed Successfully")
+print("MetroVision Dataset Preprocessing Completed Successfully")
 print("=" * 60)
 
 print("\nProcessed Files:")

@@ -17,7 +17,7 @@ export default function DashboardHeader() {
       </h1>
 
       <p className="mt-2 text-lg text-slate-600">
-        Welcome back to MetroFlow AI Metro Operations Dashboard
+        Welcome back to MetroVision AI Metro Operations Dashboard
       </p>
     </header>
   );

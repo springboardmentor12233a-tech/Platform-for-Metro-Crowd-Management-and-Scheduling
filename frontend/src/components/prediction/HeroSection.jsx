@@ -32,7 +32,7 @@ export default function HeroSection() {
               </h1>
 
               <p className="mt-2 text-indigo-100">
-                MetroFlow Intelligence Engine
+                MetroVision Intelligence Engine
               </p>
 
             </div>

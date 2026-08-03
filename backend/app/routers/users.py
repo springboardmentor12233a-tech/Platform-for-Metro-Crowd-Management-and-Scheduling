@@ -1,152 +1,218 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate
-from app.schemas.auth import LoginRequest
 
-from app.auth.dependencies import get_current_user
-from app.auth.hashing import (
-    hash_password,
-    verify_password,
-)
-from app.auth.jwt_handler import create_access_token
+from app.auth.hashing import hash_password
+from app.core.role_checker import require_roles
+
+from app.schemas.user import UserCreate
 
 from app.services.user_service import (
+    get_users,
+    get_user_by_id,
     get_user_by_email,
     create_user,
-    authenticate_user,
+    update_user_details,
+    update_user_role,
+    update_user_status,
+    delete_user,
 )
-from app.services.auth_service import record_login
+from app.services.activity_log_service import create_activity_log
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["Authentication"],
+    prefix="/users",
+    tags=["User Management"],
 )
 
 
 # ======================================================
-# Register User
+# Get All Users
 # ======================================================
 
-@router.post("/register")
-def register(
-    request: UserCreate,
+@router.get("/")
+def get_all_users(
+    search: Optional[str] = Query(None),
+    role: Optional[str] = Query(None),
+    is_active: Optional[bool] = Query(None),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
 ):
-    existing_user = get_user_by_email(
+    return get_users(
         db,
-        request.email,
+        search,
+        role,
+        is_active,
     )
 
-    if existing_user:
+
+# ======================================================
+# Get User by ID
+# ======================================================
+
+@router.get("/{user_id}")
+def get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
+):
+    user = get_user_by_id(db, user_id)
+
+    if not user:
         raise HTTPException(
-            status_code=400,
-            detail="Email already registered",
+            status_code=404,
+            detail="User not found",
         )
 
-    new_user = User(
+    return user
+
+
+# ======================================================
+# Create User (Admin)
+# ======================================================
+
+@router.post("/")
+def add_user(
+    request: UserCreate,
+    http_request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
+):
+    if get_user_by_email(db, request.email):
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists",
+        )
+
+    user = User(
         name=request.name,
         email=request.email,
         password=hash_password(request.password),
         role=request.role,
     )
 
-    create_user(
-        db,
-        new_user,
+    new_user = create_user(db, user)
+
+    create_activity_log(
+        db=db,
+        user_id=current_user.id,
+        user_name=current_user.name,
+        role=current_user.role,
+        action="Create User",
+        module="User Management",
+        target=new_user.email,
+        status="Success",
+        ip_address=http_request.client.host,
     )
 
-    return {
-        "message": "User registered successfully"
-    }
+    return new_user
 
 
 # ======================================================
-# Login User
+# Update User
 # ======================================================
 
-@router.post("/login")
-def login(
-    request: LoginRequest,
+@router.put("/{user_id}")
+def edit_user(
+    user_id: int,
+    request: UserCreate,
+    http_request: Request,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
 ):
-    user = authenticate_user(
+    user = get_user_by_id(db, user_id)
+
+    if not user:
+        raise HTTPException(404, "User not found")
+
+    update_user_details(
         db,
+        user,
+        request.name,
         request.email,
     )
 
+    update_user_role(
+        db,
+        user,
+        request.role,
+    )
+
+    create_activity_log(
+        db=db,
+        user_id=current_user.id,
+        user_name=current_user.name,
+        role=current_user.role,
+        action="Update User",
+        module="User Management",
+        target=user.email,
+        status="Success",
+        ip_address=http_request.client.host,
+    )
+
+    return user
+
+
+# ======================================================
+# Activate / Deactivate User
+# ======================================================
+
+@router.patch("/{user_id}/status")
+def change_status(
+    user_id: int,
+    is_active: bool,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
+):
+    user = get_user_by_id(db, user_id)
+
     if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password",
-        )
+        raise HTTPException(404, "User not found")
 
-    if not verify_password(
-        request.password,
-        user.password,
-    ):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password",
-        )
+    return update_user_status(
+        db,
+        user,
+        is_active,
+    )
 
-    # Record last login timestamp
-    record_login(db, user)
 
-    access_token = create_access_token(
-        {
-            "sub": user.email,
-            "role": user.role,
-        }
+# ======================================================
+# Delete User
+# ======================================================
+
+@router.delete("/{user_id}")
+def remove_user(
+    user_id: int,
+    http_request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("Admin")),
+):
+    user = get_user_by_id(db, user_id)
+
+    if not user:
+        raise HTTPException(404, "User not found")
+
+    target_email = user.email
+
+    delete_user(
+        db,
+        user,
+    )
+
+    create_activity_log(
+        db=db,
+        user_id=current_user.id,
+        user_name=current_user.name,
+        role=current_user.role,
+        action="Delete User",
+        module="User Management",
+        target=target_email,
+        status="Success",
+        ip_address=http_request.client.host,
     )
 
     return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "role": user.role,
-        },
-    }
-
-
-# ======================================================
-# Current Logged-in User
-# ======================================================
-
-@router.get("/me")
-def get_me(
-    current_user: User = Depends(get_current_user),
-):
-    return {
-        "id": current_user.id,
-        "name": current_user.name,
-        "email": current_user.email,
-        "role": current_user.role,
-    }
-
-
-# ======================================================
-# Logout (Placeholder)
-# ======================================================
-
-@router.post("/logout")
-def logout():
-    """
-    Placeholder logout endpoint.
-
-    JWT authentication is stateless, so the frontend simply
-    deletes the token from localStorage.
-
-    Later we can implement:
-    - Refresh Tokens
-    - Token Blacklisting
-    - Redis Session Storage
-    """
-    return {
-        "message": "Logged out successfully"
+        "message": "User deleted successfully"
     }

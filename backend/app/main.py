@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-
+from app.routers import activity_logs
 # Import all models so SQLAlchemy creates all tables
 from app.models import *
 
@@ -24,6 +24,7 @@ from app.routers import (
     reports,
     live_dashboard,
     crowd_monitoring,
+    activity_analytics,
 )
 
 # ------------------------------------------------
@@ -98,6 +99,8 @@ app.include_router(ai.router)
 app.include_router(alert.router)
 app.include_router(reports.router)
 app.include_router(live_dashboard.router)
+app.include_router(activity_logs.router)
+app.include_router(activity_analytics.router)
 app.include_router(crowd_monitoring.router)
 
 # ------------------------------------------------

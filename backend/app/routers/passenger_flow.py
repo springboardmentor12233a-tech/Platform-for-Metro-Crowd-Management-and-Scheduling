@@ -18,59 +18,62 @@ router = APIRouter(
     tags=["Passenger Flow"],
 )
 
+# ------------------------------------
+# Read access: Admin | Operator | Analyst
+# ------------------------------------
+read_router = APIRouter(
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+                "Analyst",
+            )
+        )
+    ],
+)
 
 # ------------------------------------
-# Create Passenger Flow
-# Admin | Operator
+# Create/Update access: Admin | Operator
 # ------------------------------------
-@router.post("/")
-def add_flow(
-    request: PassengerFlowCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
+write_router = APIRouter(
+    dependencies=[
+        Depends(
+            require_roles(
+                "Admin",
+                "Operator",
+            )
         )
-    ),
-):
-    flow = PassengerFlow(**request.model_dump())
-    return create_passenger_flow(db, flow)
+    ],
+)
+
+# ------------------------------------
+# Delete access: Admin only
+# ------------------------------------
+delete_router = APIRouter(
+    dependencies=[
+        Depends(require_roles("Admin")),
+    ],
+)
 
 
 # ------------------------------------
 # Get All Passenger Flow
-# Admin | Operator | Analyst
 # ------------------------------------
-@router.get("/")
+@read_router.get("/")
 def all_flow(
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     return get_all_passenger_flow(db)
 
 
 # ------------------------------------
 # Get Passenger Flow By ID
-# Admin | Operator | Analyst
 # ------------------------------------
-@router.get("/{flow_id}")
+@read_router.get("/{flow_id}")
 def flow_by_id(
     flow_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-            "Analyst",
-        )
-    ),
 ):
     flow = get_passenger_flow(db, flow_id)
 
@@ -84,20 +87,25 @@ def flow_by_id(
 
 
 # ------------------------------------
-# Update Passenger Flow
-# Admin | Operator
+# Create Passenger Flow
 # ------------------------------------
-@router.put("/{flow_id}")
+@write_router.post("/")
+def add_flow(
+    request: PassengerFlowCreate,
+    db: Session = Depends(get_db),
+):
+    flow = PassengerFlow(**request.model_dump())
+    return create_passenger_flow(db, flow)
+
+
+# ------------------------------------
+# Update Passenger Flow
+# ------------------------------------
+@write_router.put("/{flow_id}")
 def edit_flow(
     flow_id: int,
     request: PassengerFlowCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-            "Operator",
-        )
-    ),
 ):
     flow = update_passenger_flow(
         db,
@@ -116,17 +124,11 @@ def edit_flow(
 
 # ------------------------------------
 # Delete Passenger Flow
-# Admin Only
 # ------------------------------------
-@router.delete("/{flow_id}")
+@delete_router.delete("/{flow_id}")
 def remove_flow(
     flow_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(
-        require_roles(
-            "Admin",
-        )
-    ),
 ):
     flow = delete_passenger_flow(
         db,
@@ -142,3 +144,8 @@ def remove_flow(
     return {
         "message": "Passenger flow deleted successfully"
     }
+
+
+router.include_router(read_router)
+router.include_router(write_router)
+router.include_router(delete_router)

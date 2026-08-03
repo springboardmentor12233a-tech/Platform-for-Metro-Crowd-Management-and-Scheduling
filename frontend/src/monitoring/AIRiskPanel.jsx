@@ -571,7 +571,7 @@ function AIRiskPanel({
 
             <p className="mt-4 leading-8 text-slate-600">
 
-              The MetroFlow AI Decision Engine analyzed{" "}
+              The MetroVision AI Decision Engine analyzed{" "}
               <span className="font-semibold text-cyan-700">
                 {recommendations.length}
               </span>{" "}

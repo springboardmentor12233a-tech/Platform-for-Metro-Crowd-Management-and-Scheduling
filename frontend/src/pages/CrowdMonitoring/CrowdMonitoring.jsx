@@ -128,7 +128,7 @@ function CrowdMonitoring() {
           <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
 
           <h2 className="text-2xl font-bold text-slate-700">
-            Loading MetroFlow...
+            Loading MetroVision...
           </h2>
 
           <p className="text-slate-500 mt-2">
@@ -152,7 +152,7 @@ function CrowdMonitoring() {
         <div>
 
           <h1 className="text-5xl font-bold text-slate-900">
-            MetroFlow Crowd Control Center
+            MetroVision Crowd Control Center
           </h1>
 
           <p className="text-slate-500 mt-2 text-lg">
@@ -199,7 +199,7 @@ function CrowdMonitoring() {
               </h2>
 
               <p className="mt-3 text-blue-100">
-                This station is currently synchronized across MetroFlow.
+                This station is currently synchronized across MetroVision.
               </p>
 
             </div>
@@ -538,7 +538,7 @@ function CrowdMonitoring() {
           <div>
 
             <h3 className="text-xl font-bold text-slate-800">
-              MetroFlow AI Crowd Management Platform
+              MetroVision AI Crowd Management Platform
             </h3>
 
             <p className="mt-2 text-slate-500">

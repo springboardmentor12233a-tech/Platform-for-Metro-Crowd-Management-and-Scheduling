@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -10,7 +10,7 @@ from app.schemas.auth import (
     ResetPasswordRequest,
 )
 
-from app.auth.dependencies import get_current_user
+from app.core.auth import get_current_user
 from app.auth.hashing import (
     hash_password,
     verify_password,
@@ -22,6 +22,7 @@ from app.auth.jwt_handler import (
 )
 
 from app.services.email_service import send_reset_email
+from app.services.activity_log_service import create_activity_log
 
 from app.services.user_service import (
     get_user_by_email,
@@ -80,6 +81,7 @@ def register(
 @router.post("/login")
 def login(
     request: LoginRequest,
+    http_request: Request,
     db: Session = Depends(get_db),
 ):
     user = authenticate_user(
@@ -107,6 +109,18 @@ def login(
             "sub": user.email,
             "role": user.role,
         }
+    )
+
+    create_activity_log(
+        db=db,
+        user_id=user.id,
+        user_name=user.name,
+        role=user.role,
+        action="Login",
+        module="Authentication",
+        target=user.email,
+        status="Success",
+        ip_address=http_request.client.host,
     )
 
     return {
