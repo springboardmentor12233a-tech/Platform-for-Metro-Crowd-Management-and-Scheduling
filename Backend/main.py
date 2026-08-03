@@ -1,3 +1,6 @@
+import joblib
+import numpy as np
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
@@ -18,6 +21,11 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+crowd_model = joblib.load("crowd_model.pkl")
+weather_encoder = joblib.load("weather_encoder.pkl")
+crowd_encoder = joblib.load("crowd_encoder.pkl")
+
 app = FastAPI()
 
 app.add_middleware(
@@ -100,6 +108,28 @@ def login_user(email: str, password: str):
         return {"error": "Invalid email or password"}
     access_token = create_access_token(data={"sub": user.email, "role": user.role})
     return {"message": "Login successful", "username": user.username, "role": user.role, "access_token": access_token, "token_type": "bearer"}
+
+@app.post("/predict-crowd")
+def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: int, peak_hour: int, weather: str):
+    try:
+        weather_encoded = weather_encoder.transform([weather])[0]
+    except ValueError:
+        return {"error": f"Unknown weather value. Expected one of: {list(weather_encoder.classes_)}"}
+
+    input_data = np.array([[passenger_count, occupancy_percent, is_holiday, peak_hour, weather_encoded]])
+    prediction_encoded = crowd_model.predict(input_data)[0]
+    prediction_label = crowd_encoder.inverse_transform([prediction_encoded])[0]
+
+    return {
+        "predicted_crowd_level": prediction_label,
+        "input": {
+            "passenger_count": passenger_count,
+            "occupancy_percent": occupancy_percent,
+            "is_holiday": is_holiday,
+            "peak_hour": peak_hour,
+            "weather": weather
+        }
+    }
 
 @app.post("/schedules")
 def add_schedule(station_name: str, departure_time: str, frequency_minutes: int = 10, status: str = "On Time"):
