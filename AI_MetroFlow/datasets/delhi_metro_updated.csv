@@ -1,0 +1,21 @@
+Station_Name,Line_Color,Latitude,Longitude,Distance_From_Start_km,Peak_Hour_Footfall,Off_Peak_Footfall,Capacity_Threshold,Current_Status
+Rajiv Chowk,Yellow,28.6328,77.2197,12.4,1850,620,2000,Yellow
+Kashmere Gate,Red,28.6675,77.2285,0.0,1600,510,1800,Green
+Chandni Chowk,Yellow,28.6578,77.2301,8.1,1420,490,1500,Orange
+New Delhi,Yellow,28.6431,77.2223,10.2,1700,580,1800,Yellow
+Hauz Khas,Yellow,28.5431,77.2066,21.5,1300,410,1400,Green
+Central Secretariat,Yellow,28.6146,77.2119,14.8,1150,380,1300,Green
+Khan Market,Violet,28.6006,77.2269,16.2,980,300,1100,Green
+Lajpat Nagar,Pink,28.5701,77.2384,19.1,1250,400,1300,Yellow
+Botanical Garden,Blue,28.5644,77.3343,28.4,1100,350,1200,Green
+Noida City Centre,Blue,28.5747,77.3560,31.0,950,290,1100,Green
+Noida Sector 62,Blue,28.6208,77.3639,34.5,820,250,1000,Green
+Akshardham,Blue,28.6181,77.2785,22.0,760,220,900,Green
+Yamuna Bank,Blue,28.6234,77.2662,20.1,890,280,1000,Green
+Mandi House,Blue,28.6258,77.2341,15.5,1050,340,1200,Green
+Karol Bagh,Blue,28.6441,77.1884,8.5,920,310,1000,Green
+Rajouri Garden,Pink,28.6492,77.1226,14.2,990,320,1100,Green
+Janakpuri West,Magenta,28.6294,77.0778,19.8,1080,360,1200,Green
+Dwarka Sector 21,Blue,28.5521,77.0583,28.0,1180,390,1300,Yellow
+IGIA Terminal 1,Magenta,28.5615,77.1214,22.3,880,270,1000,Green
+Kalkaji Mandir,Violet,28.5492,77.2584,23.5,1020,330,1100,Green
