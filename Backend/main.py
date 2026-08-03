@@ -3,11 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
 from passlib.context import CryptContext
 import models
-
+from jose import jwt 
+from datetime import datetime, timedelta
 Base.metadata.create_all(bind=engine)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+SECRET_KEY = "metroflow-secret-key-change-later"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 app = FastAPI()
 
 app.add_middleware(
@@ -88,4 +98,5 @@ def login_user(email: str, password: str):
     db.close()
     if not user or not pwd_context.verify(password, user.hashed_password):
         return {"error": "Invalid email or password"}
-    return {"message": "Login successful", "username": user.username, "role": user.role}
+    access_token = create_access_token(data={"sub": user.email, "role": user.role})
+    return {"message": "Login successful", "username": user.username, "role": user.role, "access_token": access_token, "token_type": "bearer"}
