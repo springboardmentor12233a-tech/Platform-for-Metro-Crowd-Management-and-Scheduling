@@ -1,3 +1,4 @@
+import pandas as pd
 import joblib
 import numpy as np
 
@@ -187,3 +188,33 @@ def delete_schedule(schedule_id: int):
     db.commit()
     db.close()
     return {"message": f"Schedule {schedule_id} deleted"}
+
+@app.get("/traffic-report")
+def traffic_report():
+    df = pd.read_excel("MetroFlow_Dataset.xlsx")
+
+    station_summary = (
+        df.groupby("Station")
+        .agg(
+            avg_passenger_count=("Passenger_Count", "mean"),
+            avg_occupancy_percent=("Occupancy_Percent", "mean"),
+            total_delay_minutes=("Delay_Minutes", "sum"),
+            peak_hour_records=("Peak_Hour", "sum")
+        )
+        .round(2)
+        .reset_index()
+        .to_dict(orient="records")
+    )
+
+    crowd_level_distribution = (
+        df["Crowd_Level"].value_counts().to_dict()
+    )
+
+    busiest_station = df.groupby("Station")["Passenger_Count"].sum().idxmax()
+
+    return {
+        "station_summary": station_summary,
+        "crowd_level_distribution": crowd_level_distribution,
+        "busiest_station": busiest_station,
+        "total_records_analyzed": len(df)
+    }
