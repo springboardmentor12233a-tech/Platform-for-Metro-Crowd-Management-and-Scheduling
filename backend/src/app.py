@@ -236,7 +236,7 @@ def predict():
         latest_prediction = {
     "Station": "Predicted Station",
     "Passenger_Count": data["Passenger_Count"],
-    "Crowd_Level": crowd_level,
+    "Crowd_Level": crowd,
     "Delay_Minutes": data["Delay_Minutes"],
     "Occupancy_Percent": data["Occupancy_Percent"]
 }
@@ -381,46 +381,80 @@ def monitor():
 # -------------------------------------------------
 # REPORT API
 # -------------------------------------------------
-from flask import render_template, make_response
+# from flask import render_template, make_response
 
-# ================= HTML REPORT =================
+# # ================= HTML REPORT =================
 
-@app.route("/report")
+# @app.route("/report")
+# def report():
+
+#     report = {
+
+#         "Total_Passengers": int(df["Passenger_Count"].sum()),
+
+#         "Average_Passenger_Count":
+#         round(float(df["Passenger_Count"].mean()), 2),
+
+#         "Average_Delay":
+#         round(float(df["Delay_Minutes"].mean()), 2),
+
+#         "Maximum_Occupancy":
+#         round(float(df["Occupancy_Percent"].max()), 2),
+
+#         "Most_Crowded_Station":
+#         str(
+#             df.groupby("Station")["Passenger_Count"]
+#             .mean()
+#             .idxmax()
+#         ),
+
+#         "Peak_Hour":
+#         str(
+#             df.groupby("Peak_Hour")["Passenger_Count"]
+#             .mean()
+#             .idxmax()
+#         )
+
+#     }
+
+#     return render_template(
+#         "report.html",
+#         report=report
+#     )
+from flask import jsonify
+
+@app.route("/report", methods=["GET"])
 def report():
 
     report = {
 
         "Total_Passengers": int(df["Passenger_Count"].sum()),
 
-        "Average_Passenger_Count":
-        round(float(df["Passenger_Count"].mean()), 2),
-
-        "Average_Delay":
-        round(float(df["Delay_Minutes"].mean()), 2),
-
-        "Maximum_Occupancy":
-        round(float(df["Occupancy_Percent"].max()), 2),
-
-        "Most_Crowded_Station":
-        str(
-            df.groupby("Station")["Passenger_Count"]
-            .mean()
-            .idxmax()
+        "Average_Passenger_Count": round(
+            float(df["Passenger_Count"].mean()), 2
         ),
 
-        "Peak_Hour":
-        str(
-            df.groupby("Peak_Hour")["Passenger_Count"]
-            .mean()
-            .idxmax()
+        "Average_Delay": round(
+            float(df["Delay_Minutes"].mean()), 2
+        ),
+
+        "Maximum_Occupancy": round(
+            float(df["Occupancy_Percent"].max()), 2
+        ),
+
+        "Most_Crowded_Station": str(
+            df.groupby("Station")["Passenger_Count"].mean().idxmax()
+        ),
+
+        "Peak_Hour": str(
+            df.groupby("Peak_Hour")["Passenger_Count"].mean().idxmax()
         )
 
     }
 
-    return render_template(
-        "report.html",
-        report=report
-    )
+    print(report)
+
+    return jsonify(report)
 
 
 # ================= PDF REPORT =================

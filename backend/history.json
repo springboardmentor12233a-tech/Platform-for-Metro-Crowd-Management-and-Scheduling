@@ -1,5 +1,60 @@
 [
     {
+        "Timestamp": "31-07-2026 20:00:56",
+        "Passenger_Count": 2100,
+        "Occupancy_Percent": 90,
+        "Delay_Minutes": 2,
+        "Number_of_Trips": 3,
+        "Train_Frequency_Per_Hour": 2,
+        "Train_Speed_kmph": 30,
+        "Crowd_Level": "High",
+        "Recommendation": "Increase Train Frequency"
+    },
+    {
+        "Timestamp": "31-07-2026 19:57:52",
+        "Passenger_Count": 2100,
+        "Occupancy_Percent": 90,
+        "Delay_Minutes": 3,
+        "Number_of_Trips": 10,
+        "Train_Frequency_Per_Hour": 2,
+        "Train_Speed_kmph": 30,
+        "Crowd_Level": "High",
+        "Recommendation": "Increase Train Frequency"
+    },
+    {
+        "Timestamp": "31-07-2026 18:46:36",
+        "Passenger_Count": 2100,
+        "Occupancy_Percent": 90,
+        "Delay_Minutes": 3,
+        "Number_of_Trips": 10,
+        "Train_Frequency_Per_Hour": 2,
+        "Train_Speed_kmph": 30,
+        "Crowd_Level": "High",
+        "Recommendation": "Increase Train Frequency"
+    },
+    {
+        "Timestamp": "31-07-2026 18:46:13",
+        "Passenger_Count": 1200,
+        "Occupancy_Percent": 90,
+        "Delay_Minutes": 3,
+        "Number_of_Trips": 10,
+        "Train_Frequency_Per_Hour": 2,
+        "Train_Speed_kmph": 30,
+        "Crowd_Level": "Low",
+        "Recommendation": "Normal Operation"
+    },
+    {
+        "Timestamp": "31-07-2026 18:46:13",
+        "Passenger_Count": 1200,
+        "Occupancy_Percent": 90,
+        "Delay_Minutes": 3,
+        "Number_of_Trips": 10,
+        "Train_Frequency_Per_Hour": 2,
+        "Train_Speed_kmph": 30,
+        "Crowd_Level": "Low",
+        "Recommendation": "Normal Operation"
+    },
+    {
         "Timestamp": "30-07-2026 12:57:41",
         "Passenger_Count": 700,
         "Occupancy_Percent": 75,

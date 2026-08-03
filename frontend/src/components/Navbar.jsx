@@ -61,18 +61,7 @@ function Navbar() {
                 Prediction
               </Link>
             </li>
-            <li className="nav-item">
-
-    <Link
-        className="nav-link"
-        to="/prediction-history"
-    >
-
-        Prediction History
-
-    </Link>
-
-</li>
+            
             {/* Schedule */}
             <li className="nav-item">
               <Link className="nav-link" to="/schedule">
@@ -131,7 +120,18 @@ function Navbar() {
             {role === "admin" && (
 
               <>
+                <li className="nav-item">
 
+    <Link
+        className="nav-link"
+        to="/prediction-history"
+    >
+
+        Prediction History
+
+    </Link>
+
+</li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/monitoring">
                     Monitoring
