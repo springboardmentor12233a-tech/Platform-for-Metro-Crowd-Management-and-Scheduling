@@ -1,6 +1,6 @@
-# MetroFlow – AI Metro Crowd Management & Scheduling System
+# MetroVision – AI Metro Crowd Management & Scheduling System
 
-MetroFlow is an AI-powered metro analytics platform designed to analyze passenger movement, monitor station crowd levels, visualize operational insights, and support intelligent scheduling decisions using data analytics.
+MetroVision is an AI-powered metro analytics platform designed to analyze passenger movement, monitor station crowd levels, visualize operational insights, and support intelligent scheduling decisions using data analytics.
 
 The project combines a modern React dashboard with a FastAPI backend to provide real-time analytical insights from metro transportation datasets.
 
@@ -85,7 +85,7 @@ The project combines a modern React dashboard with a FastAPI backend to provide 
 # Project Structure
 
 ```
-MetroFlow
+MetroVision
 │
 ├── backend
 │   ├── api
@@ -265,7 +265,7 @@ Current dashboard includes
 
 # Team
 
-MetroFlow Development Team
+MetroVision Development Team
 
 Milestone 1
 
