@@ -273,3 +273,42 @@ def traffic_report():
         "busiest_station": busiest_station,
         "total_records_analyzed": len(df)
     }
+
+@app.get("/dashboard")
+def get_dashboard(db: Session = Depends(get_db)):
+    df = pd.read_excel("MetroFlow_Dataset.xlsx")
+
+    station_summary = (
+        df.groupby("Station")
+        .agg(
+            avg_passenger_count=("Passenger_Count", "mean"),
+            avg_occupancy_percent=("Occupancy_Percent", "mean"),
+            total_delay_minutes=("Delay_Minutes", "sum"),
+        )
+        .round(2)
+        .reset_index()
+        .to_dict(orient="records")
+    )
+
+    crowd_level_distribution = df["Crowd_Level"].value_counts().to_dict()
+    busiest_station = df.groupby("Station")["Passenger_Count"].sum().idxmax()
+
+    total_alerts = db.query(models.Alert).count()
+    active_alerts = db.query(models.Alert).filter(models.Alert.is_resolved == False).count()
+    alerts_by_type = {}
+    for alert_type in ["Overcrowding", "Delay", "Emergency"]:
+        alerts_by_type[alert_type] = db.query(models.Alert).filter(models.Alert.alert_type == alert_type).count()
+
+    recent_alerts = db.query(models.Alert).order_by(models.Alert.created_at.desc()).limit(5).all()
+
+    return {
+        "station_summary": station_summary,
+        "crowd_level_distribution": crowd_level_distribution,
+        "busiest_station": busiest_station,
+        "alerts": {
+            "total": total_alerts,
+            "active": active_alerts,
+            "by_type": alerts_by_type,
+            "recent": recent_alerts,
+        },
+    }
