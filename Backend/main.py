@@ -2,10 +2,12 @@ import pandas as pd
 import joblib
 import numpy as np
 
+from alerts import check_and_create_overcrowding_alert
 from alerts import router as alerts_router
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
+from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 import models
 from jose import jwt 
@@ -29,6 +31,14 @@ weather_encoder = joblib.load("weather_encoder.pkl")
 crowd_encoder = joblib.load("crowd_encoder.pkl")
 
 app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 app.include_router(alerts_router)
 
@@ -114,7 +124,7 @@ def login_user(email: str, password: str):
     return {"message": "Login successful", "username": user.username, "role": user.role, "access_token": access_token, "token_type": "bearer"}
 
 @app.post("/predict-crowd")
-def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: int, peak_hour: int, weather: str):
+def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: int, peak_hour: int, weather: str, station: str, db: Session = Depends(get_db)):
     try:
         weather_encoded = weather_encoder.transform([weather])[0]
     except ValueError:
@@ -123,7 +133,7 @@ def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: in
     input_data = np.array([[passenger_count, occupancy_percent, is_holiday, peak_hour, weather_encoded]])
     prediction_encoded = crowd_model.predict(input_data)[0]
     prediction_label = crowd_encoder.inverse_transform([prediction_encoded])[0]
-
+    check_and_create_overcrowding_alert(db=db, station=station, crowd_level=prediction_label)
     return {
         "predicted_crowd_level": prediction_label,
         "input": {

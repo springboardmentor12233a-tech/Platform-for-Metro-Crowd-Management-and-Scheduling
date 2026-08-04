@@ -32,3 +32,17 @@ def create_alert(alert_type: str, station: str, message: str, severity: str, db:
     db.commit()
     db.refresh(new_alert)
     return new_alert
+
+def check_and_create_overcrowding_alert(db: Session, station: str, crowd_level: str):
+    if crowd_level == "High":
+        new_alert = Alert(
+            alert_type="Overcrowding",
+            station=station,
+            message=f"High passenger density detected at {station}.",
+            severity="High",
+        )
+        db.add(new_alert)
+        db.commit()
+        db.refresh(new_alert)
+        return new_alert
+    return None
