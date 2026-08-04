@@ -153,6 +153,19 @@ def report_delay(station: str, delay_minutes: int, db: Session = Depends(get_db)
         return {"message": "Delay alert created", "alert": alert}
     return {"message": "Delay within acceptable range, no alert created"}
 
+@app.post("/emergency-alert")
+def raise_emergency(station: str, message: str, db: Session = Depends(get_db)):
+    new_alert = models.Alert(
+        alert_type="Emergency",
+        station=station,
+        message=message,
+        severity="High",
+    )
+    db.add(new_alert)
+    db.commit()
+    db.refresh(new_alert)
+    return {"message": "Emergency alert raised", "alert": new_alert}
+
 @app.get("/frequency-recommendation")
 def frequency_recommendation(crowd_level: str):
     crowd_level = crowd_level.capitalize()
