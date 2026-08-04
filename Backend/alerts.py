@@ -46,3 +46,17 @@ def check_and_create_overcrowding_alert(db: Session, station: str, crowd_level: 
         db.refresh(new_alert)
         return new_alert
     return None
+
+def check_and_create_delay_alert(db: Session, station: str, delay_minutes: int):
+    if delay_minutes >= 10:
+        new_alert = Alert(
+            alert_type="Delay",
+            station=station,
+            message=f"Train delay of {delay_minutes} min reported at {station}.",
+            severity="Medium" if delay_minutes < 20 else "High",
+        )
+        db.add(new_alert)
+        db.commit()
+        db.refresh(new_alert)
+        return new_alert
+    return None

@@ -2,6 +2,7 @@ import pandas as pd
 import joblib
 import numpy as np
 
+from alerts import check_and_create_overcrowding_alert, check_and_create_delay_alert
 from alerts import check_and_create_overcrowding_alert
 from alerts import router as alerts_router
 from fastapi import FastAPI, Depends
@@ -144,6 +145,13 @@ def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: in
             "weather": weather
         }
     }
+
+@app.post("/report-delay")
+def report_delay(station: str, delay_minutes: int, db: Session = Depends(get_db)):
+    alert = check_and_create_delay_alert(db=db, station=station, delay_minutes=delay_minutes)
+    if alert:
+        return {"message": "Delay alert created", "alert": alert}
+    return {"message": "Delay within acceptable range, no alert created"}
 
 @app.get("/frequency-recommendation")
 def frequency_recommendation(crowd_level: str):
