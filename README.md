@@ -21,7 +21,7 @@ MetroFlow AI is a state-of-the-art Metro Crowd Management and Scheduling Command
    - **Model C (Congestion Status Classifier)**: Predicts threshold overcrowding status. Accuracy = 94.66%, F1 = 0.9634.
    - **Model D (Scheduling Optimizer)**: Rule-based headway, frequency, and train allocation calculations.
    
-4. **AI Metro Copilot (xAI Grok Grounding)**
+4. **AI Metromind 
    - Grounded LLM Chat Assistant utilizing live database telemetry (active alerts, congested stations, delayed train numbers) to ground its responses, falling back to simulated templates if keys are unconfigured.
 
 ---
