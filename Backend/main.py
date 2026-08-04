@@ -132,6 +132,27 @@ def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: in
         }
     }
 
+@app.get("/frequency-recommendation")
+def frequency_recommendation(crowd_level: str):
+    crowd_level = crowd_level.capitalize()
+
+    recommendations = {
+        "Low": {"frequency_minutes": 15, "action": "Normal Operation"},
+        "Medium": {"frequency_minutes": 8, "action": "Deploy Crowd Control"},
+        "High": {"frequency_minutes": 4, "action": "Increase Train Frequency"}
+    }
+
+    if crowd_level not in recommendations:
+        return {"error": f"Invalid crowd_level. Expected one of: Low, Medium, High"}
+
+    result = recommendations[crowd_level]
+
+    return {
+        "crowd_level": crowd_level,
+        "recommended_frequency_minutes": result["frequency_minutes"],
+        "recommended_action": result["action"]
+    }
+
 @app.post("/schedules")
 def add_schedule(station_name: str, departure_time: str, frequency_minutes: int = 10, status: str = "On Time"):
     db = SessionLocal()
