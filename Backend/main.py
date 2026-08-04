@@ -2,6 +2,7 @@ import pandas as pd
 import joblib
 import numpy as np
 
+from alerts import router as alerts_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
@@ -28,6 +29,8 @@ weather_encoder = joblib.load("weather_encoder.pkl")
 crowd_encoder = joblib.load("crowd_encoder.pkl")
 
 app = FastAPI()
+
+app.include_router(alerts_router)
 
 app.add_middleware(
     CORSMiddleware,
