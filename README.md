@@ -1,6 +1,6 @@
 # MetroFlow AI: Intelligent Crowd Management & Scheduling Platform
 
-MetroFlow AI is a state-of-the-art Metro Crowd Management and Scheduling Command Center. It integrates scikit-learn machine learning regression/classification models (HistGradientBoosting) and a grounded LLM (xAI Grok Copilot) to predict crowd density, forecast demand, optimize transit frequencies, alert operators of congestion, and allow natural language analysis of station telemetry.
+MetroFlow AI is a state-of-the-art Metro Crowd Management and Scheduling Command Center. It integrates scikit-learn machine learning regression/classification models (HistGradientBoosting) and a grounded LLM to predict crowd density, forecast demand, optimize transit frequencies, alert operators of congestion, and allow natural language analysis of station telemetry.
 
 ---
 
