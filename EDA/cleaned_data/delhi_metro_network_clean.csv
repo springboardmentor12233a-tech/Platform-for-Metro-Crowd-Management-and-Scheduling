@@ -117,7 +117,7 @@ Station ID,Station Name,Distance from Start (km),Line,Opening Date,Station Layou
 116,Yamuna Bank,0.0,Blue line branch,2009-10-05,At-Grade,28.62331,77.26792,2009
 117,Anand Vihar [Conn: Pink],5.7,Blue line branch,2010-06-01,Elevated,28.64695,77.31603,2010
 118,Cyber City,8.6,Rapid Metro,2014-07-05,Elevated,28.4936,77.0935,2014
-119,Lal Quila,1.5,Voilet line,2017-05-28,Underground,27.92086195,77.52850191,2017
+119,Lal Quila,1.5,Voilet line,2017-05-28,Underground,28.657862,77.241602,2017
 120,Mandi House [Conn: Violet],31.8,Blue line,2006-11-11,Underground,28.62588,77.2341,2006
 121,Ashok Park Main,1.4,Green line,2010-02-04,Elevated,28.67153,77.15527,2010
 122,Dashrath Puri,3.1,Magenta line,2018-05-29,Underground,28.6018751,77.0823561,2018
@@ -175,7 +175,7 @@ Station ID,Station Name,Distance from Start (km),Line,Opening Date,Station Layou
 174,Jaffrabad,48.0,Pink line,2018-10-31,Elevated,28.6826822,77.2748055,2018
 175,Rohini West,31.7,Red line,2004-03-31,Elevated,28.71483,77.11467,2004
 176,Palam,4.6,Magenta line,2018-05-29,Underground,28.5918933,77.0828242,2018
-177,Shyam park,4.5,Red line,2019-08-03,Elevated,28.6988072,28.6988072,2019
+177,Shyam park,4.5,Red line,2019-08-03,Elevated,28.698807,77.344421,2019
 178,Vaishali,8.1,Blue line branch,2011-07-14,Elevated,28.64997,77.33974,2011
 179,Jahangirpuri,3.4,Yellow line,2009-04-02,Elevated,28.72592,77.16267,2009
 180,Badarpur Border,26.3,Voilet line,2011-01-14,Elevated,28.49334,77.30307,2011

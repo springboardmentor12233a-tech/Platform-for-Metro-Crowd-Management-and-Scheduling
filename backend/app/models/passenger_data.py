@@ -18,3 +18,11 @@ class PassengerData(Base):
     passenger_count = Column(Integer, nullable=False)
 
     created_at = Column(DateTime, server_default=func.now())
+
+    @property
+    def inflow_count(self) -> int:
+        return int(self.passenger_count * 0.58)
+
+    @property
+    def outflow_count(self) -> int:
+        return int(self.passenger_count * 0.42)

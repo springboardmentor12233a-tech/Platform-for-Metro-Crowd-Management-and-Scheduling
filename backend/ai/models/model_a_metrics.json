@@ -1,0 +1,14 @@
+{
+    "model_name": "HistGradientBoostingRegressor",
+    "metrics": {
+        "mae": 100.06,
+        "rmse": 132.9,
+        "r2": 0.979
+    },
+    "baseline": {
+        "model_name": "LinearRegression",
+        "mae": 607.06,
+        "rmse": 715.33,
+        "r2": 0.3924
+    }
+}

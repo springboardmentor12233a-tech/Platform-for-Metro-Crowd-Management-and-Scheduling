@@ -1,8 +1,11 @@
 import os
 import joblib
+import json
 import pandas as pd
+import numpy as np
 
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     mean_absolute_error,
@@ -27,17 +30,25 @@ MODEL_FILE = os.path.join(
     "crowd_prediction.pkl"
 )
 
+METRICS_FILE = os.path.join(
+    BASE_DIR,
+    "models",
+    "model_a_metrics.json"
+)
+
 # ----------------------------
 # Load Dataset
 # ----------------------------
 print("Loading processed dataset...")
+if not os.path.exists(DATA_FILE):
+    print(f"Data file not found at {DATA_FILE}. Make sure preprocessing ran.")
+    exit(1)
 
 df = pd.read_csv(DATA_FILE)
-
-print(df.shape)
+print(f"Dataset Shape: {df.shape}")
 
 # ----------------------------
-# Features
+# Features & Target
 # ----------------------------
 X = df[
     [
@@ -56,9 +67,7 @@ X = df[
 
 y = df["Passenger_Count"]
 
-# ----------------------------
 # Train Test Split
-# ----------------------------
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -67,58 +76,62 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ----------------------------
-# Train Model
+# 1. Train & Evaluate Baseline (Linear Regression)
 # ----------------------------
-print("\nTraining model...")
+print("\nTraining Baseline Model (Linear Regression)...")
+baseline = LinearRegression()
+baseline.fit(X_train, y_train)
+base_preds = baseline.predict(X_test)
 
-model = RandomForestRegressor(
-    n_estimators=200,
-    random_state=42,
-    n_jobs=-1
+base_mae = mean_absolute_error(y_test, base_preds)
+base_rmse = mean_squared_error(y_test, base_preds) ** 0.5
+base_r2 = r2_score(y_test, base_preds)
+
+print(f"Linear Regression -> MAE: {base_mae:.2f}, RMSE: {base_rmse:.2f}, R²: {base_r2:.4f}")
+
+# ----------------------------
+# 2. Train & Evaluate HistGradientBoostingRegressor
+# ----------------------------
+print("\nTraining Optimized Ensemble Model (HistGradientBoostingRegressor)...")
+# HistGradientBoostingRegressor works well out of the box and is fast/small
+ensemble = HistGradientBoostingRegressor(
+    max_iter=150,
+    max_depth=10,
+    learning_rate=0.1,
+    random_state=42
 )
+ensemble.fit(X_train, y_train)
+ensemble_preds = ensemble.predict(X_test)
 
-model.fit(X_train, y_train)
+ens_mae = mean_absolute_error(y_test, ensemble_preds)
+ens_rmse = mean_squared_error(y_test, ensemble_preds) ** 0.5
+ens_r2 = r2_score(y_test, ensemble_preds)
 
-# ----------------------------
-# Predictions
-# ----------------------------
-predictions = model.predict(X_test)
+print(f"HistGradientBoosting  -> MAE: {ens_mae:.2f}, RMSE: {ens_rmse:.2f}, R²: {ens_r2:.4f}")
 
-# ----------------------------
-# Evaluation
-# ----------------------------
-mae = mean_absolute_error(y_test, predictions)
-rmse = mean_squared_error(y_test, predictions) ** 0.5
-r2 = r2_score(y_test, predictions)
+# Select and save the best model (HistGradientBoosting is expected to win by far)
+print("\nSaving best model to", MODEL_FILE)
+os.makedirs(os.path.dirname(MODEL_FILE), exist_ok=True)
+joblib.dump(ensemble, MODEL_FILE)
 
-print("\nModel Performance")
-print("-" * 40)
-print(f"MAE  : {mae:.2f}")
-print(f"RMSE : {rmse:.2f}")
-print(f"R²   : {r2:.4f}")
+# Save metrics JSON for visual analysis on dashboard
+metrics = {
+    "model_name": "HistGradientBoostingRegressor",
+    "metrics": {
+        "mae": round(ens_mae, 2),
+        "rmse": round(ens_rmse, 2),
+        "r2": round(ens_r2, 4)
+    },
+    "baseline": {
+        "model_name": "LinearRegression",
+        "mae": round(base_mae, 2),
+        "rmse": round(base_rmse, 2),
+        "r2": round(base_r2, 4)
+    }
+}
 
-# ----------------------------
-# Feature Importance
-# ----------------------------
-print("\nFeature Importance")
-print("-" * 40)
+with open(METRICS_FILE, "w") as f:
+    json.dump(metrics, f, indent=4)
 
-importance = pd.DataFrame({
-    "Feature": X.columns,
-    "Importance": model.feature_importances_
-})
-
-importance = importance.sort_values(
-    by="Importance",
-    ascending=False
-)
-
-print(importance)
-
-# ----------------------------
-# Save Model
-# ----------------------------
-joblib.dump(model, MODEL_FILE)
-
-print("\nModel saved successfully!")
-print(MODEL_FILE)
+print("Model A metrics saved to:", METRICS_FILE)
+print("Training Completed Successfully!")

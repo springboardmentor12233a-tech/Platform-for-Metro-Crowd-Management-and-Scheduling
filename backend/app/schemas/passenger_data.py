@@ -17,8 +17,21 @@ class PassengerDataCreate(PassengerDataBase):
     pass
 
 
+from typing import Optional
+
+class PassengerDataUpdate(BaseModel):
+    station_id: Optional[int] = None
+    route_id: Optional[int] = None
+    train_id: Optional[int] = None
+    travel_date: Optional[date] = None
+    travel_time: Optional[time] = None
+    passenger_count: Optional[int] = Field(None, ge=0)
+
+
 class PassengerDataResponse(PassengerDataBase):
     passenger_id: int
+    inflow_count: int
+    outflow_count: int
 
     class Config:
         from_attributes = True

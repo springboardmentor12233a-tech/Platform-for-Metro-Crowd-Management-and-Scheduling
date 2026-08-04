@@ -24,3 +24,8 @@ class LoginResponse(BaseModel):
     message: str
     token: str
     user: UserResponse
+
+
+class ChangeRoleRequest(BaseModel):
+    userId: str
+    role: str

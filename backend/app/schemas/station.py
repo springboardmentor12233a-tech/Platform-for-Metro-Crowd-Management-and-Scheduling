@@ -26,6 +26,17 @@ class StationCreate(StationBase):
     pass
 
 
+class StationUpdate(BaseModel):
+    station_name: Optional[str] = Field(None, min_length=2)
+    line_name: Optional[str] = Field(None, min_length=2)
+    distance_from_start: Optional[Decimal] = Field(None, ge=0)
+    opening_date: Optional[date] = None
+    station_layout: Optional[str] = None
+    latitude: Optional[Decimal] = None
+    longitude: Optional[Decimal] = None
+    is_interchange: Optional[bool] = None
+
+
 class StationResponse(StationBase):
     station_id: int
 

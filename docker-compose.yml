@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: metroflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: metroflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongo_db:
+    image: mongo:6-jammy
+    container_name: metroflow_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  redis_db:
+    image: redis:7-alpine
+    container_name: metroflow_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: metroflow_backend
+    restart: always
+    environment:
+      - PORT=5000
+      - PG_HOST=postgres_db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=password123
+      - PG_DATABASE=metroflow
+      - MONGODB_URI=mongodb://mongo_db:27017/metroflow
+      - REDIS_HOST=redis_db
+      - REDIS_PORT=6379
+      - JWT_SECRET=metroflow_super_secret_key
+      - JWT_EXPIRES_IN=7d
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - XAI_MODEL=${XAI_MODEL:-grok-2-1212}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      mongo_db:
+        condition: service_started
+      redis_db:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: metroflow_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  mongodata:

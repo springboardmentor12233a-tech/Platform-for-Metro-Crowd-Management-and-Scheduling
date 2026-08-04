@@ -12,3 +12,11 @@ def get_all_schedules(db: Session):
 
 def get_schedule_by_id(db: Session, schedule_id: int):
     return train_schedule_repository.get_schedule_by_id(db, schedule_id)
+
+
+def update_schedule(db: Session, schedule_id: int, schedule_data):
+    return train_schedule_repository.update_schedule(db, schedule_id, schedule_data)
+
+
+def delete_schedule(db: Session, schedule_id: int):
+    return train_schedule_repository.delete_schedule(db, schedule_id)

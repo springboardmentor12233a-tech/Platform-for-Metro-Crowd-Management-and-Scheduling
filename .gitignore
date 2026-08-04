@@ -10,3 +10,6 @@ __pycache__/
 .DS_Store
 Thumbs.dbgit add .
 git commit -m "Backend update"
+
+datasets/MetroPT3(AirCompressor).csv/
+datasets/schedules.json/

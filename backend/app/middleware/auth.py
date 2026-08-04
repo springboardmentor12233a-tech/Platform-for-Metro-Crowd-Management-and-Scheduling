@@ -24,8 +24,31 @@ def get_current_user(
         return payload
 
     except Exception as e:
-        print("JWT Error:", e)   # <-- Add this line
+        print("JWT Error:", e)
         raise HTTPException(
             status_code=401,
-            detail=str(e)        # <-- Return the actual error temporarily
+            detail="Invalid or expired token"
         )
+
+
+def require_roles(allowed_roles: list):
+    """
+    RBAC Dependency
+
+    Example:
+        Depends(require_roles(["admin"]))
+        Depends(require_roles(["admin", "manager"]))
+    """
+
+    def role_checker(current_user=Depends(get_current_user)):
+        user_role = current_user.get("role")
+
+        if user_role not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail="You do not have permission to perform this action."
+            )
+
+        return current_user
+
+    return role_checker

@@ -11,10 +11,13 @@ client = MongoClient(
 
 try:
     client.admin.command("ping")
-    print("🍃 MongoDB Connected Successfully")
-except Exception as e:
-    print("❌ MongoDB Connection Failed:")
-    print(e)
-    raise
+    print("[SUCCESS] MongoDB Connected Successfully")
+    mongodb = client.get_default_database()
 
-mongodb = client.get_default_database()
+except Exception as e:
+    print("[ERROR] MongoDB Connection Failed:")
+    print(e)
+
+    # Don't stop the application
+    client = None
+    mongodb = None

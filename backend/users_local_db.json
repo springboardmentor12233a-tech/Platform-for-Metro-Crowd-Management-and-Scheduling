@@ -1,0 +1,32 @@
+{
+  "6a6c32936910a4b292de154a": {
+    "fullName": "System Admin",
+    "email": "admin@metroflow.ai",
+    "password": "$2b$12$U0OtSdYEcURE/twOHzRh9eKw6viq7aTf6EBkEhO9.plgW8Pmf/PD6",
+    "role": "admin"
+  },
+  "6a6d6d4b6910a4b292de154b": {
+    "fullName": "ajit",
+    "email": "ajit@metroflow.ai",
+    "password": "$2b$12$ADLXFdw5IczJIgjPyDskhe.qEWcAcDO97Lfa05TVriOhTTSjrCGgC",
+    "role": "manager"
+  },
+  "6a6daa4bf8eceb8e8d251cbe": {
+    "fullName": "Traveler User",
+    "email": "user@metroflow.ai",
+    "password": "$2b$12$Bffa0P9eQ0gVehm9DuXAW.KpAUwTcg8zxxlFQcj7wxlVdBMUEVN0W",
+    "role": "user"
+  },
+  "6a71d4e432841e9ad80a2c57": {
+    "fullName": "Test Operator 4219",
+    "email": "test_operator_4219@metroflow.ai",
+    "password": "$2b$12$05ULDhA0tw2hBcFnLtaWj.kGauWEpzgU7y5.Yxx7/Dd3.MYeZWcfO",
+    "role": "user"
+  },
+  "6a71d5831e04eea78fa77fa0": {
+    "fullName": "Test Operator 9904",
+    "email": "test_operator_9904@metroflow.ai",
+    "password": "$2b$12$FKW3Ac8sfr2VNv.fAvi1y.7vOjsKNGWNu03A.7mQ8zJuNGzyPpDey",
+    "role": "user"
+  }
+}

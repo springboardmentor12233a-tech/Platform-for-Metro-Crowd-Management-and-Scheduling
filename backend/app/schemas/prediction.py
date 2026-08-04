@@ -1,3 +1,4 @@
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -14,6 +15,18 @@ class CrowdPredictionRequest(BaseModel):
     is_interchange: bool
 
 
+class AlertResponse(BaseModel):
+    status: bool
+    severity: str
+    type: str
+    message: str
+
+
 class CrowdPredictionResponse(BaseModel):
     predicted_passengers: int
     crowd_level: str
+    recommendations: List[str]
+    alert: AlertResponse
+    congestion_status: Optional[str] = None
+    scheduling_recommendation: Optional[dict] = None
+    demand_forecast: Optional[List[dict]] = None

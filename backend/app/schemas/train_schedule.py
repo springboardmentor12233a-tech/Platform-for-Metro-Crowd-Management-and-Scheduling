@@ -15,6 +15,17 @@ class TrainScheduleCreate(TrainScheduleBase):
     pass
 
 
+from typing import Optional
+
+class TrainScheduleUpdate(BaseModel):
+    route_id: Optional[int] = None
+    station_id: Optional[int] = None
+    train_id: Optional[int] = None
+    arrival_time: Optional[time] = None
+    departure_time: Optional[time] = None
+    day_type: Optional[str] = None
+
+
 class TrainScheduleResponse(TrainScheduleBase):
     schedule_id: int
 

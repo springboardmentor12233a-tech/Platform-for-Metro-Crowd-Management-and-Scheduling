@@ -12,3 +12,11 @@ def get_all_routes(db: Session):
 
 def get_route_by_id(db: Session, route_id: int):
     return route_repository.get_route_by_id(db, route_id)
+
+
+def update_route(db: Session, route_id: int, route_data):
+    return route_repository.update_route(db, route_id, route_data)
+
+
+def delete_route(db: Session, route_id: int):
+    return route_repository.delete_route(db, route_id)

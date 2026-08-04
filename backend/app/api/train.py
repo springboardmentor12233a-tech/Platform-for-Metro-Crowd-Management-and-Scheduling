@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.postgres import get_db
 from app.schemas.train import TrainCreate, TrainUpdate, TrainResponse
 from app.services import train_service
+from app.middleware.auth import require_roles
 
 router = APIRouter(
     prefix="/trains",
@@ -12,17 +13,28 @@ router = APIRouter(
 
 
 @router.post("/", response_model=TrainResponse)
-def create_train(train: TrainCreate, db: Session = Depends(get_db)):
+def create_train(
+    train: TrainCreate,
+    current_user=Depends(require_roles(["admin"])),
+    db: Session = Depends(get_db)
+):
     return train_service.create_train(db, train)
 
 
 @router.get("/", response_model=list[TrainResponse])
-def get_all_trains(db: Session = Depends(get_db)):
+def get_all_trains(
+    current_user=Depends(require_roles(["admin", "manager", "user"])),
+    db: Session = Depends(get_db)
+):
     return train_service.get_all_trains(db)
 
 
 @router.get("/{train_id}", response_model=TrainResponse)
-def get_train(train_id: int, db: Session = Depends(get_db)):
+def get_train(
+    train_id: int,
+    current_user=Depends(require_roles(["admin", "manager", "user"])),
+    db: Session = Depends(get_db)
+):
     train = train_service.get_train_by_id(db, train_id)
 
     if not train:
@@ -35,6 +47,7 @@ def get_train(train_id: int, db: Session = Depends(get_db)):
 def update_train(
     train_id: int,
     train: TrainUpdate,
+    current_user=Depends(require_roles(["admin", "manager"])),
     db: Session = Depends(get_db)
 ):
     updated_train = train_service.update_train(db, train_id, train)
@@ -48,6 +61,7 @@ def update_train(
 @router.delete("/{train_id}")
 def delete_train(
     train_id: int,
+    current_user=Depends(require_roles(["admin"])),
     db: Session = Depends(get_db)
 ):
     deleted_train = train_service.delete_train(db, train_id)
