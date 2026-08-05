@@ -197,7 +197,7 @@ def frequency_recommendation(crowd_level: str):
     }
 
 @app.post("/schedules")
-def add_schedule(station_name: str, departure_time: str, frequency_minutes: int = 10, status: str = "On Time"):
+async def add_schedule(station_name: str, departure_time: str, frequency_minutes: int = 10, status: str = ...):
     db = SessionLocal()
     schedule = models.Schedule(
         station_name=station_name,
@@ -208,9 +208,18 @@ def add_schedule(station_name: str, departure_time: str, frequency_minutes: int 
     db.add(schedule)
     db.commit()
     db.refresh(schedule)
+    
+    await sio.emit("schedule_update", {
+        "id": schedule.id,
+        "station_name": schedule.station_name,
+        "departure_time": schedule.departure_time,
+        "frequency_minutes": schedule.frequency_minutes,
+        "status": schedule.status,
+        "action": "created",
+    })
+
     db.close()
     return schedule
-
 
 @app.get("/schedules")
 def get_schedules():
