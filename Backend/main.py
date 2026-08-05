@@ -30,6 +30,8 @@ def create_access_token(data: dict):
 crowd_model = joblib.load("crowd_model.pkl")
 weather_encoder = joblib.load("weather_encoder.pkl")
 crowd_encoder = joblib.load("crowd_encoder.pkl")
+demand_model = joblib.load("demand_model.pkl")
+weather_encoder_forecast = joblib.load("weather_encoder_forecast.pkl")
 
 app = FastAPI()
 
@@ -146,6 +148,26 @@ async def predict_crowd(passenger_count: int, occupancy_percent: float, is_holid
         }
     }
 
+@app.post("/predict-demand")
+def predict_demand(is_holiday: int, peak_hour: int, weather: str, train_frequency_per_hour: int):
+    try:
+        weather_encoded = weather_encoder_forecast.transform([weather])[0]
+    except ValueError:
+        return {"error": f"Unknown weather value. Expected one of: {list(weather_encoder_forecast.classes_)}"}
+
+    input_data = np.array([[is_holiday, peak_hour, weather_encoded, train_frequency_per_hour]])
+    predicted_passenger_count = demand_model.predict(input_data)[0]
+
+    return {
+        "predicted_passenger_count": int(round(predicted_passenger_count)),
+        "input": {
+            "is_holiday": is_holiday,
+            "peak_hour": peak_hour,
+            "weather": weather,
+            "train_frequency_per_hour": train_frequency_per_hour,
+        }
+    }
+
 @app.post("/report-delay")
 async def report_delay(station: str, delay_minutes: int, db: Session = Depends(get_db)):
     alert = await check_and_create_delay_alert(db=db, station=station, delay_minutes=delay_minutes)
@@ -208,7 +230,7 @@ async def add_schedule(station_name: str, departure_time: str, frequency_minutes
     db.add(schedule)
     db.commit()
     db.refresh(schedule)
-    
+
     await sio.emit("schedule_update", {
         "id": schedule.id,
         "station_name": schedule.station_name,
@@ -230,7 +252,7 @@ def get_schedules():
 
 
 @app.put("/schedules/{schedule_id}")
-def update_schedule(schedule_id: int, station_name: str = None, departure_time: str = None, frequency_minutes: int = None, status: str = None):
+async def update_schedule(schedule_id: int, station_name: str = None, departure_time: str = None, frequency_minutes: int = None, status: str = None):
     db = SessionLocal()
     schedule = db.query(models.Schedule).filter(models.Schedule.id == schedule_id).first()
     if not schedule:
@@ -246,6 +268,14 @@ def update_schedule(schedule_id: int, station_name: str = None, departure_time: 
         schedule.status = status
     db.commit()
     db.refresh(schedule)
+    await sio.emit("schedule_update", {
+        "id": schedule.id,
+        "station_name": schedule.station_name,
+        "departure_time": schedule.departure_time,
+        "frequency_minutes": schedule.frequency_minutes,
+        "status": schedule.status,
+        "action": "updated",
+    })
     db.close()
     return schedule
 
