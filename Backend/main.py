@@ -2,7 +2,7 @@ import pandas as pd
 import joblib
 import numpy as np
 
-from alerts import check_and_create_overcrowding_alert, check_and_create_delay_alert
+from alerts import check_and_create_overcrowding_alert, check_and_create_delay_alert, sio
 from alerts import check_and_create_overcrowding_alert
 from alerts import router as alerts_router
 from fastapi import FastAPI, Depends
@@ -115,7 +115,7 @@ def register_user(username: str, email: str, password: str, role: str = "operato
     return {"id": user.id, "username": user.username, "email": user.email, "role": user.role}
 
 @app.post("/users/login")
-def login_user(email: str, password: str):
+async def login_user(email: str, password: str):
     db = SessionLocal()
     user = db.query(models.User).filter(models.User.email == email).first()
     db.close()
@@ -125,7 +125,7 @@ def login_user(email: str, password: str):
     return {"message": "Login successful", "username": user.username, "role": user.role, "access_token": access_token, "token_type": "bearer"}
 
 @app.post("/predict-crowd")
-def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: int, peak_hour: int, weather: str, station: str, db: Session = Depends(get_db)):
+async def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: int, peak_hour: int, weather: str, station: str, db: Session = Depends(get_db)):
     try:
         weather_encoded = weather_encoder.transform([weather])[0]
     except ValueError:
@@ -134,7 +134,7 @@ def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: in
     input_data = np.array([[passenger_count, occupancy_percent, is_holiday, peak_hour, weather_encoded]])
     prediction_encoded = crowd_model.predict(input_data)[0]
     prediction_label = crowd_encoder.inverse_transform([prediction_encoded])[0]
-    check_and_create_overcrowding_alert(db=db, station=station, crowd_level=prediction_label)
+    await check_and_create_overcrowding_alert(db=db, station=station, crowd_level=prediction_label)
     return {
         "predicted_crowd_level": prediction_label,
         "input": {
@@ -147,14 +147,14 @@ def predict_crowd(passenger_count: int, occupancy_percent: float, is_holiday: in
     }
 
 @app.post("/report-delay")
-def report_delay(station: str, delay_minutes: int, db: Session = Depends(get_db)):
-    alert = check_and_create_delay_alert(db=db, station=station, delay_minutes=delay_minutes)
+async def report_delay(station: str, delay_minutes: int, db: Session = Depends(get_db)):
+    alert = await check_and_create_delay_alert(db=db, station=station, delay_minutes=delay_minutes)
     if alert:
         return {"message": "Delay alert created", "alert": alert}
     return {"message": "Delay within acceptable range, no alert created"}
 
 @app.post("/emergency-alert")
-def raise_emergency(station: str, message: str, db: Session = Depends(get_db)):
+async def raise_emergency(station: str, message: str, db: Session = Depends(get_db)):
     new_alert = models.Alert(
         alert_type="Emergency",
         station=station,
@@ -164,6 +164,15 @@ def raise_emergency(station: str, message: str, db: Session = Depends(get_db)):
     db.add(new_alert)
     db.commit()
     db.refresh(new_alert)
+
+    await sio.emit("new_alert", {
+        "id": new_alert.id,
+        "alert_type": new_alert.alert_type,
+        "station": new_alert.station,
+        "message": new_alert.message,
+        "severity": new_alert.severity,
+    })
+
     return {"message": "Emergency alert raised", "alert": new_alert}
 
 @app.get("/frequency-recommendation")
@@ -312,3 +321,43 @@ def get_dashboard(db: Session = Depends(get_db)):
             "recent": recent_alerts,
         },
     }
+
+@app.get("/congestion-heatmap")
+def congestion_heatmap():
+    df = pd.read_excel("MetroFlow_Dataset.xlsx")
+    df["Hour"] = df["Time"].apply(lambda t: int(str(t).split(":")[0]))
+
+    heatmap_data = (
+        df.groupby(["Station", "Hour"])
+        .agg(avg_occupancy_percent=("Occupancy_Percent", "mean"))
+        .round(2)
+        .reset_index()
+        .to_dict(orient="records")
+    )
+
+    return {"heatmap": heatmap_data}
+
+@app.get("/ai-insights")
+def ai_insights():
+    df = pd.read_excel("MetroFlow_Dataset.xlsx")
+    df["Hour"] = df["Time"].apply(lambda t: int(str(t).split(":")[0]))
+
+    insights = []
+
+    busiest_station = df.groupby("Station")["Passenger_Count"].sum().idxmax()
+    insights.append(f"{busiest_station} is the busiest station based on total passenger volume.")
+
+    peak_hour = df.groupby("Hour")["Passenger_Count"].mean().idxmax()
+    insights.append(f"Passenger demand peaks around {peak_hour}:00 hours across the network.")
+
+    most_delayed_station = df.groupby("Station")["Delay_Minutes"].sum().idxmax()
+    insights.append(f"{most_delayed_station} station has the highest cumulative delays; consider frequency adjustment.")
+
+    high_occupancy_station = df.groupby("Station")["Occupancy_Percent"].mean().idxmax()
+    avg_occ = df.groupby("Station")["Occupancy_Percent"].mean().max()
+    insights.append(f"{high_occupancy_station} station runs at {avg_occ:.1f}% average occupancy, the highest in the network.")
+
+    return {"insights": insights}
+
+import socketio
+socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
