@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroFlow - Train Schedule Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <a href="/index.html" class="brand">
+            <div class="brand-icon">⚡</div>
+            MetroFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html">📊 Overview</a></li>
+            <li><a href="/stations.html">🚉 Stations & Crowd</a></li>
+            <li><a href="/schedules.html" class="active">🚆 Train Schedules</a></li>
+            <li><a href="/analytics.html">🤖 AI Analytics</a></li>
+        </ul>
+        <div id="user-badge-container"></div>
+    </header>
+
+    <div id="top-alert-banner"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Train Schedule Management & Frequency Optimization</h1>
+                <p class="page-subtitle">Configure metro timetables, track delays, and review AI-driven peak period headway recommendations.</p>
+            </div>
+            <button onclick="openAddScheduleModal()" class="btn btn-primary btn-sm">➕ Add Train Schedule</button>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: 1.7fr 1fr;">
+            
+            <!-- Schedule Table -->
+            <div class="card">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Active Metro Timetables</h2>
+                <div class="table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Train</th>
+                                <th>Line</th>
+                                <th>Route</th>
+                                <th>Dep.</th>
+                                <th>Arr.</th>
+                                <th>Headway</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedules-tbody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Frequency Recommendations Side Panel -->
+            <div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700;">🤖 AI Dispatch Headway Engine</h2>
+                        <button onclick="loadAIRecommendations()" class="btn btn-secondary btn-sm">Refresh AI</button>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                        Automated train frequency suggestions based on station density forecast:
+                    </p>
+
+                    <div id="ai-recommendations-container">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: Add Train Schedule -->
+    <div id="add-schedule-modal" class="modal-backdrop">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700;">Add Train Schedule</h2>
+                <button onclick="closeModal('add-schedule-modal')" class="btn btn-secondary btn-sm">✕</button>
+            </div>
+
+            <form onsubmit="handleAddScheduleSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label" for="sched-train-code">Train Code</label>
+                    <input type="text" id="sched-train-code" class="form-input" placeholder="e.g. TR-501" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="sched-line">Metro Line</label>
+                    <select id="sched-line" class="form-select" required>
+                        <option value="Red Line">Red Line</option>
+                        <option value="Blue Line">Blue Line</option>
+                        <option value="Green Line">Green Line</option>
+                        <option value="Yellow Line">Yellow Line</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="sched-origin">Origin Station</label>
+                        <input type="text" id="sched-origin" class="form-input" placeholder="Origin" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sched-destination">Destination Station</label>
+                        <input type="text" id="sched-destination" class="form-input" placeholder="Destination" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="sched-departure">Departure</label>
+                        <input type="time" id="sched-departure" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sched-arrival">Arrival</label>
+                        <input type="time" id="sched-arrival" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="sched-frequency">Frequency (mins)</label>
+                        <input type="number" id="sched-frequency" class="form-input" min="2" max="60" value="8" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" onclick="closeModal('add-schedule-modal')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/schedules.js"></script>
+</body>
+</html>

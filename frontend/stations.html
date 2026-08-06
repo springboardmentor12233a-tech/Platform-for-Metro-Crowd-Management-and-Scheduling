@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroFlow - Station Crowd Monitoring</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <a href="/index.html" class="brand">
+            <div class="brand-icon">⚡</div>
+            MetroFlow
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html">📊 Overview</a></li>
+            <li><a href="/stations.html" class="active">🚉 Stations & Crowd</a></li>
+            <li><a href="/schedules.html">🚆 Train Schedules</a></li>
+            <li><a href="/analytics.html">🤖 AI Analytics</a></li>
+        </ul>
+        <div id="user-badge-container"></div>
+    </header>
+
+    <div id="top-alert-banner"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Station Crowd Density & Sensor Monitoring</h1>
+                <p class="page-subtitle">Real-time station inflow/outflow monitoring and automated congestion status categorization.</p>
+            </div>
+            <button onclick="loadStationsPage()" class="btn btn-secondary btn-sm">🔄 Refresh Stations</button>
+        </div>
+
+        <!-- Station Grid Container -->
+        <div id="stations-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            <!-- Populated via JS -->
+        </div>
+    </main>
+
+    <!-- Modal: Station Footfall History Chart -->
+    <div id="station-detail-modal" class="modal-backdrop">
+        <div class="modal-box" style="max-width: 700px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                <div>
+                    <h2 id="modal-station-title" style="font-size: 1.35rem; font-weight: 700;">Station Analytics</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);"><span id="modal-station-line">--</span> • Max Capacity: <strong id="modal-station-capacity">--</strong> • Current Density: <strong id="modal-station-density">--</strong></span>
+                </div>
+                <button onclick="closeModal('station-detail-modal')" class="btn btn-secondary btn-sm">✕ Close</button>
+            </div>
+
+            <div style="height: 320px; position: relative; margin-bottom: 1rem;">
+                <canvas id="stationHistoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Update Sensor Data (Inflow/Outflow) -->
+    <div id="update-crowd-modal" class="modal-backdrop">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 700;">Update Station Footfall</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Simulate station gate sensor data for <strong id="update-station-name-label">--</strong></p>
+                </div>
+                <button onclick="closeModal('update-crowd-modal')" class="btn btn-secondary btn-sm">✕</button>
+            </div>
+
+            <form onsubmit="handleUpdateCrowdSubmit(event)">
+                <input type="hidden" id="update-station-id">
+
+                <div class="form-group">
+                    <label class="form-label" for="update-inflow-input">Inflow Passenger Count (Gate Sensors)</label>
+                    <input type="number" id="update-inflow-input" class="form-input" min="0" max="3000" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="update-outflow-input">Outflow Passenger Count</label>
+                    <input type="number" id="update-outflow-input" class="form-input" min="0" max="3000" required>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" onclick="closeModal('update-crowd-modal')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save & Recalculate Density</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/stations.js"></script>
+</body>
+</html>
