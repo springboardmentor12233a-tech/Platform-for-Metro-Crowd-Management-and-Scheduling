@@ -4,7 +4,7 @@ AI MetroFlow is a production-ready, high-fidelity crowd intelligence and train d
 
 ---
 
-## 🏗️ Project Folder Structure
+ ## Project Folder Structure
 
 ```
 AI_MetroFlow/
@@ -42,7 +42,7 @@ AI_MetroFlow/
 
 ---
 
-## ⚡ Key Features
+##  Key Features
 
 - **JWT Authentication & RBAC**: Roles for `Admin`, `Operator`, and `Analyst` with restricted endpoint scopes.
 - **Real-Time Map Operations**: Leaflet maps displaying metro line polyline shapes, glowing color-coded stations indicating crowd occupancy (`Green`, `Yellow`, `Orange`, `Red`), and moving trains.
@@ -53,7 +53,7 @@ AI_MetroFlow/
 
 ---
 
-## 🔑 Pre-seeded Default Accounts
+##  Pre-seeded Default Accounts
 
 - **Admin**: `admin@metroflow.com` (password: `admin123`)
 - **Operator**: `operator@metroflow.com` (password: `operator123`)
@@ -61,7 +61,7 @@ AI_MetroFlow/
 
 ---
 
-## 🚀 Local Development Setup
+##  Local Development Setup
 
 ### Prerequisite
 Ensure Python 3.10+, Node.js v18+, and MongoDB (optional, in-memory fallback included) are installed.
