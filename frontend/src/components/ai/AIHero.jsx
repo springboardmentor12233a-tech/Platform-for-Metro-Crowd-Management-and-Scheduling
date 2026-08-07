@@ -132,13 +132,13 @@ function AIHero({
             flex
             flex-col
             gap-8
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
+            xl:flex-row
+            xl:items-center
+            xl:justify-between
           "
         >
 
-          <div>
+          <div className="xl:max-w-md xl:shrink-0">
 
             <div
               className="
@@ -197,9 +197,11 @@ function AIHero({
           <div
             className="
               grid
-              gap-5
-              sm:grid-cols-2
-              xl:grid-cols-4
+              w-full
+              grid-cols-2
+              gap-4
+              sm:gap-5
+              lg:grid-cols-4
             "
           >
 
@@ -218,6 +220,7 @@ function AIHero({
                 delay: 0.1,
               }}
               className="
+                min-w-0
                 rounded-3xl
                 bg-white/10
                 p-6
@@ -227,48 +230,45 @@ function AIHero({
               "
             >
 
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <p className="text-sm text-indigo-100">
-                    AI Health
-                  </p>
-
-                  <h2
-                    className="
-                      mt-3
-                      text-4xl
-                      font-black
-                    "
-                  >
-                    {aiMetrics.healthScore}%
-                  </h2>
-
-                  <p className="mt-2 text-sm text-indigo-100">
-                    System Performance
-                  </p>
-
-                </div>
+              <div className="flex items-center gap-2">
 
                 <div
                   className="
-                    rounded-2xl
+                    shrink-0
+                    rounded-xl
                     bg-white
-                    p-4
+                    p-2
                     shadow-lg
                   "
                 >
 
                   <Brain
-                    size={30}
+                    size={18}
                     className="text-indigo-600"
                     strokeWidth={2.2}
                   />
 
                 </div>
 
+                <p className="truncate text-sm text-indigo-100">
+                  AI Health
+                </p>
+
               </div>
+
+              <h2
+                className="
+                  mt-3
+                  text-4xl
+                  font-black
+                "
+              >
+                {aiMetrics.healthScore}%
+              </h2>
+
+              <p className="mt-2 text-sm text-indigo-100">
+                System Performance
+              </p>
 
             </motion.div>
 
@@ -287,6 +287,7 @@ function AIHero({
                 delay: 0.2,
               }}
               className="
+                min-w-0
                 rounded-3xl
                 bg-white/10
                 p-6
@@ -296,48 +297,45 @@ function AIHero({
               "
             >
 
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <p className="text-sm text-indigo-100">
-                    Prediction Accuracy
-                  </p>
-
-                  <h2
-                    className="
-                      mt-3
-                      text-4xl
-                      font-black
-                    "
-                  >
-                    {aiMetrics.predictionAccuracy}%
-                  </h2>
-
-                  <p className="mt-2 text-sm text-indigo-100">
-                    Forecast Reliability
-                  </p>
-
-                </div>
+              <div className="flex items-center gap-2">
 
                 <div
                   className="
-                    rounded-2xl
+                    shrink-0
+                    rounded-xl
                     bg-white
-                    p-4
+                    p-2
                     shadow-lg
                   "
                 >
 
                   <Activity
-                    size={30}
+                    size={18}
                     className="text-blue-600"
                     strokeWidth={2.2}
                   />
 
                 </div>
 
+                <p className="truncate text-sm text-indigo-100">
+                  Prediction Accuracy
+                </p>
+
               </div>
+
+              <h2
+                className="
+                  mt-3
+                  text-4xl
+                  font-black
+                "
+              >
+                {aiMetrics.predictionAccuracy}%
+              </h2>
+
+              <p className="mt-2 text-sm text-indigo-100">
+                Forecast Reliability
+              </p>
 
             </motion.div>
 
@@ -356,6 +354,7 @@ function AIHero({
                 delay: 0.3,
               }}
               className="
+                min-w-0
                 rounded-3xl
                 bg-white/10
                 p-6
@@ -365,48 +364,45 @@ function AIHero({
               "
             >
 
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <p className="text-sm text-indigo-100">
-                    Decision Confidence
-                  </p>
-
-                  <h2
-                    className="
-                      mt-3
-                      text-4xl
-                      font-black
-                    "
-                  >
-                    {aiMetrics.confidence}%
-                  </h2>
-
-                  <p className="mt-2 text-sm text-indigo-100">
-                    Recommendation Quality
-                  </p>
-
-                </div>
+              <div className="flex items-center gap-2">
 
                 <div
                   className="
-                    rounded-2xl
+                    shrink-0
+                    rounded-xl
                     bg-white
-                    p-4
+                    p-2
                     shadow-lg
                   "
                 >
 
                   <Cpu
-                    size={30}
+                    size={18}
                     className="text-cyan-600"
                     strokeWidth={2.2}
                   />
 
                 </div>
 
+                <p className="truncate text-sm text-indigo-100">
+                  Decision Confidence
+                </p>
+
               </div>
+
+              <h2
+                className="
+                  mt-3
+                  text-4xl
+                  font-black
+                "
+              >
+                {aiMetrics.confidence}%
+              </h2>
+
+              <p className="mt-2 text-sm text-indigo-100">
+                Recommendation Quality
+              </p>
 
             </motion.div>
 
@@ -425,6 +421,7 @@ function AIHero({
                 delay: 0.4,
               }}
               className="
+                min-w-0
                 rounded-3xl
                 bg-white/10
                 p-6
@@ -434,49 +431,46 @@ function AIHero({
               "
             >
 
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <p className="text-sm text-indigo-100">
-                    Network Status
-                  </p>
-
-                  <h2
-                    className={`
-                      mt-3
-                      text-3xl
-                      font-black
-                      ${statusColor[aiMetrics.networkStatus]}
-                    `}
-                  >
-                    {aiMetrics.networkStatus}
-                  </h2>
-
-                  <p className="mt-2 text-sm text-indigo-100">
-                    AI Assessment
-                  </p>
-
-                </div>
+              <div className="flex items-center gap-2">
 
                 <div
                   className="
-                    rounded-2xl
+                    shrink-0
+                    rounded-xl
                     bg-white
-                    p-4
+                    p-2
                     shadow-lg
                   "
                 >
 
                   <ShieldCheck
-                    size={30}
+                    size={18}
                     className="text-emerald-600"
                     strokeWidth={2.2}
                   />
 
                 </div>
 
+                <p className="truncate text-sm text-indigo-100">
+                  Network Status
+                </p>
+
               </div>
+
+              <h2
+                className={`
+                  mt-3
+                  text-3xl
+                  font-black
+                  ${statusColor[aiMetrics.networkStatus]}
+                `}
+              >
+                {aiMetrics.networkStatus}
+              </h2>
+
+              <p className="mt-2 text-sm text-indigo-100">
+                AI Assessment
+              </p>
 
             </motion.div>
 
@@ -899,6 +893,7 @@ function AIHero({
 
             <div
               className="
+                shrink-0
                 rounded-3xl
                 bg-cyan-400/15
                 p-6
@@ -1129,6 +1124,7 @@ function AIHero({
             <div
               className="
                 inline-flex
+                shrink-0
                 items-center
                 gap-2
                 rounded-full

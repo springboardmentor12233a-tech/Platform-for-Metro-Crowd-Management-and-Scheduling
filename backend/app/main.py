@@ -38,10 +38,10 @@ Base.metadata.create_all(bind=engine)
 # ------------------------------------------------
 
 app = FastAPI(
-    title="MetroFlow API",
+    title="MetroVision API",
     version="1.0.0",
     description="""
-# 🚆 MetroFlow API
+# 🚆 MetroVision API
 
 AI-powered Metro Crowd Management and Scheduling Platform.
 
@@ -61,8 +61,8 @@ AI-powered Metro Crowd Management and Scheduling Platform.
 - 📄 AI Report Generation
 """,
     contact={
-        "name": "MetroFlow Team",
-        "email": "support@metroflow.com",
+        "name": "MetroVision Team",
+        "email": "support@metrovision.com",
     },
 )
 
@@ -110,7 +110,7 @@ app.include_router(crowd_monitoring.router)
 @app.get("/", tags=["System"])
 def root():
     return {
-        "message": "Welcome to MetroFlow API 🚆",
+        "message": "Welcome to MetroVision API 🚆",
         "status": "Running",
         "version": "1.0.0",
     }

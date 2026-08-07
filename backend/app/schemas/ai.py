@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class AIRequest(BaseModel):
     prompt: str = Field(
         ...,
-        description="User's question or instruction for MetroFlow AI",
+        description="User's question or instruction for MetroVision AI",
     )
 
     context: dict[str, Any] | None = Field(

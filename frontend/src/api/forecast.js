@@ -6,9 +6,10 @@ export const getForecastDashboard = async () => {
 };
 
 export const getForecast = async ({ station, forecast_date }) => {
-  const res = await api.post("/forecast", {
+  const res = await api.post("/forecast/predict", {
     station,
     forecast_date,
   });
+
   return res.data;
 };

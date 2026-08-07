@@ -17,18 +17,22 @@ function Layout() {
       {/* Main Content */}
       <main
         className={`
-          min-h-screen
           transition-all
           duration-300
           ease-in-out
-          ${collapsed ? "ml-[90px]" : "ml-[280px]"}
+          min-h-screen
+          ${
+            collapsed
+              ? "ml-[90px] w-[calc(100%-90px)]"
+              : "ml-[280px] w-[calc(100%-280px)]"
+          }
         `}
       >
         {/* Top Navigation */}
         <Navbar />
 
         {/* Page Content */}
-        <div className="px-8 py-6">
+        <div className="p-4 md:p-6 lg:p-8">
           <Outlet />
         </div>
       </main>

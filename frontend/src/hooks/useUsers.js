@@ -60,15 +60,23 @@ export default function useUsers() {
     async (id) => {
       try {
         setProcessing(true);
-        await deleteUser(id);
-        setUsers((prev) => prev.filter((user) => user.id !== id));
+
+        const response = await deleteUser(id);
+
+        alert(response.message);
+
+        // User may have been deactivated instead of deleted,
+        // so refetch instead of just filtering it out locally.
+        await fetchUsers();
+
+        return response;
       } catch (err) {
         throw err;
       } finally {
         setProcessing(false);
       }
     },
-    []
+    [fetchUsers]
   );
 
   useEffect(() => {

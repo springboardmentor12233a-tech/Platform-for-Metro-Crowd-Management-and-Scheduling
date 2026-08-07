@@ -42,7 +42,7 @@ async def chat(request: AIRequest):
     )
 
     full_prompt = f"""
-You are MetroFlow AI, an intelligent Metro Operations Assistant.
+You are MetroVision AI, an intelligent Metro Operations Assistant.
 
 You help metro operators analyze dashboard data and provide operational recommendations.
 
@@ -83,7 +83,7 @@ Instructions
 
 
 # =====================================================
-# MetroFlow AI Recommendation
+# MetroVision AI Recommendation
 # =====================================================
 
 @router.post("/recommendation")
@@ -93,7 +93,7 @@ async def generate_recommendation(
 ):
 
     prompt = f"""
-You are MetroFlow AI.
+You are MetroVision AI.
 
 Analyze the following metro operational situation.
 

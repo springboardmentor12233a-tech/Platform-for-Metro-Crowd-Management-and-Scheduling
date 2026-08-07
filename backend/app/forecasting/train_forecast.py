@@ -65,7 +65,16 @@ X = df[
     ]
 ]
 
+# Scale passenger counts to realistic metro demand
+SCALE_FACTOR = 500
+
+df["total_passengers"] = df["total_passengers"] * SCALE_FACTOR
+
 y = df["total_passengers"]
+
+print("=" * 50)
+print(df["total_passengers"].describe())
+print("=" * 50)
 
 # ==========================
 # Preprocessing

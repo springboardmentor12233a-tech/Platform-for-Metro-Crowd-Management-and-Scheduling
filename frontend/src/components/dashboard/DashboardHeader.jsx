@@ -1,11 +1,6 @@
 import { motion } from "framer-motion";
-import {
-  Search,
-  CalendarDays,
-  UserCircle2,
-} from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
-import NotificationBell from "../common/NotificationBell";
 import SimulationControlPanel from "./SimulationControlPanel";
 
 function DashboardHeader() {
@@ -16,6 +11,15 @@ function DashboardHeader() {
     year: "numeric",
   });
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) return "👋 Good Morning";
+    if (hour < 17) return "👋 Good Afternoon";
+    if (hour < 21) return "👋 Good Evening";
+    return "🌙 Good Night";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -25,12 +29,10 @@ function DashboardHeader() {
     >
       {/* Header */}
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        {/* Left Section */}
-
+      <div className="flex flex-col gap-6">
         <div>
           <p className="text-lg text-slate-500">
-            👋 Good Morning
+            {getGreeting()}
           </p>
 
           <h1 className="mt-2 text-5xl font-extrabold text-slate-900">
@@ -46,76 +48,6 @@ function DashboardHeader() {
 
             <span>{currentDate}</span>
           </div>
-        </div>
-
-        {/* Right Section */}
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          {/* Search */}
-
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-            <input
-              type="text"
-              placeholder="Search stations..."
-              className="
-                w-72
-                rounded-2xl
-                border
-                border-slate-200
-                bg-white
-                py-3
-                pl-12
-                pr-4
-                text-sm
-                shadow-sm
-                outline-none
-                transition-all
-                duration-300
-                focus:border-indigo-500
-                focus:ring-4
-                focus:ring-indigo-100
-              "
-            />
-          </div>
-
-          {/* Notification */}
-
-          <NotificationBell />
-
-          {/* User */}
-
-          <button
-            className="
-              flex
-              items-center
-              gap-3
-              rounded-2xl
-              border
-              border-slate-200
-              bg-white
-              px-4
-              py-3
-              shadow-sm
-              transition-all
-              duration-300
-              hover:-translate-y-0.5
-              hover:shadow-lg
-            "
-          >
-            <UserCircle2 className="h-8 w-8 text-indigo-600" />
-
-            <div className="hidden text-left md:block">
-              <p className="text-sm font-semibold text-slate-800">
-                Metro Admin
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Control Center
-              </p>
-            </div>
-          </button>
         </div>
       </div>
 

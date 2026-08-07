@@ -89,7 +89,7 @@ def generate_report(payload: dict, db: Session = Depends(get_db)):
         ),
 
         summary=(
-            "MetroFlow AI analyzed passenger demand, "
+            "MetroVision AI analyzed passenger demand, "
             "station utilization, congestion levels, "
             "operational efficiency and revenue trends."
         ),
@@ -293,7 +293,7 @@ def export_pdf(
 
     story.append(
         Paragraph(
-            "<b>MetroFlow AI Report</b>",
+            "<b>MetroVision AI Report</b>",
             styles["Title"]
         )
     )
@@ -356,7 +356,7 @@ def export_pdf(
         media_type="application/pdf",
         headers={
             "Content-Disposition":
-            f"attachment; filename=MetroFlow_Report_{report.id}.pdf"
+            f"attachment; filename=MetroVision_Report_{report.id}.pdf"
         }
     )
 
@@ -405,7 +405,7 @@ def export_csv(
         media_type="text/csv",
         headers={
             "Content-Disposition":
-            f"attachment; filename=MetroFlow_Report_{report.id}.csv"
+            f"attachment; filename=MetroVision_Report_{report.id}.csv"
         }
     )
 
@@ -452,7 +452,7 @@ def export_excel(
         df.to_excel(
             writer,
             index=False,
-            sheet_name="MetroFlow Report"
+            sheet_name="MetroVision Report"
         )
 
     output.seek(0)
@@ -462,6 +462,6 @@ def export_excel(
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={
             "Content-Disposition":
-            f"attachment; filename=MetroFlow_Report_{report.id}.xlsx"
+            f"attachment; filename=MetroVision_Report_{report.id}.xlsx"
         }
     )

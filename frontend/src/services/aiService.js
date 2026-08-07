@@ -1,7 +1,7 @@
 import api from "./axios";
 
 /* ==========================================
-   MetroFlow AI Chat
+   MetroVVision AI Chat
 ========================================== */
 
 export const chatWithAI = async (
@@ -27,7 +27,7 @@ export const chatWithAI = async (
     throw (
       error.response?.data ??
       error.message ??
-      "Unable to connect to MetroFlow AI."
+      "Unable to connect to MetroVision AI."
     );
   }
 };

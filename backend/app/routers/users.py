@@ -4,6 +4,7 @@ from typing import Optional
 
 from app.database import get_db
 from app.models.user import User
+from app.models.activity_log import ActivityLog
 
 from app.auth.hashing import hash_password
 from app.core.role_checker import require_roles
@@ -194,12 +195,47 @@ def remove_user(
     if not user:
         raise HTTPException(404, "User not found")
 
+    # Prevent deleting yourself
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=400,
+            detail="You cannot delete your own account.",
+        )
+
+    # Check if activity logs exist
+    activity_count = (
+        db.query(ActivityLog)
+        .filter(ActivityLog.user_id == user.id)
+        .count()
+    )
+
+    # If activity logs exist -> deactivate user
+    if activity_count > 0:
+
+        user.is_active = False
+        db.commit()
+
+        create_activity_log(
+            db=db,
+            user_id=current_user.id,
+            user_name=current_user.name,
+            role=current_user.role,
+            action="Deactivate User",
+            module="User Management",
+            target=user.email,
+            status="Success",
+            ip_address=http_request.client.host,
+        )
+
+        return {
+            "message": "User has activity history and has been deactivated instead of deleted.",
+            "action": "deactivated",
+        }
+
+    # Otherwise delete normally
     target_email = user.email
 
-    delete_user(
-        db,
-        user,
-    )
+    delete_user(db, user)
 
     create_activity_log(
         db=db,
@@ -214,5 +250,6 @@ def remove_user(
     )
 
     return {
-        "message": "User deleted successfully"
+        "message": "User deleted successfully.",
+        "action": "deleted",
     }

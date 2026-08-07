@@ -16,7 +16,7 @@ for model in MODELS:
     try:
         response = client.models.generate_content(
             model=model,
-            contents="Reply with exactly: MetroFlow OK"
+            contents="Reply with exactly: MetroVision OK"
         )
 
         print("SUCCESS")

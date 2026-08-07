@@ -6,7 +6,22 @@ from sqlalchemy import func
 from app.models.trip_record import TripRecord
 
 
-DEFAULT_CAPACITY = 500
+# ---------------------------------------------------------------------
+# Station Capacities
+# ---------------------------------------------------------------------
+# TODO: replace with real per-station values (or move to a DB table —
+# see Option 2 if you want this to be dynamic instead of hardcoded).
+# Keys must match TripRecord.from_station values exactly.
+
+STATION_CAPACITY = {
+    "Rajiv Chowk": 1500,
+    "Kashmere Gate": 1200,
+    "Central Secretariat": 1000,
+    "Noida Sector 18": 900,
+    "Blue Line Station": 800,
+}
+
+DEFAULT_CAPACITY = 800  # fallback for stations not in the map above
 
 
 # ---------------------------------------------------------------------
@@ -96,6 +111,14 @@ def generate_recommendations(occupancy):
     ]
 
 
+def get_station_capacity(station_name):
+    """
+    Look up capacity for a station, falling back to DEFAULT_CAPACITY.
+    """
+
+    return STATION_CAPACITY.get(station_name, DEFAULT_CAPACITY)
+
+
 # ---------------------------------------------------------------------
 # Live Crowd Monitoring
 # ---------------------------------------------------------------------
@@ -122,21 +145,20 @@ def get_live_crowd(db: Session):
     if not stations:
         return []
 
-    max_passengers = max(
-        int(station.passengers or 0)
-        for station in stations
-    )
-
     result = []
 
     for station in stations:
 
         passengers = int(station.passengers or 0)
 
+        capacity = get_station_capacity(station.station)
+
         occupancy = round(
-            (passengers / max_passengers) * 100,
+            (passengers / capacity) * 100,
             1,
         )
+
+        occupancy = min(occupancy, 100.0)
 
         # Crowd Level
 
@@ -168,7 +190,7 @@ def get_live_crowd(db: Session):
             {
                 "station": station.station,
                 "passengers": passengers,
-                "capacity": DEFAULT_CAPACITY,
+                "capacity": capacity,
                 "occupancy": occupancy,
                 "crowd_level": crowd_level,
                 "status": status,
@@ -231,14 +253,15 @@ def get_network_summary(db: Session):
         for s in stations
     ]
 
-    max_passengers = max(passenger_counts)
-
     occupancies = [
-        round(
-            (p / max_passengers) * 100,
-            1,
+        min(
+            round(
+                (p / get_station_capacity(s.from_station)) * 100,
+                1,
+            ),
+            100.0,
         )
-        for p in passenger_counts
+        for s, p in zip(stations, passenger_counts)
     ]
 
     total_stations = len(stations)
@@ -271,6 +294,8 @@ def get_network_summary(db: Session):
         96 + (low / total_stations) * 3,
         1,
     )
+
+    max_passengers = max(passenger_counts)
 
     busiest_station = stations[
         passenger_counts.index(max_passengers)

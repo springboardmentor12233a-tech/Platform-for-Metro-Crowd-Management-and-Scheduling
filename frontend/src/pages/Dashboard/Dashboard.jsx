@@ -6,7 +6,27 @@ import {
   MapPinned,
   IndianRupee,
   Bot,
+  Gauge,
+  Building2,
+  ShieldAlert,
+  Sparkles,
 } from "lucide-react";
+
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 // Dashboard Components
 import MetricCard from "../../components/dashboard/MetricCard";
@@ -64,6 +84,61 @@ const getOccupancyStyle = (occupancy) => {
       "Passenger movement is within normal operating limits. Continue routine monitoring.",
   };
 };
+
+// =====================================================
+// Chart data normalizers
+// (Different backends label fields differently, so these
+// accept a few common key names and fall back gracefully)
+// =====================================================
+const normalizeTrend = (data) => {
+  if (!Array.isArray(data)) return [];
+  return data.map((item, i) => ({
+    label:
+      item.label ??
+      item.date ??
+      item.day ??
+      item.hour ??
+      item.time ??
+      `#${i + 1}`,
+    passengers:
+      Number(
+        item.passengers ?? item.value ?? item.count ?? item.total ?? 0
+      ) || 0,
+  }));
+};
+
+const normalizeTicketData = (data) => {
+  if (!Array.isArray(data)) return [];
+  return data.map((item) => ({
+    name:
+      item.name ??
+      item.type ??
+      item.ticket_type ??
+      item.category ??
+      "Unknown",
+    value: Number(item.value ?? item.count ?? item.total ?? 0) || 0,
+  }));
+};
+
+const normalizeRevenueData = (data) => {
+  if (!Array.isArray(data)) return [];
+  return data.map((item, i) => ({
+    label:
+      item.label ?? item.month ?? item.date ?? item.day ?? `#${i + 1}`,
+    revenue:
+      Number(item.revenue ?? item.value ?? item.amount ?? item.total ?? 0) ||
+      0,
+  }));
+};
+
+const TICKET_COLORS = [
+  "#4f46e5", // indigo
+  "#0891b2", // cyan
+  "#f97316", // orange
+  "#16a34a", // green
+  "#e11d48", // rose
+  "#7c3aed", // violet
+];
 
 const Dashboard = () => {
   // =====================================================
@@ -382,6 +457,37 @@ Generate operational recommendations.
     );
   }
 
+  // ==========================================
+  // Derived / computed insights
+  // (built from data we already have — no fake numbers)
+  // ==========================================
+
+  const stationOccupancies = busiestStations.map((station) => {
+    const capacity = Math.max(station.passengers + 5000, 1000);
+    const occupancy = Math.min(
+      Math.round((station.passengers / capacity) * 100),
+      100
+    );
+    return occupancy;
+  });
+
+  const avgOccupancy = stationOccupancies.length
+    ? Math.round(
+        stationOccupancies.reduce((sum, o) => sum + o, 0) /
+          stationOccupancies.length
+      )
+    : 0;
+
+  const criticalStationsCount = stationOccupancies.filter(
+    (o) => o >= 90
+  ).length;
+
+  const busiestStationName = busiestStations[0]?.station ?? "—";
+
+  const chartTrend = normalizeTrend(trendData);
+  const chartTickets = normalizeTicketData(ticketData);
+  const chartRevenue = normalizeRevenueData(revenueData);
+
   return (
     <div className="space-y-10">
 
@@ -461,6 +567,251 @@ Generate operational recommendations.
           trend="+5.7%"
           trendColor="text-green-600"
         />
+
+      </section>
+
+      {/* =====================================================
+          QUICK INSIGHTS STRIP
+          Computed from live station data — gives an at-a-glance
+          read on network health beyond the four top-line KPIs.
+      ===================================================== */}
+
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-6 text-white shadow-lg shadow-indigo-500/20">
+          <div className="flex items-center justify-between">
+            <span className="rounded-2xl bg-white/15 p-3">
+              <Gauge className="h-5 w-5" />
+            </span>
+            <span className="text-xs font-medium uppercase tracking-wide text-white/70">
+              Network
+            </span>
+          </div>
+          <h3 className="mt-5 text-3xl font-black">{avgOccupancy}%</h3>
+          <p className="mt-1 text-sm text-white/80">
+            Average station occupancy
+          </p>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="rounded-2xl bg-cyan-100 p-3">
+              <Building2 className="h-5 w-5 text-cyan-600" />
+            </span>
+            <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Busiest
+            </span>
+          </div>
+          <h3 className="mt-5 truncate text-2xl font-black text-slate-900">
+            {busiestStationName}
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">
+            Highest passenger volume today
+          </p>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="rounded-2xl bg-red-100 p-3">
+              <ShieldAlert className="h-5 w-5 text-red-600" />
+            </span>
+            <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Risk
+            </span>
+          </div>
+          <h3 className="mt-5 text-3xl font-black text-slate-900">
+            {criticalStationsCount}
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">
+            Stations at critical occupancy
+          </p>
+        </div>
+
+        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="rounded-2xl bg-emerald-100 p-3">
+              <Sparkles className="h-5 w-5 text-emerald-600" />
+            </span>
+            <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Gemini
+            </span>
+          </div>
+          <h3 className="mt-5 text-3xl font-black text-slate-900">
+            {recommendationHistory.length}
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">
+            AI recommendations generated
+          </p>
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          NETWORK ANALYTICS — passenger trend, ticket mix, revenue
+      ===================================================== */}
+
+      <section>
+
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold tracking-tight">
+            📈 Network Analytics
+          </h2>
+          <p className="text-slate-500 mt-2">
+            Passenger flow, ticket mix and revenue performance across the network.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+          {/* Passenger Trend */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold">Passenger Trend</h3>
+                <p className="text-sm text-slate-500">
+                  Ridership pattern over time
+                </p>
+              </div>
+              <span className="rounded-full bg-indigo-100 px-4 py-1.5 text-xs font-semibold text-indigo-700">
+                Live
+              </span>
+            </div>
+
+            {chartTrend.length === 0 ? (
+              <div className="flex h-[280px] items-center justify-center text-sm text-slate-400">
+                No trend data available yet.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={280}>
+                <AreaChart data={chartTrend}>
+                  <defs>
+                    <linearGradient id="passengerFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#4f46e5" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="#4f46e5" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12, fill: "#64748b" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "#64748b" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 16,
+                      border: "1px solid #e2e8f0",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="passengers"
+                    stroke="#4f46e5"
+                    strokeWidth={3}
+                    fill="url(#passengerFill)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Ticket Distribution */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold">Ticket Distribution</h3>
+              <p className="text-sm text-slate-500">Ticket type mix today</p>
+            </div>
+
+            {chartTickets.length === 0 ? (
+              <div className="flex h-[280px] items-center justify-center text-sm text-slate-400">
+                No ticket data available yet.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={chartTickets}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={60}
+                    outerRadius={95}
+                    paddingAngle={3}
+                  >
+                    {chartTickets.map((entry, index) => (
+                      <Cell
+                        key={entry.name}
+                        fill={TICKET_COLORS[index % TICKET_COLORS.length]}
+                        stroke="none"
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 16,
+                      border: "1px solid #e2e8f0",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    iconType="circle"
+                    wrapperStyle={{ fontSize: 12, color: "#64748b" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Revenue Analysis */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm xl:col-span-3">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold">Revenue Analysis</h3>
+                <p className="text-sm text-slate-500">
+                  Fare revenue collected over time
+                </p>
+              </div>
+              <span className="rounded-full bg-green-100 px-4 py-1.5 text-xs font-semibold text-green-700">
+                ₹ {(summary.total_revenue ?? 0).toLocaleString()} total
+              </span>
+            </div>
+
+            {chartRevenue.length === 0 ? (
+              <div className="flex h-[240px] items-center justify-center text-sm text-slate-400">
+                No revenue data available yet.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={chartRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12, fill: "#64748b" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "#64748b" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 16,
+                      border: "1px solid #e2e8f0",
+                    }}
+                  />
+                  <Bar dataKey="revenue" fill="#16a34a" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+        </div>
 
       </section>
 

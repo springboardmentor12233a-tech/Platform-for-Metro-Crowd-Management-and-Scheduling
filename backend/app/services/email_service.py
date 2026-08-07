@@ -20,12 +20,12 @@ def send_reset_email(email: str, token: str):
 
     reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
 
-    subject = "MetroFlow Password Reset"
+    subject = "MetroVision Password Reset"
 
     body = f"""
 Hello,
 
-We received a request to reset your MetroFlow password.
+We received a request to reset your MetroVision password.
 
 Click the link below to reset your password:
 
@@ -36,7 +36,7 @@ This link expires in 15 minutes.
 If you didn't request this, simply ignore this email.
 
 Regards,
-MetroFlow Team
+MetroVision Team
 """
 
     message = MIMEMultipart()
