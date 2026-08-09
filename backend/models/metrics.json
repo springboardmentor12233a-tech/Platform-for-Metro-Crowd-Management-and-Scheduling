@@ -1,0 +1,10 @@
+{
+  "demand_model": {
+    "mae": 41.95,
+    "rmse": 75.31,
+    "r2_score": 0.6356
+  },
+  "crowd_model": {
+    "accuracy": 99.95
+  }
+}

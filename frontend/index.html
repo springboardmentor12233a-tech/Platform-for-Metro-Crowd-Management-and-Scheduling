@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MetroFlow: Metro Crowd Management & Scheduling Platform</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js for Traffic Analytics & AI Reports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(59, 130, 246, 0.3);
+            --primary-blue: #3b82f6;
+            --primary-indigo: #6366f1;
+            --primary-violet: #8b5cf6;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #090d16 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .space-x-2 > * + * { margin-left: 8px; }
+        .space-x-3 > * + * { margin-left: 12px; }
+        .space-x-4 > * + * { margin-left: 16px; }
+        .space-y-2 > * + * { margin-top: 8px; }
+        .space-y-3 > * + * { margin-top: 12px; }
+        .space-y-4 > * + * { margin-top: 16px; }
+        .space-y-6 > * + * { margin-top: 24px; }
+        .grid { display: grid; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        @media (max-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .grid-2, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Layout & Header */
+        header {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Tabs Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+            padding-bottom: 8px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Buttons & Controls */
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-indigo));
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-quick-login {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            color: #ffffff;
+            padding: 10px 16px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn-quick-login:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 12px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-normal {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 28px;
+        }
+
+        /* Login Layout */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 32px;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .role-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .role-btn.active {
+            border-color: var(--primary-blue);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .role-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        .role-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- LOGIN SCREEN MODULE -->
+    <!-- ============================================================ -->
+    <div id="login-container" class="login-wrapper">
+        <div class="glass-panel login-box">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div class="logo-icon" style="margin: 0 auto 16px auto; width: 56px; height: 56px; font-size: 26px;">
+                    <i class="fa-solid fa-train-subway"></i>
+                </div>
+                <h2 style="font-weight: 800; font-size: 22px; color: #fff;">AI MetroFlow</h2>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Milestones 1–3 Platform Access Portal</p>
+            </div>
+
+            <!-- Role Selector -->
+            <div class="role-selector">
+                <div id="role-btn-operator" class="role-btn active" onclick="selectRole('operator')">
+                    <i class="fa-solid fa-user-gear" style="color: #60a5fa;"></i>
+                    <div class="role-name">Station Operator</div>
+                    <div class="role-desc">Operations & Schedules</div>
+                </div>
+
+                <div id="role-btn-admin" class="role-btn" onclick="selectRole('admin')">
+                    <div class="role-icon">
+                        <i class="fa-solid fa-shield-halved" style="color: #a78bfa;"></i>
+                    </div>
+                    <div class="role-name">System Admin</div>
+                    <div class="role-desc">Full System Control</div>
+                </div>
+            </div>
+
+            <!-- Credentials Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" class="form-control" value="operator" required placeholder="Enter username">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="form-control" value="operatorpassword" required placeholder="Enter password">
+                </div>
+
+                <div id="login-error" class="hidden" style="color: var(--rose); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; margin-bottom: 16px;"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;">
+                    <span>Sign In to MetroFlow</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <button type="button" class="btn btn-quick-login" onclick="quickLogin()">
+                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Instant 1-Click Platform Access (Demo Mode)
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- MAIN APPLICATION DASHBOARD -->
+    <!-- ============================================================ -->
+    <div id="dashboard-container" class="hidden">
+        <!-- Main Top Navigation Bar -->
+        <header>
+            <div class="container">
+                <div class="header-top">
+                    <div class="brand-logo">
+                        <div class="logo-icon">
+                            <i class="fa-solid fa-train-subway"></i>
+                        </div>
+                        <div class="brand-text">
+                            <h1>MetroFlow Operations</h1>
+                            <p>Milestone 1-3 — Crowd, AI Scheduling & Analytics Platform</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background: rgba(15, 23, 42, 0.8); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); display: inline-block;"></span>
+                            <span style="color: var(--text-muted);">Live System:</span>
+                            <span id="live-stream-clock" style="font-weight: 700; color: var(--emerald);">STREAMING LIVE</span>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border-color); padding-left: 20px;">
+                            <div style="text-align: right;">
+                                <div id="user-display-name" style="font-weight: 700; font-size: 14px;">Operator</div>
+                                <div id="user-display-role" style="font-size: 10px; color: var(--primary-blue); font-weight: 800; text-transform: uppercase;">Operator</div>
+                            </div>
+                            <button id="logout-btn" class="btn btn-secondary" style="padding: 8px 12px;" title="Logout">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub Navigation Tabs -->
+                <div class="nav-tabs">
+                    <button id="tab-crowd-btn" class="tab-btn active">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Live Crowd Monitoring</span>
+                    </button>
+                    <button id="tab-scheduling-btn" class="tab-btn">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Scheduling & Frequency</span>
+                    </button>
+                    <button id="tab-ai-btn" class="tab-btn">
+                        <i class="fa-solid fa-brain" style="color: var(--primary-indigo);"></i>
+                        <span>AI Prediction Studio</span>
+                    </button>
+                    <button id="tab-alerts-btn" class="tab-btn">
+                        <i class="fa-solid fa-bullhorn" style="color: var(--rose);"></i>
+                        <span>Emergency & Alerts</span>
+                    </button>
+                    <button id="tab-reports-btn" class="tab-btn">
+                        <i class="fa-solid fa-file-contract" style="color: var(--emerald);"></i>
+                        <span>Traffic Analysis Reports</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace Body -->
+        <main class="container" style="padding-top: 24px; padding-bottom: 40px;">
+            
+            <!-- Global Metrics Bar -->
+            <div class="grid grid-4" style="margin-bottom: 24px;">
+                <div class="glass-panel stat-card">
+                    <div>
+                        <div class="stat-title">Total Daily Entries</div>
+                        <div id="stat-total-entries" class="stat-value">473,928</div>
+                    </div>
+                    <div class="stat-icon" style="color: var(--primary-blue);"><i class="fa-solid fa-right-to-bracket"></i></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div>
+                        <div class="stat-title">Total Daily Exits</div>
+                        <div id="stat-total-exits" class="stat-value">442,938</div>
+                    </div>
+                    <div class="stat-icon" style="color: var(--emerald);"><i class="fa-solid fa-right-from-bracket"></i></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div>
+                        <div class="stat-title">Avg Hourly Flow</div>
+                        <div id="stat-avg-entries" class="stat-value">157.3</div>
+                    </div>
+                    <div class="stat-icon" style="color: var(--primary-violet);"><i class="fa-solid fa-chart-simple"></i></div>
+                </div>
+
+                <div class="glass-panel stat-card">
+                    <div>
+                        <div class="stat-title">AI Crowd Classifier</div>
+                        <div id="stat-ai-accuracy" class="stat-value" style="color: var(--emerald);">99.95%</div>
+                    </div>
+                    <div class="stat-icon" style="color: var(--amber);"><i class="fa-solid fa-microchip"></i></div>
+                </div>
+            </div>
+
+            <!-- TAB 1: LIVE CROWD MONITORING -->
+            <div id="section-crowd" class="tab-content">
+                <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <div class="space-y-6">
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                                <div>
+                                    <h2 style="font-size: 18px; font-weight: 800;">Live Station Density Tracker</h2>
+                                    <p style="font-size: 12px; color: var(--text-muted);">Real-time passenger flow & gate density sensors</p>
+                                </div>
+                                <button id="refresh-summary-btn" class="btn btn-secondary" style="padding: 8px 14px; font-size: 12px;">
+                                    <i class="fa-solid fa-rotate"></i> Refresh Data
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Station Name</th>
+                                            <th>Metro Line</th>
+                                            <th style="text-align: center;">Entries/min</th>
+                                            <th style="text-align: center;">Exits/min</th>
+                                            <th style="text-align: center;">Net Flow</th>
+                                            <th style="text-align: center;">Density Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="crowd-table-body">
+                                        <tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-muted);">Loading live data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Admin Directory (visible to admin only) -->
+                        <div id="admin-controls" class="glass-panel hidden" style="padding: 24px;">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                                <i class="fa-solid fa-shield-halved" style="color:#a78bfa;font-size:18px;"></i>
+                                <h2 style="font-size: 16px; font-weight: 800;">System Operators Directory</h2>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="operators-list-body">
+                                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading operators...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Operator Quick Actions (visible to operators only) -->
+                        <div id="operator-controls" class="glass-panel hidden" style="padding: 24px;">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                                <i class="fa-solid fa-user-gear" style="color:#60a5fa;font-size:18px;"></i>
+                                <h2 style="font-size: 16px; font-weight: 800;">Operator Quick Actions</h2>
+                            </div>
+                            <div class="grid grid-3" style="gap:12px;">
+                                <button onclick="operatorDispatch()" class="btn btn-secondary" style="padding:14px;flex-direction:column;gap:8px;height:80px;">
+                                    <i class="fa-solid fa-train" style="font-size:20px;color:#60a5fa;"></i>
+                                    <span style="font-size:11px;">Dispatch Train</span>
+                                </button>
+                                <button onclick="operatorBypass()" class="btn btn-secondary" style="padding:14px;flex-direction:column;gap:8px;height:80px;">
+                                    <i class="fa-solid fa-forward-fast" style="font-size:20px;color:#f59e0b;"></i>
+                                    <span style="font-size:11px;">Rapid Bypass</span>
+                                </button>
+                                <button onclick="operatorBroadcast()" class="btn btn-secondary" style="padding:14px;flex-direction:column;gap:8px;height:80px;">
+                                    <i class="fa-solid fa-bullhorn" style="font-size:20px;color:#ef4444;"></i>
+                                    <span style="font-size:11px;">PA Broadcast</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h2 style="font-size: 16px; font-weight: 800;">Congestion Alerts</h2>
+                                <span id="alerts-count" class="badge badge-critical">1 Active</span>
+                            </div>
+                            <div id="alerts-feed" class="space-y-3" style="max-height: 340px; overflow-y: auto;">
+                                <p style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">Loading alerts...</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 24px;">
+                            <h2 style="font-size: 16px; font-weight: 800; margin-bottom: 14px;">Busiest Stations Rank</h2>
+                            <div id="busiest-stations-list" class="space-y-3">
+                                <p style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading ranking...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SCHEDULING & FREQUENCY -->
+            <div id="section-scheduling" class="tab-content hidden space-y-6">
+                <div class="glass-panel" style="padding: 24px; border-left: 4px solid var(--primary-indigo);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 800;">AI Frequency Recommendation Engine</h2>
+                            <p style="font-size: 12px; color: var(--text-muted);">Automated line headway adjustments based on current density</p>
+                        </div>
+                        <button id="refresh-freq-btn" class="btn btn-secondary" style="padding: 8px 14px; font-size: 12px;">
+                            <i class="fa-solid fa-arrows-rotate"></i> Recalculate
+                        </button>
+                    </div>
+
+                    <div id="frequency-recommendations-grid" class="grid grid-4">
+                        <p style="color: var(--text-muted); font-size: 12px;">Calculating recommendations...</p>
+                    </div>
+                </div>
+
+                <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h2 style="font-size: 18px; font-weight: 800;">Master Train Schedules</h2>
+                            <select id="schedule-line-filter" class="form-control" style="width: auto; padding: 6px 12px; font-size: 12px;">
+                                <option value="">All Lines</option>
+                                <option value="Yellow Line">Yellow Line</option>
+                                <option value="Blue Line">Blue Line</option>
+                                <option value="Red Line">Red Line</option>
+                                <option value="Violet Line">Violet Line</option>
+                            </select>
+                        </div>
+
+                        <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Train ID</th>
+                                        <th>Line</th>
+                                        <th>Route</th>
+                                        <th style="text-align: center;">Departure</th>
+                                        <th style="text-align: center;">Arrival</th>
+                                        <th style="text-align: center;">Frequency</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-table-body">
+                                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading schedules...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h2 style="font-size: 16px; font-weight: 800;">Delay Incident Log</h2>
+                            <button id="log-delay-btn" class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px;">
+                                <i class="fa-solid fa-plus"></i> Log Delay
+                            </button>
+                        </div>
+                        <div id="delays-list" class="space-y-3" style="max-height: 380px; overflow-y: auto;">
+                            <p style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading delay logs...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AI PREDICTION STUDIO -->
+            <div id="section-ai" class="tab-content hidden space-y-6">
+                <div class="grid" style="grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 16px;">AI Forecast Studio</h2>
+                        <form id="ai-predict-form">
+                            <div class="form-group">
+                                <label>Target Station</label>
+                                <select id="pred-station" class="form-control" required>
+                                    <option value="Rajiv Chowk">Rajiv Chowk</option>
+                                    <option value="Kashmere Gate">Kashmere Gate</option>
+                                    <option value="Hauz Khas">Hauz Khas</option>
+                                    <option value="ITO">ITO</option>
+                                    <option value="Lajpat Nagar">Lajpat Nagar</option>
+                                    <option value="Noida Sector 16">Noida Sector 16</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Metro Line</label>
+                                <select id="pred-line" class="form-control" required>
+                                    <option value="Yellow Line">Yellow Line</option>
+                                    <option value="Blue Line">Blue Line</option>
+                                    <option value="Red Line">Red Line</option>
+                                    <option value="Violet Line">Violet Line</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-2">
+                                <div class="form-group">
+                                    <label>Hour</label>
+                                    <select id="pred-hour" class="form-control" required>
+                                        <option value="8">08:00 AM</option>
+                                        <option value="9" selected>09:00 AM</option>
+                                        <option value="12">12:00 PM</option>
+                                        <option value="18">06:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Weather</label>
+                                    <select id="pred-weather" class="form-control" required>
+                                        <option value="Clear">Clear</option>
+                                        <option value="Rain">Heavy Rain</option>
+                                        <option value="Fog">Fog</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Day of Week</label>
+                                <select id="pred-day" class="form-control" required>
+                                    <option value="Monday">Monday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Saturday">Saturday</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                                <i class="fa-solid fa-microchip"></i> Run AI Model Prediction
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- AI Prediction Output Dashboard -->
+                    <div class="glass-panel" style="padding: 24px; border-left: 4px solid var(--primary-violet);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <h2 style="font-size: 18px; font-weight: 800;">AI Forecast Result Output</h2>
+                                <p style="font-size: 12px; color: var(--text-muted);">GradientBoosting & RandomForest Inference Engine</p>
+                            </div>
+                            <span id="pred-model-badge" class="badge badge-normal" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.4);">
+                                Scikit-Learn Model
+                            </span>
+                        </div>
+
+                        <div class="grid grid-3" style="margin-bottom: 24px;">
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Predicted Passenger Entry</div>
+                                <div id="res-entries" style="font-size: 32px; font-weight: 900; color: #fff; margin-top: 4px;">283.4</div>
+                                <div style="font-size: 10px; color: var(--text-muted);">passengers / minute</div>
+                            </div>
+
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Crowd Risk Assessment</div>
+                                <div id="res-risk" style="margin-top: 10px;">
+                                    <span class="badge badge-critical">CRITICAL RISK</span>
+                                </div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">Bottleneck expected</div>
+                            </div>
+
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">AI Rec. Frequency</div>
+                                <div id="res-freq" style="font-size: 32px; font-weight: 900; color: var(--primary-indigo); margin-top: 4px;">14</div>
+                                <div style="font-size: 10px; color: var(--text-muted);">trains / hour required</div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; color: var(--primary-indigo); margin-bottom: 8px;">
+                                <span><i class="fa-solid fa-chart-line"></i> Model Validation Metrics:</span>
+                                <span id="res-confidence">Confidence: 94.0%</span>
+                            </div>
+                            <div class="grid grid-3" style="font-size: 11px; color: var(--text-muted);">
+                                <div>MAE: <b style="color: #fff;">41.95 entries/min</b></div>
+                                <div>RMSE: <b style="color: #fff;">75.31</b></div>
+                                <div>Crowd Accuracy: <b style="color: var(--emerald);">99.95%</b></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: EMERGENCY ANNOUNCEMENTS & ALERTS (MILESTONE 3) -->
+            <div id="section-alerts" class="tab-content hidden space-y-6">
+                <div class="grid" style="grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <div class="glass-panel" style="padding: 24px; border-left: 4px solid var(--rose);">
+                        <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-bullhorn" style="color: var(--rose);"></i>
+                            Broadcast Announcement
+                        </h2>
+                        <form id="announcement-form">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="ann-title" class="form-control" required placeholder="e.g. Surge Warning">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea id="ann-message" class="form-control" rows="3" required placeholder="Enter announcement content..."></textarea>
+                            </div>
+
+                            <div class="grid grid-2">
+                                <div class="form-group">
+                                    <label>Line</label>
+                                    <select id="ann-line" class="form-control">
+                                        <option value="Yellow Line">Yellow Line</option>
+                                        <option value="Blue Line">Blue Line</option>
+                                        <option value="Red Line">Red Line</option>
+                                        <option value="All Lines">All Lines</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Severity</label>
+                                    <select id="ann-severity" class="form-control">
+                                        <option value="INFO">INFO</option>
+                                        <option value="WARNING" selected>WARNING</option>
+                                        <option value="CRITICAL">CRITICAL</option>
+                                        <option value="EMERGENCY">EMERGENCY</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; background: linear-gradient(135deg, var(--rose), #dc2626);">
+                                <i class="fa-solid fa-paper-plane"></i> Broadcast Notice
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h2 style="font-size: 18px; font-weight: 800;">Active Emergency Broadcasts</h2>
+                            <button id="refresh-announcements-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div id="announcements-list-container" class="space-y-3" style="max-height: 420px; overflow-y: auto;">
+                            <p style="text-align: center; color: var(--text-muted); padding: 20px;">Loading broadcasts...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: TRAFFIC REPORTS & EXPORT -->
+            <div id="section-reports" class="tab-content hidden space-y-6">
+                <div class="glass-panel" style="padding: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h2 style="font-size: 18px; font-weight: 800;">Operational Analytics & Reporting</h2>
+                        <p style="font-size: 12px; color: var(--text-muted);">Milestone 3 PDF/Excel export and traffic diagnosis</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button id="export-excel-btn" class="btn btn-secondary" style="color: var(--emerald); border-color: rgba(16,185,129,0.3);">
+                            <i class="fa-solid fa-file-excel"></i> Export Excel
+                        </button>
+                        <button id="export-pdf-btn" class="btn btn-primary" style="background: linear-gradient(135deg, var(--rose), #dc2626);">
+                            <i class="fa-solid fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h3 style="font-size: 14px; font-weight: 800; margin-bottom: 16px;">Passenger Volume by Metro Line</h3>
+                        <div style="height: 260px; position: relative;">
+                            <canvas id="chart-line-flow"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h3 style="font-size: 14px; font-weight: 800; margin-bottom: 16px;">Hourly Entry Volume Profile</h3>
+                        <div style="height: 260px; position: relative;">
+                            <canvas id="chart-hourly-trend"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px;">AI Directives & Executive Operational Guidance</h3>
+                    <div id="executive-recommendations-list" class="grid grid-3">
+                        <p style="color: var(--text-muted); font-size: 12px;">Loading directives...</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Log Delay Modal -->
+    <div id="log-delay-modal" class="modal-backdrop hidden">
+        <div class="glass-panel modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                <h3 style="font-weight: 800; font-size: 16px;">Log Train Delay Incident</h3>
+                <button id="close-delay-modal" style="background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="delay-form">
+                <div class="form-group">
+                    <label>Train ID</label>
+                    <input type="text" id="delay-train-id" class="form-control" required placeholder="e.g. TRN-101">
+                </div>
+                <div class="form-group">
+                    <label>Metro Line</label>
+                    <select id="delay-line" class="form-control" required>
+                        <option value="Yellow Line">Yellow Line</option>
+                        <option value="Blue Line">Blue Line</option>
+                        <option value="Red Line">Red Line</option>
+                        <option value="Violet Line">Violet Line</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Station</label>
+                    <input type="text" id="delay-station" class="form-control" required placeholder="e.g. Rajiv Chowk">
+                </div>
+                <div class="form-group">
+                    <label>Delay Minutes</label>
+                    <input type="number" id="delay-minutes" class="form-control" required min="1" max="120" value="5">
+                </div>
+                <div class="form-group">
+                    <label>Cause</label>
+                    <input type="text" id="delay-cause" class="form-control" required placeholder="e.g. Door Malfunction">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button type="button" id="cancel-delay-modal" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, var(--rose), #dc2626);">Submit Delay Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Core App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
