@@ -1,4 +1,5 @@
 from math import ceil
+from datetime import datetime, timedelta
 
 
 class TrainScheduler:
@@ -109,29 +110,47 @@ class TrainScheduler:
                 minute += interval
 
         return schedule 
-    @staticmethod
-    def handle_delay(delay_minutes: int):
-        """
-        Handle delayed trains.
-        """
 
+    @staticmethod
+    def handle_delay(schedule: list[str], delay_minutes: int):
+        """
+        Apply delay to every departure in the schedule.
+        """
+    
         if delay_minutes <= 5:
             severity = "LOW"
-
+            recommendation = "Monitor the train."
+    
         elif delay_minutes <= 15:
             severity = "MEDIUM"
-
+            recommendation = "Increase train frequency."
+    
         else:
             severity = "HIGH"
-
+            recommendation = (
+                "Dispatch additional train and notify passengers."
+            )
+    
+        updated_schedule = []
+    
+        for departure in schedule:
+    
+            old_time = datetime.strptime(departure, "%H:%M")
+    
+            new_time = old_time + timedelta(
+                minutes=delay_minutes
+            )
+    
+            updated_schedule.append({
+                "old_departure": departure,
+                "new_departure": new_time.strftime("%H:%M")
+            })
+    
         return {
             "delay_minutes": delay_minutes,
             "severity": severity,
-            "action": (
-                "Increase train frequency"
-                if severity != "LOW"
-                else "Monitor"
-            )
+            "recommendation": recommendation,
+            "updated_schedule": updated_schedule
         }
     @staticmethod
     def allocate_platform(passengers: int):

@@ -18,8 +18,32 @@ from backend.services.gemini_service import (
     get_ai_chat_response
 )
 from pydantic import BaseModel
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    success: bool
+    role: str
+    username: str
+    email: str
+
+class CreateUserRequest(BaseModel):
+    username: str
+    email: str
+    full_name: str
+    password: str
+    role: str 
 from backend.routes.scheduling import router as scheduling_router
 from backend.scheduling import TrainScheduler
+from backend.routes.metro import router as metro_router
+from backend.database import SessionLocal
+from backend.models import User
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from backend.routes.auth import router as auth_router
+import bcrypt
 
 print("=" * 80)
 print("STARTING METROFLOW API")
@@ -72,8 +96,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:8000",
         "http://127.0.0.1:3000",
-        "http://127.0.0.1:8000",
-        "*"
+        "http://127.0.0.1:8000"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -83,7 +106,9 @@ app.add_middleware(
 
 app.include_router(ai_router)
 app.include_router(scheduling_router)
-
+app.include_router(metro_router, prefix="/api/metro")
+app.include_router(auth_router)
+ 
 # ============================================================================
 # GLOBAL VARIABLES - Will store our data and model
 # ============================================================================
@@ -92,32 +117,103 @@ lstm_model = None
 scaler = None
 lstm_ready = False
 
+station_master = None
+
 # ============================================================================
 # STEP 1: LOAD CSV DATA
 # ============================================================================
+
 print("\n[STEP 1] Loading CSV data...")
 
-# Define file paths using PARENT_DIR (data and models are in parent folder)
-data_dir = PARENT_DIR / "data"
+# Define file paths
+data_dir = BASE_DIR / "data"
 
 csv_files = {
-    'crowd_df': data_dir / "StationCrowdData.csv",
-    'forecast_df': data_dir / "PassengerDemandForecast.csv",
-    'alert_df': data_dir / "AlertNotification.csv",
-    'traffic_df': data_dir / "TrafficPattern.csv"
+    "crowd_df": data_dir / "StationCrowdData.csv",
+    "forecast_df": data_dir / "PassengerDemandForecast.csv",
+    "alert_df": data_dir / "AlertNotification.csv",
+    "traffic_df": data_dir / "TrafficPattern.csv",
 }
 
-# Check if files exist and load them
+
+# ----------------------------------------------------------------------------
+# Load Station Master
+# ----------------------------------------------------------------------------
+
+station_master = None
+station_master_path = BASE_DIR / "data" / "station_master.csv"
+
+try:
+    if station_master_path.exists():
+
+        station_master = pd.read_csv(station_master_path)
+
+        station_master = station_master.rename(
+            columns={
+                "Station_ID": "station_id",
+                "Station_Name": "station_name",
+            }
+        )
+
+        station_master = station_master.dropna(subset=["station_id"])
+
+        station_master["station_id"] = (
+            pd.to_numeric(
+                station_master["station_id"],
+                errors="coerce",
+            )
+            .dropna()
+            .astype(int)
+        )
+
+        print("✅ Station master loaded")
+
+    else:
+        print(f"⚠️ Station master not found at {station_master_path}")
+
+except Exception as e:
+    print(f"❌ Station master loading error: {e}")
+
+# ----------------------------------------------------------------------------
+# Load Remaining CSV Files
+# ----------------------------------------------------------------------------
+
 for var_name, file_path in csv_files.items():
+
     try:
+
         if file_path.exists():
+
             df = pd.read_csv(file_path)
+
             globals()[var_name] = df
+
             print(f"✅ {file_path.name} loaded: {len(df):,} records")
+
+            if var_name == "crowd_df":
+                latest_time = df["timestamp"].max()
+
+                print("Latest Timestamp:", latest_time)
+
+                print(
+                    df[df["timestamp"] == latest_time][
+                        ["station_id", "passenger_count", "capacity_percentage"]
+                    ]
+                    .sort_values("capacity_percentage", ascending=False)
+                    .head(20)
+                )
         else:
-            print(f"⚠️  {file_path.name} NOT FOUND at {file_path}")
+
+            globals()[var_name] = None
+
+            print(f"⚠️ {file_path.name} NOT FOUND at {file_path}")
+
     except Exception as e:
+
+        globals()[var_name] = None
+
         print(f"❌ Error loading {file_path.name}: {e}")
+
 
 # ============================================================================
 # STEP 2: LOAD LSTM MODEL AND SCALER
@@ -182,6 +278,10 @@ def home():
         "endpoints": {
             "health": "/health",
             "crowd": "/api/crowd/station/{id}",
+            "all_stations": "/api/crowd/all-stations",
+            "dashboard": "/api/dashboard/kpi",
+            "system_health": "/api/system/health",
+            "ai_chat": "/api/ai/chat",
             "forecast": "/api/forecast/tomorrow",
             "alerts": "/api/alerts/active",
             "top_stations": "/api/statistics/top-stations",
@@ -227,6 +327,15 @@ def get_crowd_status(station_id: int):
         
         latest = station_data.iloc[-1]
         capacity = latest['capacity_percentage']
+        station_name = "Unknown"
+
+        if station_master is not None:
+            match = station_master[
+                station_master["station_id"] == station_id
+            ]
+
+            if not match.empty:
+                station_name = match.iloc[0]["station_name"]
         
         # Determine status
         if capacity > 90:
@@ -241,17 +350,107 @@ def get_crowd_status(station_id: int):
         
         return {
             "station_id": int(station_id),
-            "current_passengers": int(latest['passenger_count']),
+            "station_name": station_name,
+            "current_passengers": int(latest["passenger_count"]),
             "capacity_percentage": float(round(capacity, 2)),
-            "crowd_level": int(latest['crowd_level']),
+            "crowd_level": int(latest["crowd_level"]),
             "status": status,
             "emoji": emoji,
-            "timestamp": str(latest['timestamp']),
-            "message": f"{emoji} Station {station_id} is {status}"
+            "timestamp": str(latest["timestamp"]),
+            "message": f"{emoji} {station_name} is {status}"
         }
     
     except Exception as e:
         return {"error": str(e), "status": "error"}
+# ============================================================================
+# ENDPOINT: GET ALL STATION CROWD STATUS
+# ============================================================================
+
+@app.get("/api/crowd/all-stations")
+def get_all_station_crowd(hour: int = 23):
+
+    if crowd_df is None:
+        return {
+            "error": "Crowd data not loaded"
+        }
+
+    # Work on a copy
+    df = crowd_df.copy()
+
+    # Convert timestamp correctly
+    df["timestamp"] = pd.to_datetime(
+        df["timestamp"],
+        dayfirst=True
+    )
+
+    # Latest available date
+    latest_date = df["timestamp"].dt.date.max()
+
+    # Data for selected hour on latest day
+    selected_data = df[
+        (df["timestamp"].dt.date == latest_date) &
+        (df["timestamp"].dt.hour == hour)
+    ]
+
+    # One row per station
+    latest_data = (
+        selected_data
+        .sort_values("station_id")
+        .drop_duplicates(subset="station_id")
+        .reset_index(drop=True)
+    )
+
+    stations = []
+
+    for _, row in latest_data.iterrows():
+
+        capacity = float(row["capacity_percentage"])
+        
+
+        if capacity >= 90:
+            status = "Critical"
+        elif capacity >= 80:
+            status = "Overcrowded"
+        else:
+            status = "Normal"
+
+        stations.append({
+            "station_id": int(row["station_id"]),
+            "passengers": int(row["passenger_count"]),
+            "capacity": capacity,
+            "status": status,
+            "timestamp": str(row["timestamp"])
+        })
+
+    stations_df = pd.DataFrame(stations)
+
+    if station_master is not None:
+
+        stations_df["station_id"] = stations_df["station_id"].astype(int)
+
+        stations_df = stations_df.merge(
+            station_master[
+                ["station_id", "station_name"]
+            ],
+            on="station_id",
+            how="left"
+        )
+
+        stations_df["station_name"] = stations_df["station_name"].fillna(
+            "Unknown Station"
+        )
+
+        print("\n========== API DATA ==========")
+        for station in stations_df.head(10).to_dict(orient="records"):
+            print(station["station_name"])
+        print("==============================")
+
+    return {
+        "total": len(stations_df),
+        "stations": stations_df.to_dict(orient="records")
+    }
+
+     
 
 
 # ============================================================================
@@ -308,73 +507,244 @@ def get_forecast():
 # ============================================================================
 
 @app.get("/api/alerts/active")
-def get_alerts():
-    """Get currently active alerts"""
-    
-    if alert_df is None:
-        return {"error": "Alert data not available", "status": "error"}
-    
-    try:
-        active = alert_df[alert_df['is_active'] == True]
-        
-        alerts_list = []
-        for idx, row in active.iterrows():
-            alerts_list.append({
-                "alert_id": idx,
-                "station_id": int(row['station_id']),
-                "alert_type": row['alert_type'],
-                "message": row['message'],
-                "severity": row['severity'],
-                "created_at": str(row['created_at'])
-            })
-        
-        return {
-            "total_alerts": len(alert_df),
-            "active_count": len(active),
-            "alerts": alerts_list,
-            "status": "overcrowding detected" if len(active) > 0 else "all clear"
-        }
-    
-    except Exception as e:
-        return {"error": str(e), "status": "error"}
+def get_alerts(
+    hour: int = 17,
+    station_id: int | None = None
+):
 
+    """Generate live alerts from current crowd data"""
+
+    if crowd_df is None:
+        return {
+            "error": "Crowd data not available",
+            "status": "error"
+        }
+
+    try:
+
+        df = crowd_df.copy()
+
+        df["timestamp"] = pd.to_datetime(
+            df["timestamp"],
+            dayfirst=True
+        )
+
+        latest_date = df["timestamp"].dt.date.max()
+
+        selected_data = df[
+            (df["timestamp"].dt.date == latest_date) &
+            (df["timestamp"].dt.hour == hour)
+        ]
+
+        latest_data = (
+            selected_data
+            .sort_values("station_id")
+            .drop_duplicates(subset="station_id")
+            .reset_index(drop=True)
+        )
+
+        if station_id is not None:
+            latest_data = latest_data[
+                latest_data["station_id"] == station_id
+            ]
+
+        print(latest_data[["station_id"]].head(20))
+
+        # Merge station names
+        if station_master is not None:
+
+            latest_data["station_id"] = latest_data["station_id"].astype(int)
+
+            latest_data = latest_data.merge(
+                station_master[
+                    ["station_id", "station_name"]
+                ],
+                on="station_id",
+                how="left"
+            )
+
+            latest_data["station_name"] = latest_data["station_name"].fillna(
+                "Unknown Station"
+            )
+
+            print(latest_data.head(20))
+
+        alerts_list = []
+
+        for _, row in latest_data.iterrows():
+
+            capacity = float(row["capacity_percentage"])
+
+            if capacity >= 90:
+
+                severity = "critical"
+                alert_type = "Critical Overcrowding"
+
+            elif capacity >= 80:
+
+                severity = "high"
+                alert_type = "Overcrowding"
+
+            else:
+                continue
+
+            alerts_list.append({
+
+                "station_id": int(row["station_id"]),
+
+                "station_name": row["station_name"],
+
+                "alert_type": alert_type,
+
+                "severity": severity,
+
+                "capacity_percentage": capacity,
+
+                "passenger_count": int(row["passenger_count"]),
+
+                "message": f"{row['station_name']} is operating at {capacity:.1f}% capacity",
+
+                "timestamp": str(row["timestamp"])
+
+            })
+
+        return {
+
+            "status": "success",
+
+            "selected_hour": hour,
+
+            "total_alerts": len(alerts_list),
+
+            "active_count": len(alerts_list),
+
+            "alerts": alerts_list
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            "status": "error",
+
+            "message": str(e)
+
+        }
 
 # ============================================================================
 # ENDPOINT 6: GET TOP BUSIEST STATIONS
 # ============================================================================
 
 @app.get("/api/statistics/top-stations")
-def get_top_stations(limit: int = 10):
+def get_top_stations(limit: int = 262):
     """Get top busiest stations"""
-    
+
     if crowd_df is None:
-        return {"error": "Crowd data not available", "status": "error"}
-    
+        return {
+            "error": "Crowd data not available",
+            "status": "error"
+        }
+
     try:
-        station_totals = crowd_df.groupby('station_id')['passenger_count'].sum().sort_values(ascending=False)
-        top_n = station_totals.nlargest(limit)
-        
+
+        # Calculate total passengers per station
+        station_totals = (
+            crowd_df.groupby("station_id")["passenger_count"]
+            .sum()
+            .reset_index(name="total_passengers")
+        )
+
+        # Merge with station master
+        station_totals = station_totals.merge(
+            station_master[["station_id", "station_name"]],
+            on="station_id",
+            how="left"
+        )
+
+        # Sort by busiest stations
+        station_totals = station_totals.sort_values(
+            "total_passengers",
+            ascending=False
+        ).head(limit)
+
         top_stations = []
-        for rank, (station_id, total) in enumerate(top_n.items(), 1):
+
+        for rank, (_, row) in enumerate(station_totals.iterrows(), start=1):
+
             top_stations.append({
                 "rank": rank,
-                "station_id": int(station_id),
-                "total_passengers": int(total),
-                "average_per_hour": int(total / 168)
+                "station_id": int(row["station_id"]),
+                "station_name": row["station_name"],
+                "total_passengers": int(row["total_passengers"]),
+                "average_per_hour": int(row["total_passengers"] / 168)
             })
-        
-        total_traffic = crowd_df['passenger_count'].sum()
-        hub_percentage = (top_n.sum() / total_traffic * 100) if total_traffic > 0 else 0
-        
+
+        total_traffic = crowd_df["passenger_count"].sum()
+
+        hub_percentage = (
+            station_totals["total_passengers"].sum()
+            / total_traffic
+            * 100
+        )
+
         return {
             "period": "7 days",
             "top_stations": top_stations,
             "hub_concentration": f"Top {limit} stations handle {hub_percentage:.1f}% of traffic"
         }
-    
-    except Exception as e:
-        return {"error": str(e), "status": "error"}
 
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
+@app.get("/api/statistics/network")
+def get_network_statistics():
+    """
+    Metro network statistics
+    """
+
+    return {
+        "stations": 262,
+        "routes": 36,
+        "trips": 5438,
+        "stop_times": 128434
+    }
+
+@app.get("/api/statistics/passengers")
+def get_passenger_statistics():
+
+    if crowd_df is None:
+        return {
+            "error": "Crowd data not available"
+        }
+
+    total = int(
+        crowd_df["passenger_count"].sum()
+    )
+
+    average = int(
+        crowd_df["passenger_count"].mean()
+    )
+
+    highest = int(
+        crowd_df["passenger_count"].max()
+    )
+
+    lowest = int(
+        crowd_df["passenger_count"].min()
+    )
+
+
+    return {
+        "total_passengers": total,
+        "average_passengers": average,
+        "highest_passengers": highest,
+        "lowest_passengers": lowest
+    }
 
 # ============================================================================
 # ENDPOINT 7: GET HOURLY PATTERN
@@ -588,23 +958,99 @@ def predict_next_hour(data: dict):
 # ============================================================================
 
 @app.get("/api/dashboard/kpi")
-def dashboard_kpi():
+def dashboard_kpi(hour: int = 17):
+
     try:
-        # Real values from datasets
-        total_passengers_today = int(crowd_df["passenger_count"].sum()) if crowd_df is not None else 0
+
+        if crowd_df is None:
+            return {
+                "status": "error",
+                "message": "Crowd data not loaded"
+            }
+
+        # Work on a copy
+        df = crowd_df.copy()
+
+        # Convert timestamp correctly
+        df["timestamp"] = pd.to_datetime(
+            df["timestamp"],
+            dayfirst=True
+        )
+
+        # Latest available date
+        latest_date = df["timestamp"].dt.date.max()
+
+        # Full latest day data
+        today_data = df[
+            df["timestamp"].dt.date == latest_date
+        ]
         
-        active_stations = int(crowd_df["station_id"].nunique()) if crowd_df is not None else 0
+        # One latest record per station
+        latest_data = (
+            today_data
+            .sort_values("timestamp")
+            .drop_duplicates(subset="station_id", keep="last")
+            .reset_index(drop=True)
+        )
+
+        # Selected hour data for crowd monitoring
+        hour_data = df[
+            (df["timestamp"].dt.date == latest_date) &
+            (df["timestamp"].dt.hour == hour)
+        ]
         
-        congested_stations = int(len(crowd_df[crowd_df["capacity_percentage"] > 80])) if crowd_df is not None else 0
-        
-        active_alerts = int(len(alert_df[alert_df["is_active"] == True])) if alert_df is not None else 0
-        
-        # FIX HERE: Cleaned up inline conditional statements
-        forecast_records = int(len(forecast_df)) if forecast_df is not None else 0
-        traffic_records = int(len(traffic_df)) if traffic_df is not None else 0
-        
-        model_status = "Online" if lstm_ready else "Offline"
-        
+        latest_hour_data = (
+            hour_data
+            .sort_values("timestamp")
+            .drop_duplicates(
+                subset="station_id",
+                keep="last"
+            )
+        )
+
+        # KPI calculations
+        total_passengers_today = int(
+            today_data["passenger_count"].sum()
+        )
+                
+
+        active_stations = int(
+            latest_hour_data["station_id"].nunique()
+        )
+
+        congested_stations = int(
+            latest_hour_data[
+                latest_hour_data["capacity_percentage"] >= 80
+            ]["station_id"].nunique()
+        )
+
+        # Active alerts from current crowd
+
+        active_alerts = int(
+            latest_hour_data[
+                latest_hour_data["capacity_percentage"] >= 80
+            ].shape[0]
+        )
+
+        # Other KPIs
+        forecast_records = (
+            len(forecast_df)
+            if forecast_df is not None
+            else 0
+        )
+
+        traffic_records = (
+            len(traffic_df)
+            if traffic_df is not None
+            else 0
+        )
+
+        model_status = (
+            "Online"
+            if lstm_ready
+            else "Offline"
+        )
+
         return {
             "status": "success",
             "kpis": {
@@ -614,12 +1060,13 @@ def dashboard_kpi():
                 "active_alerts": active_alerts,
                 "forecast_records": forecast_records,
                 "traffic_records": traffic_records,
-                "model_status": model_status
+                "model_status": model_status,
+                "selected_hour": hour
             }
         }
-        
+
     except Exception as e:
-        # FIX HERE: Closes the try block safely
+
         return {
             "status": "error",
             "message": str(e)
@@ -707,7 +1154,7 @@ if __name__ == "__main__":
     print("   3. GET  /api/crowd/station/{id}  - Current crowd")
     print("   4. GET  /api/forecast/tomorrow   - 24-hour forecast")
     print("   5. GET  /api/alerts/active       - Active alerts")
-    print("   6. GET  /api/statistics/top-stations - Top 10 stations")
+    print("   6. GET  /api/statistics/top-stations - Busiest stations")
     print("   7. GET  /api/statistics/hourly-pattern - Peak times")
     print("   8. POST /api/predict/next-hour   - LSTM prediction")
     print()
@@ -718,4 +1165,209 @@ if __name__ == "__main__":
     print()
     
     uvicorn.run(app, host="0.0.0.0", port=8000)
+from backend.database import SessionLocal
+from backend.models import User
 
+@app.on_event("startup")
+def create_default_admin():
+    db = SessionLocal()
+
+    try:
+        # -------------------------------
+        # Create Default Admin
+        # -------------------------------
+        admin = db.query(User).filter(User.username == "admin1").first()
+
+        if not admin:
+            admin = User(
+                username="admin1",
+                email="admin@metroflow.com",
+                full_name="System Administrator",
+                hashed_password=bcrypt.hashpw(
+                    "admin123".encode("utf-8"),
+                    bcrypt.gensalt()
+                ).decode("utf-8"),
+                role="admin",
+                is_active=True
+            )
+
+            db.add(admin)
+            db.commit()
+            print("✅ Default admin created")
+
+        else:
+            print("✅ Admin already exists")
+
+        # -------------------------------
+        # Create Default User
+        # -------------------------------
+        user = db.query(User).filter(User.username == "user1").first()
+
+        if not user:
+            user = User(
+                username="user1",
+                email="user@metroflow.com",
+                full_name="Metro User",
+                hashed_password=bcrypt.hashpw(
+                    "user123".encode("utf-8"),
+                    bcrypt.gensalt()
+                ).decode("utf-8"),
+                role="user",
+                is_active=True
+            )
+
+            db.add(user)
+            db.commit()
+            print("✅ Default user created")
+
+        else:
+            print("✅ User already exists")
+
+    finally:
+        db.close()
+@app.post("/api/login", response_model=LoginResponse)
+def login(data: LoginRequest):
+
+    db = SessionLocal()
+
+    try:
+        user = db.query(User).filter(User.email == data.email).first()
+        print("Email received:", data.email)
+        print("User found:", user)
+
+        if user is None:
+            return {
+                "success": False,
+                "role": "",
+                "username": "",
+                "email": ""
+            }
+        print("Password entered:", data.password)
+        print("Password hash:", user.hashed_password)
+        password_match = bcrypt.checkpw(
+            data.password.encode("utf-8"),
+            user.hashed_password.encode("utf-8")
+        )
+
+        print("Password match:", password_match)
+
+        if not password_match:
+            return {
+                "success": False,
+                "role": "",
+                "username": "",
+                "email": ""
+            }
+
+        return {
+            "success": True,
+            "role": user.role,
+            "username": user.username,
+            "email": user.email
+        }
+
+    finally:
+        db.close()
+@app.get("/api/admin/users")
+def get_users():
+
+    db = SessionLocal()
+
+    try:
+        users = db.query(User).all()
+
+        return [
+            {
+                "id": u.id,
+                "username": u.username,
+                "email": u.email,
+                "role": u.role,
+                "is_active": u.is_active,
+                "full_name": u.full_name
+            }
+            for u in users
+        ]
+
+    finally:
+        db.close()        
+@app.post("/api/admin/users")
+def create_user(data: CreateUserRequest):
+
+    db = SessionLocal()
+
+    try:
+        # Check username
+        existing_user = db.query(User).filter(
+            User.username == data.username
+        ).first()
+
+        if existing_user:
+            return {
+                "success": False,
+                "message": "Username already exists"
+            }
+
+        # Check email
+        existing_email = db.query(User).filter(
+            User.email == data.email
+        ).first()
+
+        if existing_email:
+            return {
+                "success": False,
+                "message": "Email already exists"
+            }
+
+        new_user = User(
+            username=data.username,
+            email=data.email,
+            full_name=data.full_name,
+            hashed_password=bcrypt.hashpw(
+                data.password.encode("utf-8"),
+                bcrypt.gensalt()
+            ).decode("utf-8"),
+            role=data.role,
+            is_active=True
+        )
+
+        db.add(new_user)
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "User created successfully"
+        }
+
+    finally:
+        db.close()  
+@app.delete("/api/admin/users/{user_id}")
+def delete_user(user_id: int):
+
+    db = SessionLocal()
+
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            return {
+                "success": False,
+                "message": "User not found"
+            }
+
+        # Prevent deleting the last/default admin
+        if user.role == "admin":
+            return {
+                "success": False,
+                "message": "Admin cannot be deleted"
+            }
+
+        db.delete(user)
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "User deleted successfully"
+        }
+
+    finally:
+        db.close()              

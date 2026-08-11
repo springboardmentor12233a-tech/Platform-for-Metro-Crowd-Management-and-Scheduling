@@ -74,10 +74,23 @@ def generate_schedule(
             frequency
         )
     }
-@router.get("/delay/{delay_minutes}")
-def delay_management(delay_minutes: int):
+@router.get("/delay")
+def delay_management(
+    start_hour: int,
+    end_hour: int,
+    frequency: int,
+    delay_minutes: int
+):
+    schedule = TrainScheduler.generate_schedule(
+        start_hour,
+        end_hour,
+        frequency
+    )
 
-    return TrainScheduler.handle_delay(delay_minutes)
+    return TrainScheduler.handle_delay(
+        schedule,
+        delay_minutes
+    )
 @router.get("/platform-allocation/{passengers}")
 def platform_allocation(passengers: int):
 
@@ -89,4 +102,67 @@ def send_alert(train_id: int, message: str):
         train_id,
         message
     )
+
+@router.get("/dashboard")
+def scheduling_dashboard(hour: int = 12):
+    """
+    Scheduling dashboard data
+    """
+
+    # Sample predicted passengers
+    # Simulate passenger demand based on selected hour
+
+    if 7 <= hour <= 10:
+        predicted_passengers = 1800
+    
+    elif 17 <= hour <= 20:
+        predicted_passengers = 2000
+    
+    elif 11 <= hour <= 16:
+        predicted_passengers = 1200
+    
+    elif 5 <= hour <= 6:
+        predicted_passengers = 700
+    
+    elif 21 <= hour <= 23:
+        predicted_passengers = 600
+    
+    else:
+        predicted_passengers = 350
+
+    current_frequency = 5
+
+    optimization = TrainScheduler.optimize_frequency(
+        predicted_passengers,
+        current_frequency
+    )
+
+    required_trains = TrainScheduler.estimate_required_trains(
+        predicted_passengers
+    )
+
+    platform_load = TrainScheduler.estimate_platform_load(
+        predicted_passengers
+    )
+
+    peak = TrainScheduler.peak_hour_optimization(
+        hour,
+        predicted_passengers
+    )
+
+    schedule = TrainScheduler.generate_schedule(
+        hour,
+        hour + 1,
+        optimization["recommended_frequency"]
+    )
+
+    return {
+        "predicted_passengers": predicted_passengers,
+        "current_frequency": current_frequency,
+        "recommended_frequency": optimization["recommended_frequency"],
+        "required_trains": required_trains,
+        "platform_load": platform_load,
+        "peak_hour": peak,
+        "schedule": schedule
+    }
     

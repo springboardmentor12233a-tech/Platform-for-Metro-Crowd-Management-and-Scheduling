@@ -12,17 +12,67 @@ export const apiService = {
     }
   },
 
-  // Get crowd status for a station
-  async getCrowdStatus(stationId: number) {
+  // Get crowd status for one station
+  async getCrowdStatus(stationId: number, hour?: string) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/crowd/station/${stationId}`);
+      const url = hour
+        ? `${API_BASE_URL}/api/crowd/station/${stationId}?hour=${hour}`
+        : `${API_BASE_URL}/api/crowd/station/${stationId}`;
+
+      const response = await fetch(url);
       return await response.json();
     } catch (error) {
-      console.error('Failed to get crowd status:', error);
-      return { error: 'Failed to fetch' };
+      console.error("Failed to get crowd status:", error);
+      return { error: "Failed to fetch" };
     }
   },
 
+  async getAIRecommendation(
+    station: string,
+    predictedPassengers: number,
+    peakHour: boolean
+  ) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/ai/recommendation`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            station: station,
+            predicted_passengers: predictedPassengers,
+            peak_hour: peakHour,
+          }),
+        }
+      );
+
+      return await response.json();
+
+    } catch (error) {
+      console.error("AI Recommendation failed:", error);
+      return {
+        status: "error",
+        recommendation: "Unable to generate recommendation.",
+      };
+    }
+  },
+
+  // Get all stations crowd status
+  async getAllStations(hour?: string) {
+    try {
+      const url = hour
+        ? `${API_BASE_URL}/api/crowd/all-stations?hour=${hour}`
+        : `${API_BASE_URL}/api/crowd/all-stations`;
+
+      const response = await fetch(url);
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to get all stations:", error);
+      return { error: "Failed to fetch" };
+    }
+  },
   // Get 24-hour forecast
   async getForecast() {
     try {
@@ -35,13 +85,30 @@ export const apiService = {
   },
 
   // Get active alerts
-  async getAlerts() {
+  async getAlerts(hour?: string, stationId?: number) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/alerts/active`);
+      let url = `${API_BASE_URL}/api/alerts/active`;
+
+      const params = new URLSearchParams();
+
+      if (hour) {
+        params.append("hour", hour);
+      }
+
+      if (stationId) {
+        params.append("station_id", stationId.toString());
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await fetch(url);
       return await response.json();
+
     } catch (error) {
-      console.error('Failed to get alerts:', error);
-      return { error: 'Failed to fetch' };
+      console.error("Failed to get alerts:", error);
+      return { error: "Failed to fetch" };
     }
   },
 
@@ -94,14 +161,105 @@ export const apiService = {
       return { error: 'Failed to fetch' };
     }
   },
-};
+  async getStationDetails(stationId: number) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/crowd/station/${stationId}`
+      );
 
-export const aiService = {
-  askQuestion: async (question: string) => {
-    const response = await fetch(
-      `http://localhost:8000/api/ai/chat?question=${encodeURIComponent(question)}`,
-      { method: 'POST' }
-    );
-    return response.json();
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to fetch station details:", error);
+      return { error: "Failed to fetch" };
+    }
+  },
+  async login(email: string, password: string) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error("Login failed:", error);
+      return { success: false };
+    }
+  },
+
+  async getSchedulingDashboard(hour: number) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/scheduling/dashboard?hour=${hour}`
+      );
+
+      return await response.json();
+    } catch (error) {
+      console.error("Scheduling dashboard failed:", error);
+
+      return {
+        predicted_passengers: 0,
+        current_frequency: 5,
+        recommended_frequency: 5,
+        required_trains: 0,
+        platform_load: "Unknown",
+        peak_hour: {
+          priority: "NORMAL",
+          optimized_passengers: 0,
+        },
+        schedule: [],
+      };
+    }
+  },
+  // Chat with AI Assistant
+  async chatWithAI(question: string) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/ai/chat?question=${encodeURIComponent(question)}`,
+        {
+          method: "POST",
+        }
+      );
+
+      return await response.json();
+
+    } catch (error) {
+      console.error("AI Chat failed:", error);
+
+      return {
+        status: "error",
+        answer: "Unable to contact AI Assistant."
+      };
+    }
+  },
+  async simulateDelay(
+    startHour: number,
+    endHour: number,
+    frequency: number,
+    delayMinutes: number
+  ) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/scheduling/delay?start_hour=${startHour}&end_hour=${endHour}&frequency=${frequency}&delay_minutes=${delayMinutes}`
+      );
+
+      return await response.json();
+
+    } catch (error) {
+
+      console.error("Delay simulation failed:", error);
+
+      return {
+        error: "Failed to simulate delay",
+      };
+    }
   }
 };
+
+
