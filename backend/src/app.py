@@ -57,137 +57,331 @@ latest_prediction = {
 # HOME PAGE
 # -------------------------------------------------
 
+# @app.route("/")
+# def home():
+
+#     latest = df.iloc[-1]
+
+#     total_passengers = int(df["Passenger_Count"].sum())
+
+#     average_delay = round(float(df["Delay_Minutes"].mean()), 2)
+
+#     html = f"""
+#     <html>
+
+#     <head>
+
+#     <title>MetroFlow Backend</title>
+
+#     <style>
+
+#     body{{
+#         background:#f4f4f4;
+#         font-family:Arial;
+#         margin:30px;
+#     }}
+
+#     h1{{
+#         color:#0d6efd;
+#     }}
+
+#     .card{{
+#         background:white;
+#         padding:20px;
+#         margin:15px;
+#         border-radius:10px;
+#         box-shadow:0px 0px 8px gray;
+#     }}
+
+#     table{{
+#         width:100%;
+#         border-collapse:collapse;
+#     }}
+
+#     td,th{{
+#         border:1px solid gray;
+#         padding:8px;
+#         text-align:center;
+#     }}
+
+#     </style>
+
+#     </head>
+
+#     <body>
+
+#     <h1>🚇 MetroFlow Backend Dashboard</h1>
+
+#     <div class="card">
+
+#     <h2>Current Status</h2>
+
+#     <table>
+
+#     <tr>
+#     <th>Station</th>
+#     <th>Passengers</th>
+#     <th>Crowd</th>
+#     <th>Occupancy</th>
+#     <th>Delay</th>
+#     </tr>
+
+#     <tr>
+
+#     <td>{latest["Station"]}</td>
+
+#     <td>{latest["Passenger_Count"]}</td>
+
+#     <td>{latest["Crowd_Level"]}</td>
+
+#     <td>{latest["Occupancy_Percent"]}%</td>
+
+#     <td>{latest["Delay_Minutes"]} min</td>
+
+#     </tr>
+
+#     </table>
+
+#     </div>
+
+#     <div class="card">
+
+#     <h2>Traffic Report</h2>
+
+#     <p><b>Total Passengers :</b> {total_passengers}</p>
+
+#     <p><b>Average Delay :</b> {average_delay} Minutes</p>
+
+#     </div>
+
+#     <div class="card">
+
+#     <h2>Available APIs</h2>
+
+#     <ul>
+
+#     <li>/dashboard</li>
+
+#     <li>/predict</li>
+
+#     <li>/forecast</li>
+
+#     <li>/schedule</li>
+
+#     <li>/monitor</li>
+
+#     <li>/report</li>
+#     <li>/notifications</li>
+
+#     <li>/alerts</li>
+
+#     <li>/announcement</li>
+
+#     <li>/schedule/update</li>
+#     <li>/all</li>
+#     </ul>
+
+#     </div>
+
+#     </body>
+
+#     </html>
+
+#     """
+
+#     return html
 @app.route("/")
 def home():
 
-    latest = df.iloc[-1]
+    html = """
+<!DOCTYPE html>
+<html>
 
-    total_passengers = int(df["Passenger_Count"].sum())
+<head>
 
-    average_delay = round(float(df["Delay_Minutes"].mean()), 2)
+<title>MetroFlow Backend</title>
 
-    html = f"""
-    <html>
+<style>
 
-    <head>
+body{
+    font-family:Arial;
+    background:#f4f6f9;
+    margin:30px;
+}
 
-    <title>MetroFlow Backend</title>
+h1{
+    color:#0d6efd;
+    text-align:center;
+}
 
-    <style>
+.card{
+    background:white;
+    padding:20px;
+    margin:15px 0;
+    border-radius:12px;
+    box-shadow:0 0 8px rgba(0,0,0,.2);
+}
 
-    body{{
-        background:#f4f4f4;
-        font-family:Arial;
-        margin:30px;
-    }}
+button{
+    background:#0d6efd;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
 
-    h1{{
-        color:#0d6efd;
-    }}
+button:hover{
+    background:#084298;
+}
 
-    .card{{
-        background:white;
-        padding:20px;
-        margin:15px;
-        border-radius:10px;
-        box-shadow:0px 0px 8px gray;
-    }}
+pre{
+    background:#1e1e1e;
+    color:#00ff7f;
+    padding:15px;
+    border-radius:8px;
+    overflow:auto;
+    display:none;
+}
 
-    table{{
-        width:100%;
-        border-collapse:collapse;
-    }}
+</style>
 
-    td,th{{
-        border:1px solid gray;
-        padding:8px;
-        text-align:center;
-    }}
+<script>
 
-    </style>
+async function loadAPI(api,id){
 
-    </head>
+    let response = await fetch(api);
 
-    <body>
+    let data = await response.json();
 
-    <h1>🚇 MetroFlow Backend Dashboard</h1>
+    document.getElementById(id).style.display="block";
 
-    <div class="card">
+    document.getElementById(id).textContent =
+        JSON.stringify(data,null,4);
 
-    <h2>Current Status</h2>
+}
 
-    <table>
+</script>
 
-    <tr>
-    <th>Station</th>
-    <th>Passengers</th>
-    <th>Crowd</th>
-    <th>Occupancy</th>
-    <th>Delay</th>
-    </tr>
+</head>
 
-    <tr>
+<body>
 
-    <td>{latest["Station"]}</td>
+<h1>🚇 MetroFlow Backend APIs</h1>
 
-    <td>{latest["Passenger_Count"]}</td>
+<div class="card">
+<h2>Dashboard API</h2>
+<p>Shows dashboard analytics.</p>
+<button onclick="loadAPI('/dashboard','d1')">
+View Response
+</button>
+<pre id="d1"></pre>
+</div>
 
-    <td>{latest["Crowd_Level"]}</td>
+<div class="card">
+<h2>Forecast API</h2>
+<p>Passenger Forecast</p>
+<button onclick="loadAPI('/forecast','d2')">
+View Response
+</button>
+<pre id="d2"></pre>
+</div>
 
-    <td>{latest["Occupancy_Percent"]}%</td>
+<div class="card">
+<h2>Monitoring API</h2>
+<p>Real-time Monitoring</p>
+<button onclick="loadAPI('/monitor','d3')">
+View Response
+</button>
+<pre id="d3"></pre>
+</div>
 
-    <td>{latest["Delay_Minutes"]} min</td>
+<div class="card">
+<h2>Schedule API</h2>
+<p>Train Schedule</p>
+<button onclick="loadAPI('/schedule','d4')">
+View Response
+</button>
+<pre id="d4"></pre>
+</div>
 
-    </tr>
+<div class="card">
+<h2>Report API</h2>
+<p>Traffic Report</p>
+<button onclick="loadAPI('/report','d5')">
+View Response
+</button>
+<pre id="d5"></pre>
+</div>
 
-    </table>
+<div class="card">
+<h2>Notifications API</h2>
+<p>Latest Notifications</p>
+<button onclick="loadAPI('/notifications','d6')">
+View Response
+</button>
+<pre id="d6"></pre>
+</div>
 
-    </div>
+<div class="card">
+<h2>Alerts API</h2>
+<p>AI Generated Alerts</p>
+<button onclick="loadAPI('/alerts','d7')">
+View Response
+</button>
+<pre id="d7"></pre>
+</div>
 
-    <div class="card">
+<div class="card">
+<h2>Announcement API</h2>
+<p>Metro Announcements</p>
+<button onclick="loadAPI('/announcement','d8')">
+View Response
+</button>
+<pre id="d8"></pre>
+</div>
 
-    <h2>Traffic Report</h2>
+<div class="card">
+<h2>Schedule Update API</h2>
+<p>Dynamic Schedule Update</p>
+<button onclick="loadAPI('/schedule/update','d9')">
+View Response
+</button>
+<pre id="d9"></pre>
+</div>
 
-    <p><b>Total Passengers :</b> {total_passengers}</p>
+<div class="card">
+<h2>Prediction History API</h2>
+<p>Past Predictions</p>
+<button onclick="loadAPI('/prediction-history','d10')">
+View Response
+</button>
+<pre id="d10"></pre>
+</div>
 
-    <p><b>Average Delay :</b> {average_delay} Minutes</p>
+<div class="card">
+<h2>System Test API</h2>
+<p>Backend Health Check</p>
+<button onclick="loadAPI('/system-test','d11')">
+View Response
+</button>
+<pre id="d11"></pre>
+</div>
 
-    </div>
+<div class="card">
+<h2>Complete Backend API</h2>
+<p>Returns complete backend summary.</p>
+<button onclick="loadAPI('/all','d12')">
+View Response
+</button>
+<pre id="d12"></pre>
+</div>
 
-    <div class="card">
+</body>
 
-    <h2>Available APIs</h2>
+</html>
 
-    <ul>
-
-    <li>/dashboard</li>
-
-    <li>/predict</li>
-
-    <li>/forecast</li>
-
-    <li>/schedule</li>
-
-    <li>/monitor</li>
-
-    <li>/report</li>
-    <li>/notifications</li>
-
-    <li>/alerts</li>
-
-    <li>/announcement</li>
-
-    <li>/schedule/update</li>
-    <li>/all</li>
-    </ul>
-
-    </div>
-
-    </body>
-
-    </html>
-
-    """
+"""
 
     return html
 
