@@ -24,6 +24,7 @@ CORS(app)
 
 df = pd.read_excel("../data/MetroFlow_Dataset.xlsx")
 
+
 encoded_df = df.copy()
 
 label_encoders = {}
@@ -42,17 +43,53 @@ for col in categorical_columns:
 crowd_model = joblib.load("../models/crowd_model.pkl")
 forecast_model = joblib.load("../models/forecast_model.pkl")
 scaler = joblib.load("../models/scaler.pkl")
+# ============================================================
+# ROUTE-BASED AI MODEL
+# ============================================================
+
+route_crowd_model = joblib.load(
+    "../models/route_crowd_model.pkl"
+)
+
+route_scaler = joblib.load(
+    "../models/route_scaler.pkl"
+)
+
+route_encoders = joblib.load(
+    "../models/route_label_encoders.pkl"
+)
+
+available_stations = joblib.load(
+    "../models/stations.pkl"
+)
+
+from_encoder = route_encoders["From_Station"]
+to_encoder = route_encoders["To_Station"]
+crowd_encoder = route_encoders["Crowd_Level"]
 # -----------------------------
 # Latest AI Prediction
 # -----------------------------
+# latest_prediction = {
+#     "Station": "",
+#     "Passenger_Count": 0,
+#     "Crowd_Level": "",
+#     "Delay_Minutes": 0,
+#     "Occupancy_Percent": 0
+# }
 latest_prediction = {
-    "Station": "",
+
+    "From_Station": "",
+
+    "To_Station": "",
+
     "Passenger_Count": 0,
+
     "Crowd_Level": "",
+
     "Delay_Minutes": 0,
+
     "Occupancy_Percent": 0
 }
-
 # -------------------------------------------------
 # HOME PAGE
 # -------------------------------------------------
@@ -388,84 +425,384 @@ View Response
 # -------------------------------------------------
 # CROWD PREDICTION
 # -------------------------------------------------
+# ============================================================
+# ROUTE-BASED AI CROWD PREDICTION
+# ============================================================
 
 @app.route("/predict", methods=["POST"])
 def predict():
 
     try:
 
-        data = request.json
-        #added
-        print("\n" + "=" * 50)
-        print("Received JSON:")
+        data = request.get_json()
+
+        print("\n" + "=" * 60)
+        print("ROUTE-BASED PREDICTION REQUEST")
+        print("=" * 60)
+
         print(data)
-        print("=" * 50)
 
-        input_df = pd.DataFrame([{
 
-            "Passenger_Count": data["Passenger_Count"],
-            "Occupancy_Percent": data["Occupancy_Percent"],
-            "Delay_Minutes": data["Delay_Minutes"],
-            "Number_of_Trips": data["Number_of_Trips"],
-            "Train_Frequency_Per_Hour": data["Train_Frequency_Per_Hour"],
-            "Train_Speed_kmph": data["Train_Speed_kmph"]
+        # ----------------------------------------------------
+        # GET ROUTE
+        # ----------------------------------------------------
+
+        from_station = str(
+            data.get("From_Station", "")
+        ).strip()
+
+        to_station = str(
+            data.get("To_Station", "")
+        ).strip()
+
+
+        # ----------------------------------------------------
+        # VALIDATE ROUTE
+        # ----------------------------------------------------
+
+        if not from_station:
+
+            return jsonify({
+                "Error": "From Station is required."
+            }), 400
+
+
+        if not to_station:
+
+            return jsonify({
+                "Error": "To Station is required."
+            }), 400
+
+
+        if from_station == to_station:
+
+            return jsonify({
+                "Error": "From Station and To Station cannot be the same."
+            }), 400
+
+
+        # ----------------------------------------------------
+        # CHECK STATIONS
+        # ----------------------------------------------------
+
+        if from_station not in from_encoder.classes_:
+
+            return jsonify({
+                "Error":
+                f"Invalid From Station: {from_station}",
+                "Available_Stations":
+                available_stations
+            }), 400
+
+
+        if to_station not in to_encoder.classes_:
+
+            return jsonify({
+                "Error":
+                f"Invalid To Station: {to_station}",
+                "Available_Stations":
+                available_stations
+            }), 400
+
+
+        # ----------------------------------------------------
+        # NUMERICAL INPUTS
+        # ----------------------------------------------------
+
+        passenger_count = float(
+            data["Passenger_Count"]
+        )
+
+        occupancy = float(
+            data["Occupancy_Percent"]
+        )
+
+        delay = float(
+            data["Delay_Minutes"]
+        )
+
+        number_of_trips = float(
+            data["Number_of_Trips"]
+        )
+
+        train_frequency = float(
+            data["Train_Frequency_Per_Hour"]
+        )
+
+        train_speed = float(
+            data["Train_Speed_kmph"]
+        )
+
+
+        # ----------------------------------------------------
+        # ENCODE STATIONS
+        # ----------------------------------------------------
+
+        from_encoded = from_encoder.transform(
+            [from_station]
+        )[0]
+
+        to_encoded = to_encoder.transform(
+            [to_station]
+        )[0]
+
+
+        # ----------------------------------------------------
+        # CREATE INPUT DATA
+        # IMPORTANT:
+        # SAME ORDER AS train_model.py
+        # ----------------------------------------------------
+
+        input_data = pd.DataFrame([{
+
+            "From_Station":
+            from_encoded,
+
+            "To_Station":
+            to_encoded,
+
+            "Passenger_Count":
+            passenger_count,
+
+            "Occupancy_Percent":
+            occupancy,
+
+            "Delay_Minutes":
+            delay,
+
+            "Number_of_Trips":
+            number_of_trips,
+
+            "Train_Frequency_Per_Hour":
+            train_frequency,
+
+            "Train_Speed_kmph":
+            train_speed
 
         }])
-        print("Input DataFrame:")
-        print(input_df)
 
-        input_scaled = scaler.transform(input_df)
 
-        prediction = crowd_model.predict(input_scaled)[0]
+        print("\nEncoded Input:")
+        print(input_data)
 
-        labels = {
-            0: "High",
-            1: "Low",
-            2: "Medium"
-        }
 
-        crowd = labels.get(int(prediction), "Unknown")
-        global latest_prediction
+        # ----------------------------------------------------
+        # SCALE INPUT
+        # ----------------------------------------------------
 
-        latest_prediction = {
-    "Station": "Predicted Station",
-    "Passenger_Count": data["Passenger_Count"],
-    "Crowd_Level": crowd,
-    "Delay_Minutes": data["Delay_Minutes"],
-    "Occupancy_Percent": data["Occupancy_Percent"]
-}
+        input_scaled = route_scaler.transform(
+            input_data
+        )
 
-        recommendation = {
 
-            "Low": "Normal Operation",
+        # ----------------------------------------------------
+        # AI PREDICTION
+        # ----------------------------------------------------
 
-            "Medium": "Increase Monitoring",
+        prediction_encoded = (
+            route_crowd_model.predict(
+                input_scaled
+            )[0]
+        )
 
-            "High": "Increase Train Frequency"
 
-        }
+        crowd = crowd_encoder.inverse_transform(
+            [prediction_encoded]
+        )[0]
+
+
+        # ----------------------------------------------------
+        # RECOMMENDATION
+        # ----------------------------------------------------
+
+        if crowd == "High":
+
+            recommendation = (
+                f"High crowd is predicted on the "
+                f"{from_station} → {to_station} route. "
+                f"Increase train frequency and deploy "
+                f"additional station staff."
+            )
+
+        elif crowd == "Medium":
+
+            recommendation = (
+                f"Moderate crowd is predicted on the "
+                f"{from_station} → {to_station} route. "
+                f"Increase monitoring during busy periods."
+            )
+
+        else:
+
+            recommendation = (
+                f"Low crowd is predicted on the "
+                f"{from_station} → {to_station} route. "
+                f"Normal metro operation is recommended."
+            )
+
+
+        # ----------------------------------------------------
+        # RESULT
+        # ----------------------------------------------------
 
         result = {
 
-    "Passenger_Count": data["Passenger_Count"],
-    "Occupancy_Percent": data["Occupancy_Percent"],
-    "Delay_Minutes": data["Delay_Minutes"],
-    "Number_of_Trips": data["Number_of_Trips"],
-    "Train_Frequency_Per_Hour": data["Train_Frequency_Per_Hour"],
-    "Train_Speed_kmph": data["Train_Speed_kmph"],
+            "From_Station":
+            from_station,
 
-    "Crowd_Level": crowd,
-    "Recommendation": recommendation[crowd]
+            "To_Station":
+            to_station,
 
-}
+            "Route":
+            f"{from_station} → {to_station}",
 
-# Save prediction to history.json
+            "Passenger_Count":
+            passenger_count,
+
+            "Occupancy_Percent":
+            occupancy,
+
+            "Delay_Minutes":
+            delay,
+
+            "Number_of_Trips":
+            number_of_trips,
+
+            "Train_Frequency_Per_Hour":
+            train_frequency,
+
+            "Train_Speed_kmph":
+            train_speed,
+
+            "Crowd_Level":
+            crowd,
+
+            "Recommendation":
+            recommendation
+
+        }
+
+
+        # ----------------------------------------------------
+        # SAVE PREDICTION HISTORY
+        # ----------------------------------------------------
+        global latest_prediction
+
+        latest_prediction = {
+
+         "From_Station": from_station,
+
+        "To_Station": to_station,
+
+        "Passenger_Count": passenger_count,
+
+        "Crowd_Level": crowd,
+
+        "Delay_Minutes": delay,
+
+        "Occupancy_Percent": occupancy
+
+        }
         save_prediction(result)
 
+
+        print("\nPrediction Result:")
+        print(result)
+
+        print("=" * 60)
+
+
         return jsonify(result)
+
+
     except Exception as e:
 
-        return jsonify({"Error": str(e)})
+        print("\nPREDICTION ERROR:")
+        print(str(e))
+
+        return jsonify({
+
+            "Error":
+            str(e)
+
+        }), 500
+# @app.route("/predict", methods=["POST"])
+# def predict():
+
+#     try:
+
+#         data = request.json
+#         #added
+#         print("\n" + "=" * 50)
+#         print("Received JSON:")
+#         print(data)
+#         print("=" * 50)
+
+#         input_df = pd.DataFrame([{
+
+#             "Passenger_Count": data["Passenger_Count"],
+#             "Occupancy_Percent": data["Occupancy_Percent"],
+#             "Delay_Minutes": data["Delay_Minutes"],
+#             "Number_of_Trips": data["Number_of_Trips"],
+#             "Train_Frequency_Per_Hour": data["Train_Frequency_Per_Hour"],
+#             "Train_Speed_kmph": data["Train_Speed_kmph"]
+
+#         }])
+#         print("Input DataFrame:")
+#         print(input_df)
+
+#         input_scaled = scaler.transform(input_df)
+
+#         prediction = crowd_model.predict(input_scaled)[0]
+
+#         labels = {
+#             0: "High",
+#             1: "Low",
+#             2: "Medium"
+#         }
+
+#         crowd = labels.get(int(prediction), "Unknown")
+#         global latest_prediction
+
+#         latest_prediction = {
+#     "Station": "Predicted Station",
+#     "Passenger_Count": data["Passenger_Count"],
+#     "Crowd_Level": crowd,
+#     "Delay_Minutes": data["Delay_Minutes"],
+#     "Occupancy_Percent": data["Occupancy_Percent"]
+# }
+
+#         recommendation = {
+
+#             "Low": "Normal Operation",
+
+#             "Medium": "Increase Monitoring",
+
+#             "High": "Increase Train Frequency"
+
+#         }
+
+#         result = {
+
+#     "Passenger_Count": data["Passenger_Count"],
+#     "Occupancy_Percent": data["Occupancy_Percent"],
+#     "Delay_Minutes": data["Delay_Minutes"],
+#     "Number_of_Trips": data["Number_of_Trips"],
+#     "Train_Frequency_Per_Hour": data["Train_Frequency_Per_Hour"],
+#     "Train_Speed_kmph": data["Train_Speed_kmph"],
+
+#     "Crowd_Level": crowd,
+#     "Recommendation": recommendation[crowd]
+
+# }
+
+# # Save prediction to history.json
+#         save_prediction(result)
+
+#         return jsonify(result)
+#     except Exception as e:
+
+#         return jsonify({"Error": str(e)})
 
 # -------------------------------------------------
 # TRAIN SCHEDULE

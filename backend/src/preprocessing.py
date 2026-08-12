@@ -54,6 +54,25 @@ print("\nCategorical Columns Encoded Successfully")
 # ------------------------------------
 X = df.drop("Crowd_Level", axis=1)
 y = df["Crowd_Level"]
+print("\n================ CROWD LEVEL ANALYSIS ================")
+
+print("\nCrowd Level Distribution:")
+print(df["Crowd_Level"].value_counts())
+
+print("\nAverage Passenger Count:")
+print(
+    df.groupby("Crowd_Level")["Passenger_Count"].mean()
+)
+
+print("\nAverage Occupancy:")
+print(
+    df.groupby("Crowd_Level")["Occupancy_Percent"].mean()
+)
+
+print("\nAverage Delay:")
+print(
+    df.groupby("Crowd_Level")["Delay_Minutes"].mean()
+)
 
 print("\nFeature Shape :", X.shape)
 print("Target Shape :", y.shape)

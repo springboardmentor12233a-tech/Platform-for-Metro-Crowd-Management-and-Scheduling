@@ -1,5 +1,71 @@
 [
     {
+        "Timestamp": "12-08-2026 19:34:49",
+        "Passenger_Count": 2560.0,
+        "Occupancy_Percent": 65.0,
+        "Delay_Minutes": 22.0,
+        "Number_of_Trips": 11.0,
+        "Train_Frequency_Per_Hour": 11.0,
+        "Train_Speed_kmph": 10.0,
+        "Crowd_Level": "Medium",
+        "Recommendation": "Moderate crowd is predicted on the Airport \u2192 University route. Increase monitoring during busy periods."
+    },
+    {
+        "Timestamp": "12-08-2026 19:34:42",
+        "Passenger_Count": 2560.0,
+        "Occupancy_Percent": 100.0,
+        "Delay_Minutes": 22.0,
+        "Number_of_Trips": 11.0,
+        "Train_Frequency_Per_Hour": 11.0,
+        "Train_Speed_kmph": 10.0,
+        "Crowd_Level": "High",
+        "Recommendation": "High crowd is predicted on the Airport \u2192 University route. Increase train frequency and deploy additional station staff."
+    },
+    {
+        "Timestamp": "12-08-2026 19:34:31",
+        "Passenger_Count": 256000.0,
+        "Occupancy_Percent": 100.0,
+        "Delay_Minutes": 22.0,
+        "Number_of_Trips": 11.0,
+        "Train_Frequency_Per_Hour": 11.0,
+        "Train_Speed_kmph": 10.0,
+        "Crowd_Level": "High",
+        "Recommendation": "High crowd is predicted on the Airport \u2192 University route. Increase train frequency and deploy additional station staff."
+    },
+    {
+        "Timestamp": "12-08-2026 19:34:05",
+        "Passenger_Count": 256.0,
+        "Occupancy_Percent": 3.0,
+        "Delay_Minutes": 2.0,
+        "Number_of_Trips": 1.0,
+        "Train_Frequency_Per_Hour": 1.0,
+        "Train_Speed_kmph": 32.0,
+        "Crowd_Level": "Low",
+        "Recommendation": "Low crowd is predicted on the Airport \u2192 University route. Normal metro operation is recommended."
+    },
+    {
+        "Timestamp": "12-08-2026 19:10:26",
+        "Passenger_Count": 900.0,
+        "Occupancy_Percent": 90.0,
+        "Delay_Minutes": 10.0,
+        "Number_of_Trips": 8.0,
+        "Train_Frequency_Per_Hour": 3.0,
+        "Train_Speed_kmph": 25.0,
+        "Crowd_Level": "Low",
+        "Recommendation": "Low crowd is predicted on the Central \u2192 Market route. Normal metro operation is recommended."
+    },
+    {
+        "Timestamp": "12-08-2026 19:08:39",
+        "Passenger_Count": 3453.0,
+        "Occupancy_Percent": 34.0,
+        "Delay_Minutes": 3.0,
+        "Number_of_Trips": 2.0,
+        "Train_Frequency_Per_Hour": 2.0,
+        "Train_Speed_kmph": 23.0,
+        "Crowd_Level": "Low",
+        "Recommendation": "Low crowd is predicted on the Central \u2192 University route. Normal metro operation is recommended."
+    },
+    {
         "Timestamp": "07-08-2026 18:45:08",
         "Passenger_Count": 202,
         "Occupancy_Percent": 12,
