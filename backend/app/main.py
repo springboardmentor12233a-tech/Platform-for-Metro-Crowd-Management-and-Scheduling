@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-
+from dataset_router import router as dataset_router
 from app.database import engine, Base, get_db
 from app import models, schemas, auth
 from fastapi.security import OAuth2PasswordRequestForm
@@ -50,7 +50,7 @@ app.include_router(schedule_updates_router)
 app.include_router(operational_router)
 app.include_router(analytics_router)
 app.include_router(heatmap_router)
-
+app.include_router(dataset_router)
 # ---------------- HOME ----------------
 
 @app.get("/")

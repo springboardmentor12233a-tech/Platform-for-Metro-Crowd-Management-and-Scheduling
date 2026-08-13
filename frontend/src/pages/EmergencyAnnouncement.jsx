@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
+import "../styles/aiPages.css";
 
 function EmergencyAnnouncement() {
   const [station, setStation] = useState("");
@@ -7,67 +8,82 @@ function EmergencyAnnouncement() {
   const [severity, setSeverity] = useState("Medium");
   const [announcement, setAnnouncement] = useState("");
   const [loading, setLoading] = useState(false);
+  const [stations, setStations] = useState([]);
+  const [stationsLoading, setStationsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const stations = [
-    "Ameerpet",
-    "Miyapur",
-    "Secunderabad",
-    "LB Nagar",
-    "Raidurg",
-    "Nagole",
-    "Kukatpally",
-    "Uppal",
-    "Madhapur",
-  ];
+  // Load all stations from the existing backend API
+  useEffect(() => {
+    const loadStations = async () => {
+      try {
+        setStationsLoading(true);
+        setError("");
+
+        const response = await api.get("/prediction/stations");
+
+        setStations(response.data.stations || []);
+      } catch (error) {
+        console.error("Error loading stations:", error);
+
+        setError(
+          "Unable to load metro stations. Please make sure the backend is running."
+        );
+      } finally {
+        setStationsLoading(false);
+      }
+    };
+
+    loadStations();
+  }, []);
 
   const generateAnnouncement = async () => {
     if (!station || !incident) {
-      alert("Please fill all the fields.");
+      setError("Please select a station and describe the incident.");
       return;
     }
 
-    setLoading(true);
-
     try {
+      setLoading(true);
+      setError("");
+      setAnnouncement("");
+
       const response = await api.post("/announcements/generate", {
         station,
         incident,
         severity,
       });
 
-      // Backend returns plain text
       if (typeof response.data === "string") {
         setAnnouncement(response.data);
-      }
-      // Backend returns { announcement: "..." }
-      else if (response.data.announcement) {
+      } else if (response.data?.announcement) {
         setAnnouncement(response.data.announcement);
-      }
-      // Backend returns { response: "..." }
-      else if (response.data.response) {
+      } else if (response.data?.response) {
         setAnnouncement(response.data.response);
       } else {
         setAnnouncement(JSON.stringify(response.data, null, 2));
       }
     } catch (error) {
-      console.error(error);
+      console.error("Emergency announcement error:", error);
 
-      if (error.response) {
-        alert(error.response.data.detail || "Server Error");
-      } else {
-        alert("Unable to connect to the server.");
-      }
+      const message =
+        error.response?.data?.detail ||
+        "Unable to generate the emergency announcement.";
+
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
   const copyAnnouncement = async () => {
+    if (!announcement) return;
+
     try {
       await navigator.clipboard.writeText(announcement);
       alert("Announcement copied successfully.");
     } catch (error) {
-      console.error(error);
+      console.error("Copy error:", error);
+      setError("Unable to copy the announcement.");
     }
   };
 
@@ -76,169 +92,202 @@ function EmergencyAnnouncement() {
     setIncident("");
     setSeverity("Medium");
     setAnnouncement("");
+    setError("");
   };
 
   return (
-    <div
-      style={{
-        padding: "30px",
-        background: "#f5f5f5",
-        minHeight: "100vh",
-      }}
-    >
-      <h1 style={{ color: "#1565C0" }}>
-        🚇 AI Emergency Announcement Generator
-      </h1>
+    <div className="ai-page">
 
-      <div
-        style={{
-          background: "#fff",
-          marginTop: "25px",
-          padding: "25px",
-          borderRadius: "10px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-          maxWidth: "800px",
-        }}
-      >
-        <label>
-          <strong>Station</strong>
-        </label>
+      {/* Header */}
 
-        <select
-          value={station}
-          onChange={(e) => setStation(e.target.value)}
+      <div className="ai-header">
+        <h2>🚨 AI Emergency Announcement</h2>
+
+        <p>
+          Generate professional emergency announcements for metro
+          passengers using AI.
+        </p>
+      </div>
+
+      {/* Error */}
+
+      {error && (
+        <div
           style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "8px",
+            background: "#ffebee",
+            color: "#c62828",
+            border: "1px solid #ffcdd2",
+            padding: "12px 15px",
+            borderRadius: "9px",
             marginBottom: "20px",
           }}
         >
-          <option value="">Select Station</option>
+          ⚠️ {error}
+        </div>
+      )}
 
-          {stations.map((item) => (
-            <option key={item} value={item}>
-              {item}
+      {/* Form */}
+
+      <div className="ai-card">
+
+        <h3 className="section-title">
+          Emergency Announcement Details
+        </h3>
+
+        {/* Station */}
+
+        <div className="form-group">
+          <label>Metro Station</label>
+
+          <select
+            value={station}
+            onChange={(e) => {
+              setStation(e.target.value);
+              setError("");
+            }}
+            disabled={stationsLoading}
+          >
+            <option value="">
+              {stationsLoading
+                ? "Loading stations..."
+                : "Select Station"}
             </option>
-          ))}
-        </select>
 
-        <label>
-          <strong>Incident</strong>
-        </label>
+            {stations.map((item) => (
+              <option
+                key={item}
+                value={item}
+              >
+                {item}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <textarea
-          rows={4}
-          value={incident}
-          onChange={(e) => setIncident(e.target.value)}
-          placeholder="Describe the emergency..."
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "8px",
-            marginBottom: "20px",
-          }}
-        />
+        {/* Incident */}
 
-        <label>
-          <strong>Severity</strong>
-        </label>
+        <div className="form-group">
+          <label>Emergency / Incident</label>
 
-        <select
-          value={severity}
-          onChange={(e) => setSeverity(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "8px",
-            marginBottom: "20px",
-          }}
-        >
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
+          <textarea
+            rows={5}
+            value={incident}
+            onChange={(e) => {
+              setIncident(e.target.value);
+              setError("");
+            }}
+            placeholder="Describe the emergency or incident..."
+          />
+        </div>
+
+        {/* Severity */}
+
+        <div className="form-group">
+          <label>Severity Level</label>
+
+          <select
+            value={severity}
+            onChange={(e) => {
+              setSeverity(e.target.value);
+              setError("");
+            }}
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        {/* Generate Button */}
 
         <button
+          className="primary-btn"
           onClick={generateAnnouncement}
-          disabled={loading}
+          disabled={loading || stationsLoading}
           style={{
-            width: "100%",
-            padding: "14px",
-            background: "#1976D2",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: loading ? "not-allowed" : "pointer",
-            fontSize: "16px",
+            opacity:
+              loading || stationsLoading ? 0.7 : 1,
+            cursor:
+              loading || stationsLoading
+                ? "not-allowed"
+                : "pointer",
           }}
         >
           {loading
-            ? "Generating Announcement..."
-            : "Generate AI Announcement"}
+            ? "🤖 Generating Announcement..."
+            : "🤖 Generate AI Announcement"}
         </button>
 
-        {announcement && (
-          <>
-            <h2
-              style={{
-                marginTop: "30px",
-                color: "#1565C0",
-              }}
-            >
-              📢 Generated Announcement
-            </h2>
-
-            <textarea
-              readOnly
-              rows={8}
-              value={announcement}
-              style={{
-                width: "100%",
-                padding: "12px",
-                marginTop: "10px",
-                background: "#fafafa",
-              }}
-            />
-
-            <div
-              style={{
-                display: "flex",
-                gap: "15px",
-                marginTop: "20px",
-              }}
-            >
-              <button
-                onClick={copyAnnouncement}
-                style={{
-                  padding: "10px 18px",
-                  background: "#2E7D32",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                📋 Copy
-              </button>
-
-              <button
-                onClick={clearFields}
-                style={{
-                  padding: "10px 18px",
-                  background: "#E53935",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                🗑 Clear
-              </button>
-            </div>
-          </>
-        )}
       </div>
+
+      {/* Generated Result */}
+
+      {announcement && (
+        <div className="ai-card">
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "15px",
+              flexWrap: "wrap",
+              marginBottom: "20px",
+            }}
+          >
+            <div>
+
+              <h3
+                className="section-title"
+                style={{ marginBottom: "8px" }}
+              >
+                📢 Generated Announcement
+              </h3>
+
+              <div className="info-row">
+
+                <span className="chip">
+                  📍 {station}
+                </span>
+
+                <span className="chip">
+                  ⚠️ {severity} Severity
+                </span>
+
+              </div>
+
+            </div>
+          </div>
+
+          {/* Announcement */}
+
+          <div className="result-box">
+            {announcement}
+          </div>
+
+          {/* Buttons */}
+
+          <div className="action-buttons">
+
+            <button
+              className="copy-btn"
+              onClick={copyAnnouncement}
+            >
+              📋 Copy
+            </button>
+
+            <button
+              className="clear-btn"
+              onClick={clearFields}
+            >
+              🗑 Clear
+            </button>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }

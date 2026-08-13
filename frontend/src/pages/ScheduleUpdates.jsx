@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import "../components/AI/AIStyles.css";
 import AILayout from "../components/AI/AILayout";
@@ -12,34 +12,58 @@ function ScheduleUpdates() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const stations = [
-    "Visakhapatnam",
-    "Rajiv Chowk",
-    "Ameerpet",
-    "Miyapur",
-    "Secunderabad",
-    "LB Nagar",
-    "Raidurg",
-    "Nagole",
-  ];
+  const [stations, setStations] = useState([]);
+  const [stationsLoading, setStationsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const metroLines = [
     "Blue Line",
     "Red Line",
     "Green Line",
+    "Yellow Line",
     "Orange Line",
+    "Violet Line",
+    "Magenta Line",
+    "Pink Line",
+    "Grey Line",
+    "Rapid Metro",
   ];
+
+  // Load complete station list
+  useEffect(() => {
+    const loadStations = async () => {
+      try {
+        setStationsLoading(true);
+        setError("");
+
+        const res = await api.get("/prediction/stations");
+
+        setStations(res.data.stations || []);
+      } catch (err) {
+        console.error("Error loading stations:", err);
+
+        setError(
+          "Unable to load metro stations. Please make sure the backend is running."
+        );
+      } finally {
+        setStationsLoading(false);
+      }
+    };
+
+    loadStations();
+  }, []);
 
   const generateScheduleUpdate = async () => {
     if (!station || !line || !delay || !reason) {
-      alert("Please fill all fields.");
+      setError("Please fill all fields.");
       return;
     }
 
-    setLoading(true);
-    setResponse("");
-
     try {
+      setLoading(true);
+      setResponse("");
+      setError("");
+
       const res = await api.post("/schedule-updates/generate", {
         station,
         line,
@@ -52,20 +76,16 @@ function ScheduleUpdates() {
       if (res.data.success) {
         setResponse(res.data.schedule_update);
       } else {
-        setResponse("Unable to generate schedule update.");
+        setError("Unable to generate schedule update.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Schedule update error:", err);
 
-      if (err.response) {
-        alert(
-          typeof err.response.data === "string"
-            ? err.response.data
-            : JSON.stringify(err.response.data, null, 2)
-        );
-      } else {
-        alert("Unable to connect to server.");
-      }
+      const message =
+        err.response?.data?.detail ||
+        "Unable to connect to server.";
+
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -77,8 +97,9 @@ function ScheduleUpdates() {
     try {
       await navigator.clipboard.writeText(response);
       alert("Schedule update copied successfully.");
-    } catch {
-      alert("Unable to copy schedule update.");
+    } catch (err) {
+      console.error(err);
+      setError("Unable to copy schedule update.");
     }
   };
 
@@ -88,6 +109,7 @@ function ScheduleUpdates() {
     setDelay("");
     setReason("");
     setResponse("");
+    setError("");
   };
 
   return (
@@ -95,52 +117,99 @@ function ScheduleUpdates() {
       title="🚆 AI Schedule Update Generator"
       subtitle="Generate intelligent passenger announcements using Groq Llama 3.3"
     >
+
+      {/* Error */}
+
+      {error && (
+        <div
+          style={{
+            background: "#ffebee",
+            color: "#c62828",
+            border: "1px solid #ffcdd2",
+            padding: "12px 15px",
+            borderRadius: "9px",
+            marginBottom: "20px",
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
+
       <div className="ai-form">
+
+        {/* Metro Station */}
 
         <div className="ai-group">
           <label>Metro Station</label>
 
           <select
             value={station}
-            onChange={(e) => setStation(e.target.value)}
+            onChange={(e) => {
+              setStation(e.target.value);
+              setError("");
+            }}
+            disabled={stationsLoading}
           >
-            <option value="">Select Station</option>
+            <option value="">
+              {stationsLoading
+                ? "Loading stations..."
+                : "Select Station"}
+            </option>
 
             {stations.map((item) => (
-              <option key={item} value={item}>
+              <option
+                key={item}
+                value={item}
+              >
                 {item}
               </option>
             ))}
           </select>
         </div>
+
+        {/* Metro Line */}
 
         <div className="ai-group">
           <label>Metro Line</label>
 
           <select
             value={line}
-            onChange={(e) => setLine(e.target.value)}
+            onChange={(e) => {
+              setLine(e.target.value);
+              setError("");
+            }}
           >
             <option value="">Select Line</option>
 
             {metroLines.map((item) => (
-              <option key={item} value={item}>
+              <option
+                key={item}
+                value={item}
+              >
                 {item}
               </option>
             ))}
           </select>
         </div>
 
+        {/* Delay */}
+
         <div className="ai-group">
           <label>Delay (Minutes)</label>
 
           <input
             type="number"
+            min="1"
             placeholder="Enter delay in minutes"
             value={delay}
-            onChange={(e) => setDelay(e.target.value)}
+            onChange={(e) => {
+              setDelay(e.target.value);
+              setError("");
+            }}
           />
         </div>
+
+        {/* Reason */}
 
         <div className="ai-group">
           <label>Reason</label>
@@ -149,15 +218,20 @@ function ScheduleUpdates() {
             type="text"
             placeholder="Ex: Heavy Passenger Crowd"
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(e) => {
+              setReason(e.target.value);
+              setError("");
+            }}
           />
         </div>
+
+        {/* Generate */}
 
         <div className="ai-full">
           <button
             className="generate-btn"
             onClick={generateScheduleUpdate}
-            disabled={loading}
+            disabled={loading || stationsLoading}
           >
             {loading
               ? "Generating Schedule Update..."
@@ -166,6 +240,8 @@ function ScheduleUpdates() {
         </div>
 
       </div>
+
+      {/* Response */}
 
       {response && (
         <div className="response-card">
@@ -185,9 +261,11 @@ function ScheduleUpdates() {
               background: "#ffffff",
               lineHeight: "1.6",
               fontSize: "15px",
+              boxSizing: "border-box",
             }}
           />
-                    <div className="response-buttons">
+
+          <div className="response-buttons">
 
             <button
               className="copy-btn"
@@ -206,7 +284,8 @@ function ScheduleUpdates() {
           </div>
 
           <div className="ai-footer">
-            🤖 Generated using <strong>Groq • Llama 3.3 70B</strong>
+            🤖 Generated using{" "}
+            <strong>Groq • Llama 3.3 70B</strong>
           </div>
 
         </div>

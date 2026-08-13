@@ -1,30 +1,41 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import DashboardCard from "../components/DashboardCard";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "../styles/dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
 
   const [summary, setSummary] = useState({
-    total_records: 0,
     total_stations: 0,
     high_crowd: 0,
     medium_crowd: 0,
     low_crowd: 0,
+    total_passengers: 0,
   });
 
+  const [topStations, setTopStations] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch Dashboard Summary
+  // ============================================================
+  // FETCH DASHBOARD DATA
+  // ============================================================
+
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await api.get("/dashboard/summary");
-        setSummary(response.data);
+        const response = await api.get("/data/dashboard");
+
+        setSummary({
+          total_stations: response.data.total_stations,
+          high_crowd: response.data.high_demand,
+          medium_crowd: response.data.medium_demand,
+          low_crowd: response.data.low_demand,
+          total_passengers: response.data.total_passengers,
+        });
       } catch (error) {
         console.error("Dashboard Error:", error);
       } finally {
@@ -35,7 +46,40 @@ function Dashboard() {
     fetchDashboard();
   }, []);
 
-  // Fetch Logged-in User
+  // ============================================================
+  // FETCH TOP CROWDED STATIONS
+  // ============================================================
+
+  useEffect(() => {
+    const fetchTopStations = async () => {
+      try {
+        const response = await api.get(
+          "/data/snapshot?limit=50"
+        );
+
+        const records = response.data.records || [];
+
+        const sortedStations = [...records]
+          .sort(
+            (a, b) =>
+              Number(b.passenger_demand || 0) -
+              Number(a.passenger_demand || 0)
+          )
+          .slice(0, 5);
+
+        setTopStations(sortedStations);
+      } catch (error) {
+        console.error("Top Stations Error:", error);
+      }
+    };
+
+    fetchTopStations();
+  }, []);
+
+  // ============================================================
+  // FETCH USER
+  // ============================================================
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -49,200 +93,664 @@ function Dashboard() {
     fetchUser();
   }, []);
 
-  // Logout
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
+  // ============================================================
+  // CROWD PERCENTAGES
+  // ============================================================
+
+  const totalStations = summary.total_stations || 0;
+
+  const highPercentage =
+    totalStations > 0
+      ? (summary.high_crowd / totalStations) * 100
+      : 0;
+
+  const mediumPercentage =
+    totalStations > 0
+      ? (summary.medium_crowd / totalStations) * 100
+      : 0;
+
+  const lowPercentage =
+    totalStations > 0
+      ? (summary.low_crowd / totalStations) * 100
+      : 0;
+
+  // ============================================================
+  // UI
+  // ============================================================
+
   return (
-    <>
+    <div className="dashboard-page">
+
       <Navbar />
 
-      <div
-        style={{
-          display: "flex",
-        }}
-      >
-        <Sidebar />
+      <section className="dashboard-main">
 
-        <div
-          style={{
-            flex: 1,
-            padding: "30px",
-            background: "#f5f5f5",
-            minHeight: "100vh",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              marginBottom: "30px",
-            }}
-          >
-            <div>
-              <h1 style={{ color: "#1565C0" }}>
-                Dashboard
-              </h1>
+        {/* ======================================================
+            HEADER
+        ====================================================== */}
 
-              {user && (
-                <>
-                  <h3>Welcome, {user.name}</h3>
+        <div className="dashboard-heading">
 
-                  <p>
-                    <strong>Email:</strong> {user.email}
-                  </p>
+          <div>
 
-                  <p>
-                    <strong>Role:</strong> {user.role}
-                  </p>
-                </>
-              )}
-            </div>
+            <span className="eyebrow">
+              METRO OPERATIONS
+            </span>
 
-            <button
-              onClick={logout}
-              style={{
-                padding: "10px 20px",
-                background: "#E53935",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              Logout
-            </button>
+            <h1>
+              Dashboard
+            </h1>
+
+            <p>
+              Monitor station activity and crowd
+              conditions from one place.
+            </p>
+
           </div>
 
-          {loading ? (
-            <h2>Loading Dashboard...</h2>
-          ) : (
-            <>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(220px, 1fr))",
-                  gap: "20px",
-                }}
-              >
-                <DashboardCard
-                  title="Stations"
-                  value={summary.total_stations}
-                  color="#1976D2"
-                />
+          <button
+            className="dashboard-logout"
+            onClick={logout}
+          >
+            Logout
+          </button>
 
-                <DashboardCard
-                  title="High Crowd"
-                  value={summary.high_crowd}
-                  color="#E53935"
-                />
+        </div>
 
-                <DashboardCard
-                  title="Medium Crowd"
-                  value={summary.medium_crowd}
-                  color="#FB8C00"
-                />
 
-                <DashboardCard
-                  title="Low Crowd"
-                  value={summary.low_crowd}
-                  color="#43A047"
-                />
+        {/* ======================================================
+            USER SUMMARY
+        ====================================================== */}
 
-                <DashboardCard
-                  title="Total Records"
-                  value={summary.total_records}
-                  color="#6A1B9A"
-                />
+        {user && (
+
+          <div className="user-summary">
+
+            <div className="user-avatar">
+
+              {user.name
+                ?.charAt(0)
+                ?.toUpperCase() || "U"}
+
+            </div>
+
+            <div>
+
+              <strong>
+                Welcome, {user.name}
+              </strong>
+
+              <span>
+                {user.email} • {user.role}
+              </span>
+
+            </div>
+
+            <div className="online-label">
+
+              <span />
+
+              Online
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* ======================================================
+            LOADING
+        ====================================================== */}
+
+        {loading ? (
+
+          <div className="dashboard-loading">
+
+            <div className="loading-ring" />
+
+            <p>
+              Loading dashboard data...
+            </p>
+
+          </div>
+
+        ) : (
+
+          <>
+
+            {/* ==================================================
+                STAT CARDS
+            ================================================== */}
+
+            <div className="dashboard-stat-grid">
+
+              <DashboardCard
+                title="Stations"
+                value={summary.total_stations}
+                color="#1976D2"
+              />
+
+              <DashboardCard
+                title="High Crowd"
+                value={summary.high_crowd}
+                color="#E53935"
+              />
+
+              <DashboardCard
+                title="Medium Crowd"
+                value={summary.medium_crowd}
+                color="#FB8C00"
+              />
+
+              <DashboardCard
+                title="Low Crowd"
+                value={summary.low_crowd}
+                color="#43A047"
+              />
+
+              <DashboardCard
+                title="Total Passengers"
+                value={summary.total_passengers}
+                color="#6A1B9A"
+              />
+
+            </div>
+
+
+            {/* ==================================================
+                ANALYTICS
+            ================================================== */}
+
+            <div className="dashboard-analytics">
+
+
+              {/* =================================================
+                  MODERN CROWD DISTRIBUTION
+              ================================================= */}
+
+              <div className="analytics-card crowd-distribution-card">
+
+                <div className="analytics-title-row">
+
+                  <div>
+
+                    <h2>
+                      Crowd Distribution
+                    </h2>
+
+                    <p>
+                      Current station crowd classification
+                    </p>
+
+                  </div>
+
+                  <div className="distribution-total">
+
+                    <strong>
+                      {totalStations}
+                    </strong>
+
+                    <span>
+                      Stations
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* Distribution Overview */}
+
+                <div className="distribution-overview">
+
+                  {/* Circle */}
+
+                  <div
+                    className="distribution-circle"
+                    style={{
+                      "--percentage": `${highPercentage}%`,
+                    }}
+                  >
+
+                    <div className="distribution-circle-inner">
+
+                      <strong>
+                        {Math.round(highPercentage)}%
+                      </strong>
+
+                      <span>
+                        High
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* Distribution Information */}
+
+                  <div className="distribution-info">
+
+
+                    {/* HIGH */}
+
+                    <div className="distribution-item">
+
+                      <div className="distribution-item-top">
+
+                        <div className="distribution-name">
+
+                          <span className="distribution-dot high-dot" />
+
+                          <span>
+                            High Crowd
+                          </span>
+
+                        </div>
+
+                        <strong>
+                          {summary.high_crowd}
+                        </strong>
+
+                      </div>
+
+                      <div className="distribution-track">
+
+                        <div
+                          className="distribution-fill high-fill"
+                          style={{
+                            width: `${highPercentage}%`,
+                          }}
+                        />
+
+                      </div>
+
+                      <span className="distribution-percent">
+
+                        {highPercentage.toFixed(1)}%
+
+                      </span>
+
+                    </div>
+
+
+                    {/* MEDIUM */}
+
+                    <div className="distribution-item">
+
+                      <div className="distribution-item-top">
+
+                        <div className="distribution-name">
+
+                          <span className="distribution-dot medium-dot" />
+
+                          <span>
+                            Medium Crowd
+                          </span>
+
+                        </div>
+
+                        <strong>
+                          {summary.medium_crowd}
+                        </strong>
+
+                      </div>
+
+                      <div className="distribution-track">
+
+                        <div
+                          className="distribution-fill medium-fill"
+                          style={{
+                            width: `${mediumPercentage}%`,
+                          }}
+                        />
+
+                      </div>
+
+                      <span className="distribution-percent">
+
+                        {mediumPercentage.toFixed(1)}%
+
+                      </span>
+
+                    </div>
+
+
+                    {/* LOW */}
+
+                    <div className="distribution-item">
+
+                      <div className="distribution-item-top">
+
+                        <div className="distribution-name">
+
+                          <span className="distribution-dot low-dot" />
+
+                          <span>
+                            Low Crowd
+                          </span>
+
+                        </div>
+
+                        <strong>
+                          {summary.low_crowd}
+                        </strong>
+
+                      </div>
+
+                      <div className="distribution-track">
+
+                        <div
+                          className="distribution-fill low-fill"
+                          style={{
+                            width: `${lowPercentage}%`,
+                          }}
+                        />
+
+                      </div>
+
+                      <span className="distribution-percent">
+
+                        {lowPercentage.toFixed(1)}%
+
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* Mini Status Cards */}
+
+                <div className="crowd-mini-cards">
+
+                  <div className="crowd-mini-card high-mini">
+
+                    <span>
+                      🔴
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        {summary.high_crowd}
+                      </strong>
+
+                      <small>
+                        High
+                      </small>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="crowd-mini-card medium-mini">
+
+                    <span>
+                      🟠
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        {summary.medium_crowd}
+                      </strong>
+
+                      <small>
+                        Medium
+                      </small>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="crowd-mini-card low-mini">
+
+                    <span>
+                      🟢
+                    </span>
+
+                    <div>
+
+                      <strong>
+                        {summary.low_crowd}
+                      </strong>
+
+                      <small>
+                        Low
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
               </div>
 
-              <div
-                style={{
-                  marginTop: "35px",
-                  background: "white",
-                  padding: "20px",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 10px rgba(0,0,0,.1)",
-                }}
-              >
-                <h2>Dashboard Summary</h2>
 
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    marginTop: "15px",
-                  }}
-                >
+              {/* =================================================
+                  TOP CROWDED STATIONS
+              ================================================= */}
+
+              <div className="analytics-card">
+
+                <h2>
+                  Top Crowded Stations
+                </h2>
+
+                <p>
+                  Stations with highest passenger demand
+                </p>
+
+
+                <div className="top-stations-list">
+
+                  {topStations.length > 0 ? (
+
+                    topStations.map(
+                      (station, index) => (
+
+                        <div
+                          className="top-station-item"
+                          key={`${station.station}-${index}`}
+                        >
+
+                          <div className="top-station-rank">
+
+                            #{index + 1}
+
+                          </div>
+
+
+                          <div className="top-station-info">
+
+                            <strong>
+                              {station.station}
+                            </strong>
+
+                            <span>
+                              {station.crowd_level} Crowd
+                            </span>
+
+                          </div>
+
+
+                          <div className="top-station-demand">
+
+                            {station.passenger_demand}
+
+                          </div>
+
+                        </div>
+
+                      )
+                    )
+
+                  ) : (
+
+                    <div className="top-stations-empty">
+
+                      Loading station information...
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* ==================================================
+                OPERATIONAL SUMMARY
+            ================================================== */}
+
+            <div className="dashboard-summary-card">
+
+              <div className="summary-header">
+
+                <div>
+
+                  <h2>
+                    Operational Summary
+                  </h2>
+
+                  <p>
+                    Current crowd monitoring overview
+                  </p>
+
+                </div>
+
+                <span className="live-pill">
+
+                  <span />
+
+                  Live Data
+
+                </span>
+
+              </div>
+
+
+              <div className="summary-table-wrap">
+
+                <table>
+
                   <thead>
-                    <tr
-                      style={{
-                        background: "#1976D2",
-                        color: "white",
-                      }}
-                    >
-                      <th style={{ padding: "12px" }}>
+
+                    <tr>
+
+                      <th>
                         Metric
                       </th>
 
-                      <th style={{ padding: "12px" }}>
+                      <th>
                         Value
                       </th>
+
                     </tr>
+
                   </thead>
 
+
                   <tbody>
+
                     <tr>
-                      <td style={{ padding: "12px" }}>
+
+                      <td>
                         Total Stations
                       </td>
 
-                      <td>{summary.total_stations}</td>
+                      <td>
+                        {summary.total_stations}
+                      </td>
+
                     </tr>
 
+
                     <tr>
-                      <td style={{ padding: "12px" }}>
+
+                      <td>
                         High Crowd
                       </td>
 
-                      <td>{summary.high_crowd}</td>
+                      <td>
+                        {summary.high_crowd}
+                      </td>
+
                     </tr>
 
+
                     <tr>
-                      <td style={{ padding: "12px" }}>
+
+                      <td>
                         Medium Crowd
                       </td>
 
-                      <td>{summary.medium_crowd}</td>
+                      <td>
+                        {summary.medium_crowd}
+                      </td>
+
                     </tr>
 
+
                     <tr>
-                      <td style={{ padding: "12px" }}>
+
+                      <td>
                         Low Crowd
                       </td>
 
-                      <td>{summary.low_crowd}</td>
-                    </tr>
-
-                    <tr>
-                      <td style={{ padding: "12px" }}>
-                        Total Records
+                      <td>
+                        {summary.low_crowd}
                       </td>
 
-                      <td>{summary.total_records}</td>
                     </tr>
+
+
+                    <tr>
+
+                      <td>
+                        Total Passengers
+                      </td>
+
+                      <td>
+                        {summary.total_passengers}
+                      </td>
+
+                    </tr>
+
                   </tbody>
+
                 </table>
+
               </div>
-            </>
-          )}
-        </div>
-      </div>
-    </>
+
+            </div>
+
+          </>
+
+        )}
+
+      </section>
+
+    </div>
   );
 }
 

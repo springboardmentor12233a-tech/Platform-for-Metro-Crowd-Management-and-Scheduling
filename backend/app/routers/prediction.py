@@ -54,17 +54,26 @@ def predict(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
 @router.get("/stations")
 def get_stations():
     try:
-        import os
-        import joblib
-
-        base_path = os.path.join(os.path.dirname(__file__), "..", "ml")
+        base_path = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "ml"
+        )
 
         encoder = joblib.load(
-            os.path.join(base_path, "from_station_encoder.pkl")
+            os.path.join(
+                base_path,
+                "from_station_encoder.pkl"
+            )
         )
 
         stations = sorted(
@@ -76,7 +85,12 @@ def get_stations():
             )
         )
 
-        return {"stations": stations}
+        return {
+            "stations": stations
+        }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )

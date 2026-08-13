@@ -12,7 +12,9 @@ router = APIRouter(
 
 
 @router.get("/")
-def get_prediction_history(db: Session = Depends(get_db)):
+def get_prediction_history(
+    db: Session = Depends(get_db)
+):
     history = (
         db.query(models.PredictionHistory)
         .order_by(models.PredictionHistory.created_at.desc())
@@ -23,7 +25,10 @@ def get_prediction_history(db: Session = Depends(get_db)):
 
 
 @router.get("/{history_id}")
-def get_prediction(history_id: int, db: Session = Depends(get_db)):
+def get_prediction(
+    history_id: int,
+    db: Session = Depends(get_db)
+):
     history = (
         db.query(models.PredictionHistory)
         .filter(models.PredictionHistory.id == history_id)

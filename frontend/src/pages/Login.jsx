@@ -1,123 +1,59 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { FaTrain, FaEnvelope, FaLock } from "react-icons/fa6";
 import api from "../services/api";
+import "../styles/auth.css";
 
 function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      // Create form data for FastAPI OAuth2 login
       const formData = new URLSearchParams();
       formData.append("username", email);
       formData.append("password", password);
 
-      // Login request
       const response = await api.post("/login", formData, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      // Save JWT token
       localStorage.setItem("token", response.data.access_token);
-
-      // Fetch logged-in user details
       const userResponse = await api.get("/me");
-
-      // Save user info
       localStorage.setItem("name", userResponse.data.name);
       localStorage.setItem("email", userResponse.data.email);
       localStorage.setItem("role", userResponse.data.role);
 
       alert("Login Successful");
-
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-
-      if (error.response) {
-        alert(error.response.data.detail);
-      } else {
-        alert("Login Failed");
-      }
+      alert(error.response?.data?.detail || "Login Failed");
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        background: "#f5f5f5",
-      }}
-    >
-      <div
-        style={{
-          width: "350px",
-          background: "#fff",
-          padding: "30px",
-          borderRadius: "10px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-          MetroFlow Login
-        </h2>
+    <div className="auth-page">
+      <div className="auth-decoration">
+        <div className="auth-orb orb-one" /><div className="auth-orb orb-two" />
+        <div className="auth-brand"><div className="auth-brand-icon"><FaTrain /></div><strong>MetroFlow</strong></div>
+        <div className="auth-hero-text"><span>SMART METRO</span><h1>Manage crowds.<br />Move people smarter.</h1><p>A unified platform for metro monitoring, analytics and AI-powered passenger communication.</p></div>
+      </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px",
-          }}
-        />
+      <div className="auth-panel">
+        <div className="auth-card">
+          <div className="mobile-auth-logo"><FaTrain /></div>
+          <span className="auth-kicker">WELCOME BACK</span>
+          <h2>Sign in to MetroFlow</h2>
+          <p className="auth-description">Access your metro operations dashboard.</p>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "20px",
-          }}
-        />
+          <div className="auth-field"><label>Email Address</label><div className="auth-input"><FaEnvelope /><input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} /></div></div>
+          <div className="auth-field"><label>Password</label><div className="auth-input"><FaLock /><input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} /></div></div>
 
-        <button
-          onClick={handleLogin}
-          style={{
-            width: "100%",
-            padding: "10px",
-            background: "#1976D2",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          <p
-          style={{
-         textAlign: "center",
-        marginTop: "15px",
-        }}
-        >
-        Don't have an account?{" "}
-        <Link to="/signup">Register</Link>
-        </p>
-          Login
-        </button>
+          <button className="auth-button" onClick={handleLogin}>Sign In</button>
+          <p className="auth-switch">Don't have an account? <Link to="/signup">Create one</Link></p>
+        </div>
       </div>
     </div>
   );

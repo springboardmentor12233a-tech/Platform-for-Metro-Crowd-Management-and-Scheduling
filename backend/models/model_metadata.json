@@ -1,0 +1,25 @@
+{
+    "model": "RandomForestRegressor",
+    "dataset": "processed_station_demand.csv",
+    "rows": 9622,
+    "stations": 23,
+    "features": [
+        "station",
+        "day_of_week",
+        "day",
+        "month",
+        "year",
+        "is_weekend"
+    ],
+    "target": "passenger_demand",
+    "train_rows": 7697,
+    "test_rows": 1925,
+    "mae": 39.07340664368654,
+    "r2": 0.5795784380125487,
+    "crowd_levels": [
+        "High",
+        "Low",
+        "Medium"
+    ],
+    "note": "The p90 demand value is a historical demand proxy and is not physical station capacity."
+}

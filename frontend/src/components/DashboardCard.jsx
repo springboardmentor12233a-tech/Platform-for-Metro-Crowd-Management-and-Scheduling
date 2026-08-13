@@ -1,18 +1,31 @@
-function DashboardCard({ title, value, color }) {
-  return (
-    <div
-      style={{
-        background: color,
-        color: "white",
-        borderRadius: "12px",
-        padding: "20px",
-        minWidth: "220px",
-        boxShadow: "0 5px 12px rgba(0,0,0,0.2)",
-      }}
-    >
-      <h3>{title}</h3>
+import {
+  FaBuilding,
+  FaTriangleExclamation,
+  FaGaugeHigh,
+  FaCircleCheck,
+  FaDatabase,
+} from "react-icons/fa6";
 
-      <h1>{value}</h1>
+const iconMap = {
+  Stations: FaBuilding,
+  "High Crowd": FaTriangleExclamation,
+  "Medium Crowd": FaGaugeHigh,
+  "Low Crowd": FaCircleCheck,
+  "Total Records": FaDatabase,
+};
+
+function DashboardCard({ title, value, color }) {
+  const Icon = iconMap[title] || FaGaugeHigh;
+
+  return (
+    <div className="dashboard-stat-card" style={{ "--card-accent": color }}>
+      <div className="stat-card-top">
+        <div className="stat-icon"><Icon /></div>
+        <span className="stat-status">LIVE</span>
+      </div>
+      <p>{title}</p>
+      <h2>{value ?? 0}</h2>
+      <div className="stat-card-line" />
     </div>
   );
 }

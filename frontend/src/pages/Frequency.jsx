@@ -1,114 +1,225 @@
 import { useState } from "react";
+import api from "../services/api";
 import "../styles/Frequency.css";
 
 function Frequency() {
-  const [search, setSearch] = useState("");
+  const [demandLevel, setDemandLevel] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const frequencyData = [
-    {
-      id: 1,
-      station: "Rajiv Chowk",
-      line: "Blue Line",
-      interval: "3 min",
-      peak: "2 min",
-      offPeak: "5 min",
-      waiting: "2 min",
-    },
-    {
-      id: 2,
-      station: "AIIMS",
-      line: "Yellow Line",
-      interval: "4 min",
-      peak: "3 min",
-      offPeak: "6 min",
-      waiting: "3 min",
-    },
-    {
-      id: 3,
-      station: "New Delhi",
-      line: "Yellow Line",
-      interval: "5 min",
-      peak: "3 min",
-      offPeak: "7 min",
-      waiting: "4 min",
-    },
-    {
-      id: 4,
-      station: "Noida City Centre",
-      line: "Blue Line",
-      interval: "6 min",
-      peak: "4 min",
-      offPeak: "8 min",
-      waiting: "5 min",
-    },
-  ];
+  const handleRecommend = async (e) => {
+    e.preventDefault();
 
-  const filtered = frequencyData.filter(
-    (item) =>
-      item.station.toLowerCase().includes(search.toLowerCase()) ||
-      item.line.toLowerCase().includes(search.toLowerCase())
-  );
+    if (!demandLevel) {
+      setError("Please select a demand level.");
+      setResult(null);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+      setResult(null);
+
+      const response = await api.post("/frequency/recommend", {
+        demand_level: demandLevel,
+      });
+
+      setResult(response.data);
+    } catch (err) {
+      console.error("Frequency recommendation error:", err);
+
+      const message =
+        err.response?.data?.detail ||
+        "Unable to generate frequency recommendation.";
+
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLevelClass = () => {
+    if (demandLevel === "High") return "high";
+    if (demandLevel === "Medium") return "medium";
+    if (demandLevel === "Low") return "low";
+    return "";
+  };
 
   return (
     <div className="frequency-page">
 
-      <h1>🚆 Train Frequency Dashboard</h1>
+      {/* Header */}
 
-      <div className="summary-cards">
+      <div className="frequency-header">
+        <div>
+          <span className="frequency-eyebrow">
+            METRO OPERATIONS
+          </span>
 
-        <div className="summary-card">
-          <h3>Total Stations</h3>
-          <h2>{frequencyData.length}</h2>
+          <h1>🚆 Dynamic Train Frequency</h1>
+
+          <p>
+            Adjust train frequency based on the current crowd
+            demand level.
+          </p>
         </div>
-
-        <div className="summary-card blue">
-          <h3>Average Interval</h3>
-          <h2>4.5 min</h2>
-        </div>
-
-        <div className="summary-card green">
-          <h3>Peak Frequency</h3>
-          <h2>2 min</h2>
-        </div>
-
       </div>
 
-      <input
-        className="search-box"
-        placeholder="Search Station or Line..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {/* Error */}
 
-      <table>
+      {error && (
+        <div className="frequency-error">
+          ⚠️ {error}
+        </div>
+      )}
 
-        <thead>
-          <tr>
-            <th>Station</th>
-            <th>Metro Line</th>
-            <th>Train Interval</th>
-            <th>Peak Hours</th>
-            <th>Off Peak</th>
-            <th>Estimated Waiting</th>
-          </tr>
-        </thead>
+      {/* Recommendation Form */}
 
-        <tbody>
+      <div className="frequency-form-card">
 
-          {filtered.map((item) => (
-            <tr key={item.id}>
-              <td>{item.station}</td>
-              <td>{item.line}</td>
-              <td>{item.interval}</td>
-              <td>{item.peak}</td>
-              <td>{item.offPeak}</td>
-              <td>{item.waiting}</td>
-            </tr>
-          ))}
+        <div className="frequency-form-header">
+          <h2>Demand-Based Frequency Adjustment</h2>
 
-        </tbody>
+          <p>
+            Select the current crowd level to receive a recommended
+            train frequency.
+          </p>
+        </div>
 
-      </table>
+        <form onSubmit={handleRecommend}>
+
+          <div className="frequency-field">
+
+            <label>Current Demand Level</label>
+
+            <select
+              value={demandLevel}
+              onChange={(e) => {
+                setDemandLevel(e.target.value);
+                setError("");
+              }}
+            >
+              <option value="">
+                Select demand level
+              </option>
+
+              <option value="High">
+                High
+              </option>
+
+              <option value="Medium">
+                Medium
+              </option>
+
+              <option value="Low">
+                Low
+              </option>
+            </select>
+
+          </div>
+
+          <button
+            type="submit"
+            className="frequency-button"
+            disabled={loading}
+          >
+            {loading
+              ? "Calculating..."
+              : "🚆 Recommend Frequency"}
+          </button>
+
+        </form>
+      </div>
+
+      {/* Result */}
+
+      {result && (
+        <div className="frequency-result-card">
+
+          <div className="frequency-result-header">
+
+            <div>
+              <span className="frequency-result-eyebrow">
+                FREQUENCY RECOMMENDATION
+              </span>
+
+              <h2>
+                {result.demand_level} Demand
+              </h2>
+            </div>
+
+            <span
+              className={`frequency-level-badge ${getLevelClass()}`}
+            >
+              {result.status}
+            </span>
+
+          </div>
+
+          <div className="frequency-result-grid">
+
+            <div className="frequency-result-item">
+
+              <span>
+                🚆 Recommended Frequency
+              </span>
+
+              <strong>
+                {result.recommended_frequency}
+              </strong>
+
+            </div>
+
+            <div className="frequency-result-item">
+
+              <span>
+                🚇 Additional Trains
+              </span>
+
+              <strong>
+                {result.additional_trains}
+              </strong>
+
+            </div>
+
+            <div className="frequency-result-item">
+
+              <span>
+                📊 Demand Level
+              </span>
+
+              <strong>
+                {result.demand_level}
+              </strong>
+
+            </div>
+
+            <div className="frequency-result-item">
+
+              <span>
+                ⚡ Operational Status
+              </span>
+
+              <strong>
+                {result.status}
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div className="frequency-note">
+
+            <strong>ℹ️ Recommendation:</strong>{" "}
+            Train frequency is dynamically recommended according
+            to the selected crowd demand level.
+
+          </div>
+
+        </div>
+      )}
 
     </div>
   );
