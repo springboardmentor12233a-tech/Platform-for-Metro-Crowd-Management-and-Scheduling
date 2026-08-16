@@ -1,77 +1,316 @@
-"""
-Alerts Endpoints
-=================
-Manages crowd management alerts and notifications.
-Milestone 1: Returns dummy alert data.
-"""
-from fastapi import APIRouter, Query
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+from typing import Optional
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    status,
+)
+
+from sqlalchemy.orm import Session
+
+from app.database.session import get_db
+from app.models.alert import Alert
+from app.models.user import User
+
+from app.core.security import (
+    get_current_user,
+    require_admin,
+)
+
 from app.utils.response import success_response
+
 
 router = APIRouter()
 
-_base = datetime.now(timezone.utc)
 
-DUMMY_ALERTS = [
-    {
-        "alert_id": "ALT001", "severity": "CRITICAL",
-        "title": "Overcrowding — East Junction",
-        "message": "Platform occupancy at 95.4%. Immediate crowd control required.",
-        "station": "East Junction",
-        "timestamp": (_base - timedelta(minutes=5)).isoformat(),
-        "is_resolved": False, "resolved_at": None,
-    },
-    {
-        "alert_id": "ALT002", "severity": "WARNING",
-        "title": "Train MT-202 Delayed",
-        "message": "Red Line train MT-202 is delayed by 12 minutes due to signal fault.",
-        "station": "South Bridge",
-        "timestamp": (_base - timedelta(minutes=18)).isoformat(),
-        "is_resolved": False, "resolved_at": None,
-    },
-    {
-        "alert_id": "ALT003", "severity": "INFO",
-        "title": "Schedule Updated",
-        "message": "Green Line schedule adjusted for maintenance window.",
-        "station": None,
-        "timestamp": (_base - timedelta(hours=1)).isoformat(),
-        "is_resolved": True,
-        "resolved_at": (_base - timedelta(minutes=30)).isoformat(),
-    },
-    {
-        "alert_id": "ALT004", "severity": "CRITICAL",
-        "title": "Train MT-404 Cancelled",
-        "message": "Blue Line MT-404 cancelled. Passengers advised to use alternate route.",
-        "station": "North Terminal",
-        "timestamp": (_base - timedelta(minutes=45)).isoformat(),
-        "is_resolved": False, "resolved_at": None,
-    },
-]
+# ============================================================
+# GET ALL ALERTS
+# ============================================================
 
-
-@router.get("/", summary="Get All Alerts")
-async def get_alerts(
-    severity: str = Query(None, description="Filter by severity: CRITICAL | WARNING | INFO"),
-    resolved: bool = Query(None, description="Filter by resolution status"),
+@router.get(
+    "/",
+    summary="Get All Alerts",
+)
+def get_alerts(
+    severity: Optional[str] = Query(
+        None,
+        description="LOW | MEDIUM | HIGH | CRITICAL",
+    ),
+    resolved: Optional[bool] = Query(
+        None,
+        description="Filter by resolution status",
+    ),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    """Returns all alerts, optionally filtered by severity and resolution status."""
-    alerts = DUMMY_ALERTS
+
+    query = (
+        db.query(Alert)
+        .order_by(Alert.timestamp.desc())
+    )
+
+    # --------------------------------------------------------
+    # Severity filter
+    # --------------------------------------------------------
+
     if severity:
-        alerts = [a for a in alerts if a["severity"] == severity.upper()]
+
+        severity_value = severity.upper()
+
+        valid_severities = {
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL",
+        }
+
+        if severity_value not in valid_severities:
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Invalid severity. "
+                    "Use LOW, MEDIUM, HIGH or CRITICAL."
+                ),
+            )
+
+        query = query.filter(
+            Alert.severity == severity_value
+        )
+
+    # --------------------------------------------------------
+    # Resolution filter
+    # --------------------------------------------------------
+
     if resolved is not None:
-        alerts = [a for a in alerts if a["is_resolved"] == resolved]
-    return success_response({
-        "total": len(alerts),
-        "unresolved": sum(1 for a in alerts if not a["is_resolved"]),
-        "alerts": alerts,
-    })
+
+        if resolved:
+
+            query = query.filter(
+                Alert.status.in_(
+                    ["RESOLVED", "CLOSED"]
+                )
+            )
+
+        else:
+
+            query = query.filter(
+                Alert.status.notin_(
+                    ["RESOLVED", "CLOSED"]
+                )
+            )
+
+    alerts = query.all()
+
+    result = []
+
+    for alert in alerts:
+
+        is_resolved = alert.status in {
+            "RESOLVED",
+            "CLOSED",
+        }
+
+        result.append(
+            {
+                "alert_id": str(alert.id),
+
+                "severity": alert.severity,
+
+                "title": alert.alert_type,
+
+                "message": alert.message,
+
+                "station_id": alert.station_id,
+
+                "train_id": alert.train_id,
+
+                "timestamp": (
+                    alert.timestamp.isoformat()
+                    if alert.timestamp
+                    else None
+                ),
+
+                "status": alert.status,
+
+                "is_resolved": is_resolved,
+
+                "resolved_at": (
+                    alert.resolved_at.isoformat()
+                    if alert.resolved_at
+                    else None
+                ),
+
+                "created_by": (
+                    str(alert.created_by)
+                    if alert.created_by
+                    else None
+                ),
+            }
+        )
+
+    return success_response(
+        {
+            "total": len(result),
+
+            "unresolved": sum(
+                1
+                for alert in result
+                if not alert["is_resolved"]
+            ),
+
+            "alerts": result,
+        }
+    )
 
 
-@router.patch("/{alert_id}/resolve", summary="Resolve an Alert")
-async def resolve_alert(alert_id: str):
-    """Marks an alert as resolved (stub — no DB write in Milestone 1)."""
-    return success_response({
-        "alert_id": alert_id,
-        "is_resolved": True,
-        "resolved_at": datetime.now(timezone.utc).isoformat(),
-    })
+# ============================================================
+# CREATE ALERT — ADMIN ONLY
+# ============================================================
+
+@router.post(
+    "/",
+    summary="Create Alert",
+)
+def create_alert(
+    alert_type: str,
+    severity: str,
+    message: str,
+    station_id: Optional[int] = None,
+    train_id: Optional[str] = None,
+
+    db: Session = Depends(get_db),
+
+    current_user: User = Depends(
+        require_admin
+    ),
+):
+
+    severity_value = severity.upper()
+
+    valid_severities = {
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL",
+    }
+
+    if severity_value not in valid_severities:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid severity. "
+                "Use LOW, MEDIUM, HIGH or CRITICAL."
+            ),
+        )
+
+    if not message.strip():
+
+        raise HTTPException(
+            status_code=400,
+            detail="Alert message cannot be empty.",
+        )
+
+    alert = Alert(
+        timestamp=datetime.now(timezone.utc),
+        station_id=station_id,
+        train_id=train_id,
+        alert_type=alert_type.strip(),
+        severity=severity_value,
+        message=message.strip(),
+        status="OPEN",
+        created_by=current_user.id,
+    )
+
+    db.add(alert)
+    db.commit()
+    db.refresh(alert)
+
+    return success_response(
+        {
+            "message": "Alert created successfully.",
+
+            "alert": {
+                "alert_id": str(alert.id),
+                "severity": alert.severity,
+                "title": alert.alert_type,
+                "message": alert.message,
+                "station_id": alert.station_id,
+                "train_id": alert.train_id,
+                "timestamp": alert.timestamp.isoformat(),
+                "status": alert.status,
+                "is_resolved": False,
+                "resolved_at": None,
+                "created_by": str(
+                    current_user.id
+                ),
+            },
+        }
+    )
+
+
+# ============================================================
+# RESOLVE ALERT — ADMIN ONLY
+# ============================================================
+
+@router.patch(
+    "/{alert_id}/resolve",
+    summary="Resolve an Alert",
+)
+def resolve_alert(
+    alert_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_user: User = Depends(
+        require_admin
+    ),
+):
+
+    alert = (
+        db.query(Alert)
+        .filter(
+            Alert.id == alert_id
+        )
+        .first()
+    )
+
+    if alert is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Alert not found.",
+        )
+
+    alert.status = "RESOLVED"
+
+    alert.resolved_at = datetime.now(
+        timezone.utc
+    )
+
+    alert.resolved_by = current_user.id
+
+    db.commit()
+    db.refresh(alert)
+
+    return success_response(
+        {
+            "message": "Alert resolved successfully.",
+
+            "alert_id": str(
+                alert.id
+            ),
+
+            "is_resolved": True,
+
+            "status": alert.status,
+
+            "resolved_at": (
+                alert.resolved_at.isoformat()
+            ),
+        }
+    )

@@ -14,9 +14,7 @@ crowd_model = joblib.load(
     MODEL_DIR / "crowd_xgboost.pkl"
 )
 
-station_encoder = joblib.load(
-    MODEL_DIR / "station_encoder.pkl"
-)
+
 
 crowd_label_encoder = joblib.load(
     MODEL_DIR / "crowd_label_encoder.pkl"
@@ -34,6 +32,16 @@ exit_model = joblib.load(
     MODEL_DIR / "exit_xgboost.pkl"
 )
 
-ridership_station_encoder = joblib.load(
-    MODEL_DIR / "ridership_station_encoder.pkl"
+delay_model = joblib.load(
+    MODEL_DIR
+    / "delay_xgboost.pkl"
+)
+
+delay_encoders = joblib.load(
+    MODEL_DIR
+    / "delay_label_encoder.pkl"
+)
+
+frequency_model = joblib.load(
+    MODEL_DIR / "frequency_xgboost.pkl"
 )

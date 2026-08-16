@@ -11,7 +11,14 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        {/* =========================================================
+            GLOBAL THEME WRAPPER
+            This ensures the background and text colors change 
+            across every single page in your app.
+        ========================================================== */}
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-200">
+          <AppRoutes />
+        </div>
       </AuthProvider>
     </BrowserRouter>
   )

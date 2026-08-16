@@ -116,3 +116,132 @@ datasets/raw/metro-sensordata.csv
 datasets/processed/sensor_preprocessed.csv
 datasets/old/sensor_preprocessed.csv
 datasets/old/
+
+# ============================================================
+# Environment / Secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+**/.env
+**/.env.*
+
+# Credentials
+**/credentials.json
+**/service-account.json
+**/google-credentials.json
+**/*.pem
+**/*.key
+
+
+# ============================================================
+# Python
+# ============================================================
+
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+backend/venv/
+backend/.venv/
+**/venv/
+**/.venv/
+
+
+# ============================================================
+# Node
+# ============================================================
+
+frontend/node_modules/
+**/node_modules/
+
+
+# ============================================================
+# Build
+# ============================================================
+
+frontend/dist/
+frontend/build/
+**/dist/
+**/build/
+
+
+# ============================================================
+# IDE
+# ============================================================
+
+.vscode/
+.idea/
+
+
+# ============================================================
+# Logs
+# ============================================================
+
+*.log
+logs/
+
+
+# ============================================================
+# Local databases
+# ============================================================
+
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+
+
+# ============================================================
+# ML models
+# ============================================================
+
+*.pkl
+*.joblib
+*.h5
+*.keras
+*.pt
+*.pth
+*.onnx
+
+ml/runs/
+ml/outputs/
+ml/checkpoints/
+backend/ml/models/
+
+
+# ============================================================
+# Private / raw datasets
+# ============================================================
+
+data/raw/
+data/private/
+datasets/
+**/raw/
+**/private/
+
+*.csv
+*.json
+
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+
+.DS_Store
+Thumbs.db
+# Generated datasets
+backend/ml/data/processed/
+backend/ml/metrics/
+
+# Preprocessed datasets
+backend/datasets/*_preprocessed.csv

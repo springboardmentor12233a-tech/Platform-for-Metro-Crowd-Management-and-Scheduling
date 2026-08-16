@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -27,6 +27,7 @@ class Train(Base, TimestampMixin):
     id: Mapped[str] = mapped_column(
         String(50),
         primary_key=True,
+         nullable=False,
     )
 
     # ==================================================
@@ -99,7 +100,7 @@ class Train(Base, TimestampMixin):
     # RELATIONSHIPS
     # ==================================================
 
-    current_station: Mapped["Station"] = relationship(
+    current_station: Mapped[Optional["Station"]] = relationship(
     back_populates="trains",
     )
     schedules: Mapped[list["Schedule"]] = relationship(

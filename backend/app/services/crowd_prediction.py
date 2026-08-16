@@ -1,126 +1,143 @@
-from sqlalchemy.orm import Session
+from pathlib import Path
+from datetime import datetime
+import uuid
 
-from app.models.crowd_prediction import CrowdPrediction
-from app.repositories.crowd_prediction import crowd_prediction_repository
-from app.schemas.crowd_prediction import (
-    CrowdPredictionCreate,
-    CrowdPredictionUpdate,
-)
-
+import joblib
 import pandas as pd
 
-from app.core.ml_model import (
-    crowd_model,
-    station_encoder,
-    crowd_label_encoder,
-)
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+from app.models.station import Station
+from app.models.crowd_prediction import CrowdPrediction
 
 from app.schemas.crowd_prediction import (
-    CrowdPredictionCreate,
-    CrowdPredictionUpdate,
     CrowdPredictionRequest,
+    CrowdPredictionResponse,
 )
+
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+MODEL_PATH = (
+    BASE_DIR
+    / "ml"
+    / "models"
+    / "crowd_xgboost.pkl"
+)
+
+model = joblib.load(MODEL_PATH)
+
+
+MODEL_FEATURES = [
+    "entry_count",
+    "exit_count",
+    "hour",
+    "day",
+    "month",
+    "day_of_week",
+    "weekend",
+]
+
 
 class CrowdPredictionService:
 
     @staticmethod
-    def create_prediction(
-        db: Session,
-        prediction: CrowdPredictionCreate,
-    ) -> CrowdPrediction:
-        return crowd_prediction_repository.create(
-            db=db,
-            obj_in=prediction,
-        )
-
-    @staticmethod
-    def get_prediction(
-        db: Session,
-        prediction_id: str,
-    ):
-        return crowd_prediction_repository.get(
-            db=db,
-            id=prediction_id,
-        )
-
-    @staticmethod
-    def get_all_predictions(
-        db: Session,
-        skip: int = 0,
-        limit: int = 100,
-    ):
-        return crowd_prediction_repository.get_multi(
-            db=db,
-            skip=skip,
-            limit=limit,
-        )
-
-    @staticmethod
-    def update_prediction(
-        db: Session,
-        prediction_id: str,
-        prediction: CrowdPredictionUpdate,
-    ):
-        db_obj = crowd_prediction_repository.get(
-            db=db,
-            id=prediction_id,
-        )
-
-        if db_obj is None:
-            return None
-
-        return crowd_prediction_repository.update(
-            db=db,
-            db_obj=db_obj,
-            obj_in=prediction,
-        )
-
-    @staticmethod
-    def delete_prediction(
-        db: Session,
-        prediction_id: str,
-    ):
-        return crowd_prediction_repository.remove(
-            db=db,
-            id=prediction_id,
-        )   
-    
-    @staticmethod
     def predict_crowd(
+        db: Session,
         request: CrowdPredictionRequest,
     ):
-        station = station_encoder.transform(
-            [request.station_name]
-        )[0]
 
-        X = pd.DataFrame(
+        station = (
+            db.query(Station)
+            .filter(
+                Station.station_name
+                == request.station_name
+            )
+            .first()
+        )
+
+        if station is None:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"Station '{request.station_name}' "
+                    "not found."
+                ),
+            )
+
+        data = pd.DataFrame(
             [
                 {
-                    "station_name": station,
-                    "entry_count": request.entry_count,
-                    "exit_count": request.exit_count,
-                    "platform_count": request.platform_count,
-                    "concourse_count": request.concourse_count,
-                    "hour": request.hour,
-                    "day": request.day,
-                    "month": request.month,
-                    "day_of_week": request.day_of_week,
-                    "weekend": request.weekend,
+                    "entry_count": int(request.entry_count),
+                    "exit_count": int(request.exit_count),
+                    "hour": int(request.hour),
+                    "day": int(request.day),
+                    "month": int(request.month),
+                    "day_of_week": int(request.day_of_week),
+                    "weekend": int(request.weekend),
                 }
             ]
         )
 
-        prediction = crowd_model.predict(X)[0]
+        data = data[MODEL_FEATURES]
 
-        probability = crowd_model.predict_proba(X)[0]
+        prediction = model.predict(data)
 
-        confidence = float(probability.max())
+        predicted_value = prediction[0]
 
-        crowd_level = crowd_label_encoder.inverse_transform(
-            [prediction]
-        )[0]
+        if isinstance(predicted_value, str):
+            predicted_crowd_level = predicted_value
+        else:
+            predicted_value = int(round(float(predicted_value)))
 
-        return {
-            "predicted_crowd_level": crowd_level,
-            "confidence_score": round(confidence, 4),
-        }
+            # Map the XGBoost class index directly to the label
+            class_mapping = {
+                0: "Low",
+                1: "Medium",
+                2: "High",
+                3: "Very High"
+            }
+            
+            # Use the mapping, defaulting to "Very High" if an unknown class is returned
+            predicted_crowd_level = class_mapping.get(predicted_value, "Very High")
+
+        confidence = None
+
+        if hasattr(model, "predict_proba"):
+            probabilities = model.predict_proba(data)
+            confidence = float(probabilities.max())
+
+        prediction_id = (
+            "CP_"
+            + uuid.uuid4().hex[:12].upper()
+        )
+
+        prediction_time = datetime.now()
+
+        db_prediction = CrowdPrediction(
+            id=prediction_id,
+            station_id=station.id,
+            prediction_time=prediction_time,
+            predicted_entries=request.entry_count,
+            predicted_exits=request.exit_count,
+            predicted_platform_crowd=None,
+            predicted_crowd_level=predicted_crowd_level,
+            confidence_score=confidence,
+        )
+
+        db.add(db_prediction)
+        db.commit()
+        db.refresh(db_prediction)
+
+        return CrowdPredictionResponse(
+            id=db_prediction.id,
+            station_id=db_prediction.station_id,
+            station_name=station.station_name,
+            prediction_time=db_prediction.prediction_time,
+            predicted_entries=db_prediction.predicted_entries,
+            predicted_exits=db_prediction.predicted_exits,
+            predicted_platform_crowd=None,
+            predicted_crowd_level=db_prediction.predicted_crowd_level,
+            confidence_score=db_prediction.confidence_score,
+        )

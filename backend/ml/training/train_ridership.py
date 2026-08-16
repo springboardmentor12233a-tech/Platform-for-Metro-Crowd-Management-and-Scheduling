@@ -3,6 +3,19 @@ Ridership Prediction Model Training
 
 Author: Ankita Jana
 Project: Metro Crowd Management System
+
+Models:
+    1. Entry Count Prediction
+    2. Exit Count Prediction
+
+Features:
+    hour
+    day
+    month
+    day_of_week
+    weekend
+
+Station name is NOT used by the model.
 """
 
 from pathlib import Path
@@ -11,7 +24,6 @@ import json
 import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 
 from sklearn.model_selection import (
     train_test_split,
@@ -44,17 +56,17 @@ DATASET = (
     / "ridership_training.csv"
 )
 
-MODEL_DIR = BASE_DIR / "ml" / "models"
+MODEL_DIR = (
+    BASE_DIR
+    / "ml"
+    / "models"
+)
 
-METRICS_DIR = BASE_DIR / "ml" / "metrics"
-
-MODEL_DIR.mkdir(parents=True, exist_ok=True)
-METRICS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# ==========================================================
-# Model Paths
-# ==========================================================
+METRICS_DIR = (
+    BASE_DIR
+    / "ml"
+    / "metrics"
+)
 
 ENTRY_MODEL_PATH = (
     MODEL_DIR
@@ -66,11 +78,6 @@ EXIT_MODEL_PATH = (
     / "exit_xgboost.pkl"
 )
 
-
-# ==========================================================
-# Metric Paths
-# ==========================================================
-
 ENTRY_METRICS_PATH = (
     METRICS_DIR
     / "entry_metrics.json"
@@ -81,24 +88,34 @@ EXIT_METRICS_PATH = (
     / "exit_metrics.json"
 )
 
-ENTRY_FEATURE_PATH = (
+ENTRY_IMPORTANCE_PATH = (
     METRICS_DIR
     / "entry_feature_importance.png"
 )
 
-EXIT_FEATURE_PATH = (
+EXIT_IMPORTANCE_PATH = (
     METRICS_DIR
     / "exit_feature_importance.png"
 )
 
-ENTRY_PARAMETER_PATH = (
+BEST_PARAMS_PATH = (
     METRICS_DIR
-    / "entry_best_parameters.json"
+    / "ridership_best_parameters.json"
 )
 
-EXIT_PARAMETER_PATH = (
-    METRICS_DIR
-    / "exit_best_parameters.json"
+
+# ==========================================================
+# Create Directories
+# ==========================================================
+
+MODEL_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
+)
+
+METRICS_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
 )
 
 
@@ -107,115 +124,168 @@ EXIT_PARAMETER_PATH = (
 # ==========================================================
 
 print("=" * 60)
-print("Loading Ridership Dataset...")
+print("Loading Processed Ridership Dataset...")
 print("=" * 60)
 
-df = pd.read_csv(DATASET)
+df = pd.read_csv(
+    DATASET
+)
 
-print(f"Dataset Shape : {df.shape}")
 print()
+print(
+    f"Dataset Shape : {df.shape}"
+)
 
-print(df.head())
 print()
+print(
+    "Available Columns:"
+)
+
+print(
+    df.columns.tolist()
+)
+
+print()
+print(
+    "First 5 Records:"
+)
+
+print(
+    df.head()
+)
 
 
 # ==========================================================
-# Features
+# Validate Required Columns
 # ==========================================================
+
+print()
+print("=" * 60)
+print("Validating Required Columns...")
+print("=" * 60)
 
 FEATURES = [
-
-    "station_name",
-
-    "platform_count",
-
-    "concourse_count",
-
     "hour",
-
     "day",
-
     "month",
-
     "day_of_week",
-
     "weekend",
-
 ]
 
-X = df[FEATURES]
+TARGETS = [
+    "entry_count",
+    "exit_count",
+]
 
-y_entry = df["entry_count"]
+REQUIRED_COLUMNS = (
+    FEATURES
+    + TARGETS
+)
 
-y_exit = df["exit_count"]
+missing_columns = [
+    column
+    for column in REQUIRED_COLUMNS
+    if column not in df.columns
+]
 
+if missing_columns:
 
-print("Features:")
+    raise ValueError(
+        "Missing required columns: "
+        f"{missing_columns}"
+    )
 
-print(FEATURES)
-
-print()
-
-print("Targets:")
-
-print("Entry Count")
-
-print("Exit Count")
-
-print()
+print(
+    "All required columns are present."
+)
 
 
 # ==========================================================
-# Train Test Split
+# Prepare Features
 # ==========================================================
 
+X = df[
+    FEATURES
+].copy()
+
+
+# ==========================================================
+# Prepare Targets
+# ==========================================================
+
+y_entry = df[
+    "entry_count"
+].copy()
+
+y_exit = df[
+    "exit_count"
+].copy()
+
+
+# ==========================================================
+# Train/Test Split
+# ==========================================================
+
+print()
 print("=" * 60)
 print("Splitting Dataset...")
 print("=" * 60)
 
-X_train, X_test, y_entry_train, y_entry_test = train_test_split(
-
-    X,
-
-    y_entry,
-
-    test_size=0.20,
-
-    random_state=42,
-
+X_train, X_test, y_entry_train, y_entry_test, y_exit_train, y_exit_test = (
+    train_test_split(
+        X,
+        y_entry,
+        y_exit,
+        test_size=0.20,
+        random_state=42,
+    )
 )
 
-_, _, y_exit_train, y_exit_test = train_test_split(
-
-    X,
-
-    y_exit,
-
-    test_size=0.20,
-
-    random_state=42,
-
-)
-
-print(f"Training Samples : {len(X_train)}")
-
-print(f"Testing Samples  : {len(X_test)}")
 
 print()
+print(
+    f"Training Samples : {len(X_train)}"
+)
+
+print(
+    f"Testing Samples  : {len(X_test)}"
+)
 
 
 # ==========================================================
-# Hyperparameter Grid
+# Base XGBoost Model
+# ==========================================================
+
+base_model = XGBRegressor(
+    objective="reg:squarederror",
+    random_state=42,
+    n_jobs=-1,
+)
+
+
+# ==========================================================
+# Hyperparameter Search
 # ==========================================================
 
 param_grid = {
 
-    "n_estimators": [100, 200, 300],
+    "n_estimators": [
+        100,
+        200,
+        300,
+        500,
+    ],
 
-    "max_depth": [3, 5, 7, 9],
+    "max_depth": [
+        3,
+        5,
+        7,
+        9,
+    ],
 
     "learning_rate": [
         0.01,
+        0.03,
         0.05,
         0.1,
         0.2,
@@ -239,6 +309,7 @@ param_grid = {
         1,
         3,
         5,
+        10,
     ],
 
     "gamma": [
@@ -247,215 +318,56 @@ param_grid = {
         0.2,
         0.3,
     ],
-
 }
+
+
 # ==========================================================
-# Training Function
-# ==========================================================
-
-def train_model(
-    target_name,
-    y_train,
-    y_test,
-    model_path,
-    metrics_path,
-    parameter_path,
-    feature_path,
-):
-
-    print("=" * 60)
-    print(f"Training {target_name} Model...")
-    print("=" * 60)
-
-    base_model = XGBRegressor(
-        objective="reg:squarederror",
-        random_state=42,
-    )
-
-    search = RandomizedSearchCV(
-        estimator=base_model,
-        param_distributions=param_grid,
-        n_iter=20,
-        cv=5,
-        scoring="neg_mean_absolute_error",
-        verbose=2,
-        random_state=42,
-        n_jobs=-1,
-    )
-
-    search.fit(
-        X_train,
-        y_train,
-    )
-
-    model = search.best_estimator_
-
-    print()
-    print("Training Complete!")
-    print()
-
-    print("=" * 60)
-    print(f"{target_name} Best Parameters")
-    print("=" * 60)
-
-    print(search.best_params_)
-    print()
-
-    print(
-        f"Best CV Score : {-search.best_score_:.4f}"
-    )
-
-    # ==========================================
-    # Prediction
-    # ==========================================
-
-    prediction = model.predict(X_test)
-
-    mae = mean_absolute_error(
-        y_test,
-        prediction,
-    )
-
-    rmse = np.sqrt(
-        mean_squared_error(
-            y_test,
-            prediction,
-        )
-    )
-
-    r2 = r2_score(
-        y_test,
-        prediction,
-    )
-
-    print()
-    print(f"{target_name} Metrics")
-    print("-" * 30)
-
-    print(f"MAE  : {mae:.4f}")
-    print(f"RMSE : {rmse:.4f}")
-    print(f"R²   : {r2:.4f}")
-
-    print()
-
-    # ==========================================
-    # Save Model
-    # ==========================================
-
-    joblib.dump(
-        model,
-        model_path,
-    )
-
-    print(f"Model Saved : {model_path}")
-
-    # ==========================================
-    # Save Metrics
-    # ==========================================
-
-    metrics = {
-
-        "MAE": float(mae),
-
-        "RMSE": float(rmse),
-
-        "R2": float(r2),
-
-    }
-
-    with open(
-        metrics_path,
-        "w",
-        encoding="utf-8",
-    ) as file:
-
-        json.dump(
-            metrics,
-            file,
-            indent=4,
-        )
-
-    print(
-        f"Metrics Saved : {metrics_path}"
-    )
-
-    # ==========================================
-    # Save Best Parameters
-    # ==========================================
-
-    with open(
-        parameter_path,
-        "w",
-        encoding="utf-8",
-    ) as file:
-
-        json.dump(
-            search.best_params_,
-            file,
-            indent=4,
-        )
-
-    print(
-        f"Best Parameters Saved : {parameter_path}"
-    )
-
-    # ==========================================
-    # Feature Importance
-    # ==========================================
-
-    print()
-    print("=" * 60)
-    print("Generating Feature Importance...")
-    print("=" * 60)
-
-    plt.figure(figsize=(10, 6))
-
-    plot_importance(
-        model,
-        importance_type="gain",
-        max_num_features=10,
-    )
-
-    plt.title(
-        f"{target_name} Feature Importance"
-    )
-
-    plt.tight_layout()
-
-    plt.savefig(
-        feature_path,
-        dpi=300,
-        bbox_inches="tight",
-    )
-
-    plt.close()
-
-    print(
-        f"Feature Importance Saved : {feature_path}"
-    )
-
-    print()
-
-    return model# ==========================================================
 # Train Entry Model
 # ==========================================================
 
-entry_model = train_model(
+print()
+print("=" * 60)
+print("Training Entry Count Model...")
+print("=" * 60)
 
-    target_name="Entry",
+entry_search = RandomizedSearchCV(
+    estimator=base_model,
+    param_distributions=param_grid,
+    n_iter=20,
+    cv=5,
+    scoring="neg_mean_absolute_error",
+    verbose=2,
+    random_state=42,
+    n_jobs=-1,
+)
 
-    y_train=y_entry_train,
+entry_search.fit(
+    X_train,
+    y_entry_train,
+)
 
-    y_test=y_entry_test,
+entry_model = (
+    entry_search.best_estimator_
+)
 
-    model_path=ENTRY_MODEL_PATH,
+print()
+print(
+    "Entry Model Training Complete!"
+)
 
-    metrics_path=ENTRY_METRICS_PATH,
+print()
+print(
+    "Best Entry Parameters:"
+)
 
-    parameter_path=ENTRY_PARAMETER_PATH,
+print(
+    entry_search.best_params_
+)
 
-    feature_path=ENTRY_FEATURE_PATH,
-
+print()
+print(
+    f"Best Entry CV MAE: "
+    f"{-entry_search.best_score_:.4f}"
 )
 
 
@@ -463,29 +375,386 @@ entry_model = train_model(
 # Train Exit Model
 # ==========================================================
 
-exit_model = train_model(
+print()
+print("=" * 60)
+print("Training Exit Count Model...")
+print("=" * 60)
 
-    target_name="Exit",
+exit_search = RandomizedSearchCV(
+    estimator=base_model,
+    param_distributions=param_grid,
+    n_iter=20,
+    cv=5,
+    scoring="neg_mean_absolute_error",
+    verbose=2,
+    random_state=42,
+    n_jobs=-1,
+)
 
-    y_train=y_exit_train,
+exit_search.fit(
+    X_train,
+    y_exit_train,
+)
 
-    y_test=y_exit_test,
+exit_model = (
+    exit_search.best_estimator_
+)
 
-    model_path=EXIT_MODEL_PATH,
+print()
+print(
+    "Exit Model Training Complete!"
+)
 
-    metrics_path=EXIT_METRICS_PATH,
+print()
+print(
+    "Best Exit Parameters:"
+)
 
-    parameter_path=EXIT_PARAMETER_PATH,
+print(
+    exit_search.best_params_
+)
 
-    feature_path=EXIT_FEATURE_PATH,
-
+print()
+print(
+    f"Best Exit CV MAE: "
+    f"{-exit_search.best_score_:.4f}"
 )
 
 
 # ==========================================================
-# Finish
+# Predictions
 # ==========================================================
 
+print()
 print("=" * 60)
-print("Ridership Model Training Completed Successfully")
+print("Generating Predictions...")
+print("=" * 60)
+
+entry_pred = (
+    entry_model.predict(X_test)
+)
+
+exit_pred = (
+    exit_model.predict(X_test)
+)
+
+
+# ==========================================================
+# Prevent Negative Predictions
+# ==========================================================
+
+entry_pred = entry_pred.clip(
+    min=0
+)
+
+exit_pred = exit_pred.clip(
+    min=0
+)
+
+
+# ==========================================================
+# Evaluation Function
+# ==========================================================
+
+def calculate_metrics(
+    y_true,
+    y_pred,
+):
+
+    mae = mean_absolute_error(
+        y_true,
+        y_pred,
+    )
+
+    rmse = mean_squared_error(
+        y_true,
+        y_pred,
+    ) ** 0.5
+
+    r2 = r2_score(
+        y_true,
+        y_pred,
+    )
+
+    return {
+        "mae": float(mae),
+        "rmse": float(rmse),
+        "r2_score": float(r2),
+    }
+
+
+# ==========================================================
+# Calculate Metrics
+# ==========================================================
+
+entry_metrics = calculate_metrics(
+    y_entry_test,
+    entry_pred,
+)
+
+exit_metrics = calculate_metrics(
+    y_exit_test,
+    exit_pred,
+)
+
+
+# ==========================================================
+# Print Entry Metrics
+# ==========================================================
+
+print()
+print("=" * 60)
+print("ENTRY COUNT MODEL")
+print("=" * 60)
+
+print(
+    f"MAE  : "
+    f"{entry_metrics['mae']:.4f}"
+)
+
+print(
+    f"RMSE : "
+    f"{entry_metrics['rmse']:.4f}"
+)
+
+print(
+    f"R²   : "
+    f"{entry_metrics['r2_score']:.4f}"
+)
+
+
+# ==========================================================
+# Print Exit Metrics
+# ==========================================================
+
+print()
+print("=" * 60)
+print("EXIT COUNT MODEL")
+print("=" * 60)
+
+print(
+    f"MAE  : "
+    f"{exit_metrics['mae']:.4f}"
+)
+
+print(
+    f"RMSE : "
+    f"{exit_metrics['rmse']:.4f}"
+)
+
+print(
+    f"R²   : "
+    f"{exit_metrics['r2_score']:.4f}"
+)
+
+
+# ==========================================================
+# Save Models
+# ==========================================================
+
+joblib.dump(
+    entry_model,
+    ENTRY_MODEL_PATH,
+)
+
+joblib.dump(
+    exit_model,
+    EXIT_MODEL_PATH,
+)
+
+print()
+print(
+    f"Entry Model Saved:"
+)
+
+print(
+    ENTRY_MODEL_PATH
+)
+
+print()
+print(
+    f"Exit Model Saved:"
+)
+
+print(
+    EXIT_MODEL_PATH
+)
+
+
+# ==========================================================
+# Save Metrics
+# ==========================================================
+
+with open(
+    ENTRY_METRICS_PATH,
+    "w",
+    encoding="utf-8",
+) as file:
+
+    json.dump(
+        entry_metrics,
+        file,
+        indent=4,
+    )
+
+
+with open(
+    EXIT_METRICS_PATH,
+    "w",
+    encoding="utf-8",
+) as file:
+
+    json.dump(
+        exit_metrics,
+        file,
+        indent=4,
+    )
+
+
+# ==========================================================
+# Save Best Parameters
+# ==========================================================
+
+best_parameters = {
+
+    "entry_model":
+        entry_search.best_params_,
+
+    "exit_model":
+        exit_search.best_params_,
+}
+
+
+with open(
+    BEST_PARAMS_PATH,
+    "w",
+    encoding="utf-8",
+) as file:
+
+    json.dump(
+        best_parameters,
+        file,
+        indent=4,
+    )
+
+
+# ==========================================================
+# Feature Importance - Entry
+# ==========================================================
+
+print()
+print("=" * 60)
+print("Generating Entry Feature Importance...")
+print("=" * 60)
+
+plt.figure(
+    figsize=(10, 6)
+)
+
+plot_importance(
+    entry_model,
+    importance_type="gain",
+    max_num_features=len(FEATURES),
+)
+
+plt.title(
+    "Entry Count Prediction - Feature Importance"
+)
+
+plt.tight_layout()
+
+plt.savefig(
+    ENTRY_IMPORTANCE_PATH,
+    dpi=300,
+    bbox_inches="tight",
+)
+
+plt.close()
+
+
+# ==========================================================
+# Feature Importance - Exit
+# ==========================================================
+
+print()
+print("=" * 60)
+print("Generating Exit Feature Importance...")
+print("=" * 60)
+
+plt.figure(
+    figsize=(10, 6)
+)
+
+plot_importance(
+    exit_model,
+    importance_type="gain",
+    max_num_features=len(FEATURES),
+)
+
+plt.title(
+    "Exit Count Prediction - Feature Importance"
+)
+
+plt.tight_layout()
+
+plt.savefig(
+    EXIT_IMPORTANCE_PATH,
+    dpi=300,
+    bbox_inches="tight",
+)
+
+plt.close()
+
+
+# ==========================================================
+# Final Summary
+# ==========================================================
+
+print()
+print("=" * 60)
+print("RIDERSHIP MODEL TRAINING COMPLETED")
+print("=" * 60)
+
+print()
+
+print("ML Features:")
+
+for feature in FEATURES:
+
+    print(
+        f"  ✓ {feature}"
+    )
+
+print()
+
+print("Models:")
+
+print(
+    "  ✓ entry_xgboost.pkl"
+)
+
+print(
+    "  ✓ exit_xgboost.pkl"
+)
+
+print()
+
+print(
+    "Station Name: "
+    "OPTIONAL / NOT USED BY MODEL"
+)
+
+print()
+
+print(
+    "Predicted Ridership:"
+)
+
+print(
+    "  predicted_entries "
+    "+ predicted_exits"
+)
+
+print()
+
 print("=" * 60)

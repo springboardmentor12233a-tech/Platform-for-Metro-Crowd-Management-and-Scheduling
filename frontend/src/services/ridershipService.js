@@ -5,7 +5,6 @@ const API = axios.create({
 });
 
 const ridershipService = {
-
   getStations() {
     return API.get("/stations");
   },

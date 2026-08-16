@@ -1,30 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import crowdService from "../services/crowdService";
 
 export default function CrowdPrediction() {
   const [stations, setStations] = useState([]);
+  const [loadingStations, setLoadingStations] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   const [formData, setFormData] = useState({
     station_name: "",
     entry_count: "",
     exit_count: "",
-    platform_count: "",
-    concourse_count: "",
     date: "",
-    time: ""
-});
+    time: "",
+  });
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  // Load stations from backend
   useEffect(() => {
     const loadStations = async () => {
       try {
         const response = await crowdService.getStations();
-        setStations(response.data);
-      } catch (err) {
-        console.error("Failed to load stations:", err);
+        setStations(response.data || []);
+      } catch (error) {
+        console.error("Failed to load stations:", error);
+      } finally {
+        setLoadingStations(false);
       }
     };
 
@@ -32,104 +31,187 @@ export default function CrowdPrediction() {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
-  
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "number" ? Number(value) : value,
+      [name]: value,
     }));
   };
-  
+
   const predictCrowd = async () => {
-    // Validation
     if (!formData.station_name) {
       alert("Please select a station.");
       return;
     }
-  
+
+    if (!formData.entry_count || !formData.exit_count) {
+      alert("Please enter entry and exit counts.");
+      return;
+    }
+
     if (!formData.date) {
       alert("Please select a date.");
       return;
     }
-  
+
     if (!formData.time) {
       alert("Please select a time.");
       return;
     }
-  
+
+    const entryCount = Number(formData.entry_count);
+    const exitCount = Number(formData.exit_count);
+
     if (
-      formData.entry_count < 0 ||
-      formData.exit_count < 0 ||
-      formData.platform_count < 0 ||
-      formData.concourse_count < 0
+      !Number.isFinite(entryCount) ||
+      !Number.isFinite(exitCount)
     ) {
-      alert("Counts cannot be negative.");
+      alert("Please enter valid passenger counts.");
       return;
     }
-  
-    // Create Date object
-    const selectedDate = new Date(`${formData.date}T${formData.time}`);
-  
-    // Extract required fields
+
+    if (entryCount < 0 || exitCount < 0) {
+      alert("Passenger counts cannot be negative.");
+      return;
+    }
+
+    const selectedDate = new Date(
+      `${formData.date}T${formData.time}`
+    );
+
+    if (Number.isNaN(selectedDate.getTime())) {
+      alert("Invalid date or time.");
+      return;
+    }
+
     const hour = selectedDate.getHours();
     const day = selectedDate.getDate();
     const month = selectedDate.getMonth() + 1;
-    const day_of_week = selectedDate.getDay();
-    const weekend = day_of_week === 0 || day_of_week === 6 ? 1 : 0;
-  
-    // Request payload
+
+    const jsDay = selectedDate.getDay();
+
+    const dayOfWeek =
+      jsDay === 0
+        ? 6
+        : jsDay - 1;
+
+    const weekend =
+      dayOfWeek === 5 ||
+      dayOfWeek === 6
+        ? 1
+        : 0;
+
     const requestData = {
       station_name: formData.station_name,
-      entry_count: Number(formData.entry_count),
-      exit_count: Number(formData.exit_count),
-      platform_count: Number(formData.platform_count),
-      concourse_count: Number(formData.concourse_count),
-  
-      hour,
-      day,
-      month,
-      day_of_week,
-      weekend,
+      entry_count: entryCount,
+      exit_count: exitCount,
+      hour: hour,
+      day: day,
+      month: month,
+      day_of_week: dayOfWeek,
+      weekend: weekend,
     };
-  
+
+    console.log(
+      "Crowd prediction request:",
+      requestData
+    );
+
     setLoading(true);
-  
+    setResult(null);
+
     try {
-      const response = await crowdService.predictCrowd(requestData);
+      const response =
+        await crowdService.predictCrowd(
+          requestData
+        );
+
+      console.log(
+        "Crowd prediction response:",
+        response.data
+      );
+
       setResult({
         ...response.data,
-        station_name: formData.station_name,
-        prediction_date: formData.date,
-        prediction_time: formData.time,
+        station_name:
+          formData.station_name,
+        prediction_date:
+          formData.date,
+        prediction_time_input:
+          formData.time,
       });
-    } catch (err) {
-      console.error(err);
-      alert("Prediction failed.");
+
+    } catch (error) {
+      console.error(
+        "Crowd prediction failed:",
+        error.response?.data || error
+      );
+
+      const detail =
+        error.response?.data?.detail;
+
+      let message =
+        "Crowd prediction failed.";
+
+      if (typeof detail === "string") {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        message =
+          detail
+            .map(
+              (item) =>
+                item.msg || "Invalid input"
+            )
+            .join("\n");
+      }
+
+      alert(message);
+
     } finally {
       setLoading(false);
     }
   };
 
-  const badgeColor = () => {
-    if (!result) return "bg-gray-500";
-  
-    switch (result.predicted_crowd_level) {
-      case "Low":
+  const getBadgeClass = (level) => {
+    switch (
+      String(level).toUpperCase()
+    ) {
+      case "LOW":
         return "bg-green-500";
-  
-      case "Medium":
+
+      case "MEDIUM":
         return "bg-yellow-500 text-black";
-  
-      case "High":
+
+      case "HIGH":
         return "bg-orange-500";
-  
-      case "Very High":
+
+      case "VERY HIGH":
+      case "VERY_HIGH":
         return "bg-red-600";
-  
+
       default:
-        return "bg-blue-500";
+        return "bg-slate-500";
     }
   };
+
+  const formatCrowdLevel = (level) => {
+    if (!level) {
+      return "Unknown";
+    }
+
+    return String(level)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) =>
+        char.toUpperCase()
+      );
+  };
+
+  const confidence =
+    result?.confidence_score !== null &&
+    result?.confidence_score !== undefined
+      ? Number(result.confidence_score)
+      : null;
 
   return (
     <div className="p-8">
@@ -140,15 +222,14 @@ export default function CrowdPrediction() {
         </h1>
 
         <p className="text-slate-400 mt-2">
-          Predict crowd level using the AI model.
+          Predict station crowd level using
+          the trained AI model.
         </p>
       </div>
 
       <div className="bg-slate-800 rounded-xl p-6 shadow-lg">
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-          {/* Station */}
 
           <div>
             <label className="block text-slate-300 mb-2">
@@ -159,9 +240,14 @@ export default function CrowdPrediction() {
               name="station_name"
               value={formData.station_name}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-slate-700 text-white"
+              disabled={loadingStations}
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
-              <option value="">Select Station</option>
+              <option value="">
+                {loadingStations
+                  ? "Loading stations..."
+                  : "Select Station"}
+              </option>
 
               {stations.map((station) => (
                 <option
@@ -173,8 +259,6 @@ export default function CrowdPrediction() {
               ))}
             </select>
           </div>
-
-          
 
           <Input
             label="Entry Count"
@@ -190,70 +274,184 @@ export default function CrowdPrediction() {
             onChange={handleChange}
           />
 
-<Input
-  label="Concourse Crowd"
-  name="concourse_count"
-  value={formData.concourse_count}
-  onChange={handleChange}
-/>
+          <div>
+            <label className="block text-slate-300 mb-2">
+              Date
+            </label>
 
-<input
-  type="date"
-  name="date"
-  value={formData.date}
-  onChange={handleChange}
-  className="w-full rounded-lg border border-gray-300 p-2"
-/>
-
-<input
-  type="time"
-  name="time"
-  value={formData.time}
-  onChange={handleChange}
-  className="w-full rounded-lg border border-gray-300 p-2"
-/>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
           </div>
+
+          <div>
+            <label className="block text-slate-300 mb-2">
+              Time
+            </label>
+
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+
+        </div>
 
         <button
           onClick={predictCrowd}
           disabled={loading}
-          className="mt-8 px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-semibold transition"
+          className="mt-8 px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-600 text-white font-semibold transition"
         >
-          {loading ? "Predicting..." : "Predict Crowd"}
+          {loading
+            ? "Predicting..."
+            : "Predict Crowd"}
         </button>
 
       </div>
 
       {result && (
-        <div className="mt-8 bg-slate-800 rounded-xl p-6">
+        <div className="mt-8 bg-slate-800 rounded-xl p-6 shadow-lg">
 
-          <h2 className="text-white text-xl font-bold mb-4">
+          <h2 className="text-white text-xl font-bold mb-6">
             Prediction Result
           </h2>
 
-          <span
-            className={`px-4 py-2 rounded-full text-white ${badgeColor()}`}
-          >
-            {result.predicted_crowd_level}
-          </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <p className="mt-6 text-white">
-            Confidence:
-            <span className="ml-2 text-cyan-400 font-bold">
-              {(result.confidence_score * 100).toFixed(2)}%
-            </span>
-          </p>
+            <div>
+              <p className="text-slate-400 text-sm">
+                Station
+              </p>
 
-          <div className="mt-3 w-full h-3 rounded-full bg-slate-700">
+              <p className="text-white text-lg font-semibold mt-1">
+                {result.station_name}
+              </p>
+            </div>
 
-            <div
-              className="h-3 rounded-full bg-cyan-500"
-              style={{
-                width: `${result.confidence_score * 100}%`,
-              }}
-            />
+            <div>
+              <p className="text-slate-400 text-sm">
+                Crowd Level
+              </p>
+
+              <span
+                className={`inline-block mt-2 px-5 py-2 rounded-full text-white font-semibold ${getBadgeClass(
+                  result.predicted_crowd_level
+                )}`}
+              >
+                {formatCrowdLevel(
+                  result.predicted_crowd_level
+                )}
+              </span>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Predicted Entries
+              </p>
+
+              <p className="text-cyan-400 text-2xl font-bold mt-1">
+                {result.predicted_entries ??
+                  "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Predicted Exits
+              </p>
+
+              <p className="text-cyan-400 text-2xl font-bold mt-1">
+                {result.predicted_exits ??
+                  "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Prediction Date
+              </p>
+
+              <p className="text-white mt-1">
+                {result.prediction_date}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Prediction Time
+              </p>
+
+              <p className="text-white mt-1">
+                {result.prediction_time_input}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Prediction ID
+              </p>
+
+              <p className="text-cyan-400 mt-1 font-mono">
+                {result.id || "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm">
+                Station ID
+              </p>
+
+              <p className="text-white mt-1">
+                {result.station_id ?? "-"}
+              </p>
+            </div>
 
           </div>
+
+          {confidence !== null && (
+            <div className="mt-8">
+
+              <div className="flex justify-between mb-2">
+
+                <span className="text-slate-300">
+                  Confidence
+                </span>
+
+                <span className="text-cyan-400 font-bold">
+                  {(
+                    confidence * 100
+                  ).toFixed(2)}
+                  %
+                </span>
+
+              </div>
+
+              <div className="w-full h-3 rounded-full bg-slate-700">
+
+                <div
+                  className="h-3 rounded-full bg-cyan-500 transition-all"
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      Math.max(
+                        0,
+                        confidence * 100
+                      )
+                    )}%`,
+                  }}
+                />
+
+              </div>
+
+            </div>
+          )}
 
         </div>
       )}
@@ -262,7 +460,12 @@ export default function CrowdPrediction() {
   );
 }
 
-function Input({ label, name, value, onChange }) {
+function Input({
+  label,
+  name,
+  value,
+  onChange,
+}) {
   return (
     <div>
       <label className="block text-slate-300 mb-2">
@@ -271,10 +474,11 @@ function Input({ label, name, value, onChange }) {
 
       <input
         type="number"
+        min="0"
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full p-3 rounded-lg bg-slate-700 text-white"
+        className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
       />
     </div>
   );

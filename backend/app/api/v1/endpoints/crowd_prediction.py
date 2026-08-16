@@ -1,142 +1,73 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
+from app.models.crowd_prediction import CrowdPrediction  # <-- Make sure this is imported!
 from app.schemas.crowd_prediction import (
-    CrowdPredictionCreate,
-    CrowdPredictionUpdate,
-    CrowdPredictionResponse,
     CrowdPredictionRequest,
+    CrowdPredictionResponse,
 )
-from app.services.crowd_prediction import CrowdPredictionService
+from app.services.crowd_prediction import (
+    CrowdPredictionService,
+)
 
 router = APIRouter()
 
 
-# -------------------------------------------------------
-# ML Crowd Prediction
-# -------------------------------------------------------
 @router.post(
     "/predict",
-    status_code=status.HTTP_200_OK,
+    response_model=CrowdPredictionResponse,
 )
 def predict_crowd(
     request: CrowdPredictionRequest,
-):
-    return CrowdPredictionService.predict_crowd(request)
-
-
-# -------------------------------------------------------
-# Create Prediction
-# -------------------------------------------------------
-@router.post(
-    "/",
-    response_model=CrowdPredictionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-def create_prediction(
-    prediction: CrowdPredictionCreate,
     db: Session = Depends(get_db),
 ):
-    return CrowdPredictionService.create_prediction(
+    return CrowdPredictionService.predict_crowd(
         db=db,
-        prediction=prediction,
+        request=request,
     )
 
 
-# -------------------------------------------------------
-# Get All Predictions
-# -------------------------------------------------------
+# ==========================================================
+# NEW GET ROUTE: Fetch history for Analytics Dashboard
+# ==========================================================
+# ==========================================================
+# NEW GET ROUTE: Fetch history for Analytics Dashboard
+# ==========================================================
 @router.get(
     "/",
     response_model=List[CrowdPredictionResponse],
 )
-def get_all_predictions(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1),
+def get_all_crowd_predictions(
     db: Session = Depends(get_db),
 ):
-    return CrowdPredictionService.get_all_predictions(
-        db=db,
-        skip=skip,
-        limit=limit,
+    predictions = (
+        db.query(CrowdPrediction)
+        .order_by(CrowdPrediction.prediction_time.desc())
+        .limit(100)
+        .all()
     )
-
-
-# -------------------------------------------------------
-# Get Prediction by ID
-# -------------------------------------------------------
-@router.get(
-    "/{prediction_id}",
-    response_model=CrowdPredictionResponse,
-)
-def get_prediction(
-    prediction_id: str,
-    db: Session = Depends(get_db),
-):
-    prediction = CrowdPredictionService.get_prediction(
-        db=db,
-        prediction_id=prediction_id,
-    )
-
-    if prediction is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Crowd prediction not found",
+    
+    formatted_responses = []
+    
+    for p in predictions:
+        # Safely extract the station name from the database relationship
+        station_name = p.station.station_name if p.station else "Unknown Station"
+        
+        formatted_responses.append(
+            CrowdPredictionResponse(
+                id=p.id,
+                station_id=p.station_id,
+                station_name=station_name, # Map the extracted name here!
+                prediction_time=p.prediction_time,
+                predicted_entries=p.predicted_entries,
+                predicted_exits=p.predicted_exits,
+                predicted_platform_crowd=p.predicted_platform_crowd,
+                predicted_crowd_level=p.predicted_crowd_level,
+                confidence_score=p.confidence_score,
+            )
         )
 
-    return prediction
-
-
-# -------------------------------------------------------
-# Update Prediction
-# -------------------------------------------------------
-@router.put(
-    "/{prediction_id}",
-    response_model=CrowdPredictionResponse,
-)
-def update_prediction(
-    prediction_id: str,
-    prediction: CrowdPredictionUpdate,
-    db: Session = Depends(get_db),
-):
-    updated_prediction = CrowdPredictionService.update_prediction(
-        db=db,
-        prediction_id=prediction_id,
-        prediction=prediction,
-    )
-
-    if updated_prediction is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Crowd prediction not found",
-        )
-
-    return updated_prediction
-
-
-# -------------------------------------------------------
-# Delete Prediction
-# -------------------------------------------------------
-@router.delete(
-    "/{prediction_id}",
-    response_model=CrowdPredictionResponse,
-)
-def delete_prediction(
-    prediction_id: str,
-    db: Session = Depends(get_db),
-):
-    deleted_prediction = CrowdPredictionService.delete_prediction(
-        db=db,
-        prediction_id=prediction_id,
-    )
-
-    if deleted_prediction is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Crowd prediction not found",
-        )
-
-    return deleted_prediction
+    return formatted_responses

@@ -1,10 +1,13 @@
-import axios from "axios";
-
-const API = axios.create({
-    baseURL: "http://localhost:8000/api/v1",
-});
-
+import api from "./api";
 export const predictDelay = async (data) => {
-    const response = await API.post("/predict/delay", data);
+    const response = await api.post(
+        "/delay-prediction/predict",
+        data
+    );
+
     return response.data;
+};
+
+export default {
+    predictDelay,
 };

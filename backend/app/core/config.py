@@ -1,64 +1,90 @@
-"""
-Application Configuration — Pydantic Settings
-=============================================
-Loads all environment variables from the .env file and exposes them
-as a typed singleton `settings` object used throughout the application.
-"""
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # ------------------------------------------------------------------
-    # Application Identity
-    # ------------------------------------------------------------------
-    app_name: str = "Metro Crowd Management API"
-    app_version: str = "1.0.0"
-    debug: bool = True
-    environment: str = "development"
 
-    # ------------------------------------------------------------------
-    # Server Binding
-    # ------------------------------------------------------------------
-    host: str = "0.0.0.0"
-    port: int = 8000
+    # ========================================================
+    # APPLICATION
+    # ========================================================
 
-    # ------------------------------------------------------------------
-    # JWT / Security
-    # ------------------------------------------------------------------
-    secret_key: str = "dev-secret-key-replace-in-production"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    APP_NAME: str = "Metro Crowd Management API"
 
-    # ------------------------------------------------------------------
-    # Database
-    # ------------------------------------------------------------------
-    database_url: str = "postgresql+psycopg://postgres:test1234@localhost:5432/metroflow"
+    APP_VERSION: str = "1.0.0"
 
-    # ------------------------------------------------------------------
+    DEBUG: bool = True
+
+    ENVIRONMENT: str = "development"
+
+
+    # ========================================================
+    # SERVER
+    # ========================================================
+
+    HOST: str = "0.0.0.0"
+
+    PORT: int = 8000
+
+    DATABASE_URL: str
+
+
+    # ========================================================
+    # JWT
+    # ========================================================
+
+    JWT_SECRET_KEY: str
+
+    JWT_ALGORITHM: str = "HS256"
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+
+    # ========================================================
+    # GOOGLE AUTHENTICATION
+    # ========================================================
+
+    GOOGLE_CLIENT_ID: str | None = None
+
+
+    # ========================================================
     # CORS
-    # Store as a comma-separated string in .env
-    # ------------------------------------------------------------------
-    allowed_origins: str = "http://localhost:5173,http://localhost:3000"
+    # ========================================================
+
+    ALLOWED_ORIGINS: str = (
+        "http://localhost:5173,"
+        "http://localhost:3000"
+    )
+
+
+    # ========================================================
+    # CORS ORIGINS
+    # ========================================================
 
     @property
     def cors_origins(self) -> list[str]:
+        """
+        Convert the comma-separated ALLOWED_ORIGINS
+        environment variable into a list.
+        """
+
         return [
             origin.strip()
-            for origin in self.allowed_origins.split(",")
+            for origin in self.ALLOWED_ORIGINS.split(",")
             if origin.strip()
         ]
 
-    # ------------------------------------------------------------------
-    # Pydantic Settings Configuration
-    # ------------------------------------------------------------------
+
+    # ========================================================
+    # PYDANTIC SETTINGS
+    # ========================================================
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        case_sensitive=False,
+        case_sensitive=True,
         extra="ignore",
     )
 
 
-# Singleton
 settings = Settings()

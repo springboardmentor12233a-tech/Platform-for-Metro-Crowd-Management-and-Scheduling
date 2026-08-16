@@ -31,15 +31,32 @@ def load_passenger_journeys(db: Session, mapper: Mapper) -> dict:
     logger.info(f"Loading {PASSENGER_CSV.name}...")
 
     try:
+        # -----------------------------------
+        # Check CSV
+        # -----------------------------------
+
         if not PASSENGER_CSV.exists():
             logger.error(f"File not found: {PASSENGER_CSV}")
             stats["errors"] += 1
             return stats
 
+        # -----------------------------------
+        # Read CSV
+        # -----------------------------------
+
         df = pd.read_csv(PASSENGER_CSV)
+
         stats["loaded"] = len(df)
 
+        logger.info(
+            f"Passenger journey records found: {stats['loaded']}"
+        )
+
         valid_dicts = []
+
+        # -----------------------------------
+        # Process Records
+        # -----------------------------------
 
         for _, row in df.iterrows():
 
@@ -54,23 +71,36 @@ def load_passenger_journeys(db: Session, mapper: Mapper) -> dict:
                 continue
 
             # -----------------------------------
-            # Station Mapping
+            # Entry Station
             # -----------------------------------
 
-            entry_station_name = clean_string(row.get("entry_station"))
+            entry_station_name = clean_string(
+                row.get("entry_station")
+            )
 
             if not entry_station_name:
                 stats["skipped"] += 1
                 continue
 
-            exit_station_name = clean_string(row.get("exit_station"))
+            entry_station_id = mapper.get_or_create_station(
+                entry_station_name
+            )
+
+            # -----------------------------------
+            # Exit Station
+            # -----------------------------------
+
+            exit_station_name = clean_string(
+                row.get("exit_station")
+            )
 
             if not exit_station_name:
                 stats["skipped"] += 1
                 continue
 
-            entry_station_id = mapper.get_or_create_station(entry_station_name)
-            exit_station_id = mapper.get_or_create_station(exit_station_name)
+            exit_station_id = mapper.get_or_create_station(
+                exit_station_name
+            )
 
             # -----------------------------------
             # Build Record
@@ -79,17 +109,32 @@ def load_passenger_journeys(db: Session, mapper: Mapper) -> dict:
             valid_dicts.append(
                 {
                     "id": journey_id,
+
                     "entry_station_id": entry_station_id,
-                    "entry_time": parse_datetime(row.get("entry_time")),
-                    "entry_gate": clean_string(row.get("entry_gate")),
+                    "entry_time": parse_datetime(
+                        row.get("entry_time")
+                    ),
+                    "entry_gate": clean_string(
+                        row.get("entry_gate")
+                    ),
+
                     "exit_station_id": exit_station_id,
-                    "exit_time": parse_datetime(row.get("exit_time")),
-                    "exit_gate": clean_string(row.get("exit_gate")),
+                    "exit_time": parse_datetime(
+                        row.get("exit_time")
+                    ),
+                    "exit_gate": clean_string(
+                        row.get("exit_gate")
+                    ),
+
                     "travel_duration_mins": clean_int(
                         row.get("travel_duration_mins")
                     ),
                 }
             )
+
+        logger.info(
+            f"Prepared {len(valid_dicts)} new passenger journey records"
+        )
 
         # -----------------------------------
         # Bulk Insert
@@ -97,18 +142,52 @@ def load_passenger_journeys(db: Session, mapper: Mapper) -> dict:
 
         if valid_dicts:
 
-            for chunk in chunked_iterable(valid_dicts, CHUNK_SIZE):
+            for chunk in chunked_iterable(
+                valid_dicts,
+                CHUNK_SIZE,
+            ):
 
                 stmt = (
                     insert(PassengerJourney)
                     .values(chunk)
-                    .on_conflict_do_nothing()
+                    .on_conflict_do_nothing(
+                        index_elements=[PassengerJourney.id]
+                    )
+                    .returning(PassengerJourney.id)
                 )
 
-                db.execute(stmt)
-                stats["inserted"] += len(chunk)
+                result = db.execute(stmt)
+
+                inserted_ids = result.fetchall()
+
+                batch_inserted = len(inserted_ids)
+                batch_skipped = len(chunk) - batch_inserted
+
+                stats["inserted"] += batch_inserted
+                stats["skipped"] += batch_skipped
+
+                logger.info(
+                    f"Inserted passenger journey batch: "
+                    f"{batch_inserted}/{len(chunk)}"
+                )
 
             db.commit()
+
+            logger.info(
+                "Passenger journey data committed successfully"
+            )
+
+        # -----------------------------------
+        # Completion Summary
+        # -----------------------------------
+
+        logger.info("========================================")
+        logger.info("Passenger journey loading completed")
+        logger.info(f"Total records: {stats['loaded']}")
+        logger.info(f"Inserted: {stats['inserted']}")
+        logger.info(f"Skipped: {stats['skipped']}")
+        logger.info(f"Errors: {stats['errors']}")
+        logger.info("========================================")
 
     except Exception as e:
         logger.error(
@@ -119,6 +198,9 @@ def load_passenger_journeys(db: Session, mapper: Mapper) -> dict:
         stats["errors"] += 1
         db.rollback()
 
-    stats["time"] = round(time.time() - t0, 2)
+    stats["time"] = round(
+        time.time() - t0,
+        2,
+    )
 
     return stats

@@ -1,195 +1,333 @@
-"""
-Analytics Endpoints
-====================
-Returns aggregated metro system performance metrics and reports.
+from fastapi import APIRouter, Depends
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-Milestone 1: Returns rich dummy aggregated data for dashboard population.
-Milestone 2: Will query the analytics service which reads from TimescaleDB/PostgreSQL.
-Milestone 3: Will add export functionality (CSV/PDF via background tasks).
+from app.database.session import get_db
 
-Routes:
-    GET /api/v1/analytics         -- Analytics summary for a given period.
-    GET /api/v1/analytics/export  -- Export analytics report (stub).
-    GET /api/v1/analytics/lines   -- Per-line performance breakdown.
-"""
 
-import logging
-from typing import Optional
-
-from fastapi import APIRouter, Query
-
-from app.utils.response import success_response
-
-logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# ---------------------------------------------------------------------------
-# Dummy Analytics Data (rich dataset to power dashboard charts)
-# ---------------------------------------------------------------------------
-HOURLY_TRAFFIC = [
-    {"label": "06:00", "value": 4200},
-    {"label": "07:00", "value": 8900},
-    {"label": "08:00", "value": 15600},
-    {"label": "09:00", "value": 12300},
-    {"label": "10:00", "value": 7800},
-    {"label": "11:00", "value": 6100},
-    {"label": "12:00", "value": 9200},
-    {"label": "13:00", "value": 8700},
-    {"label": "14:00", "value": 7400},
-    {"label": "15:00", "value": 6800},
-    {"label": "16:00", "value": 9600},
-    {"label": "17:00", "value": 14200},
-    {"label": "18:00", "value": 16800},
-    {"label": "19:00", "value": 11200},
-    {"label": "20:00", "value": 6400},
-    {"label": "21:00", "value": 4100},
-    {"label": "22:00", "value": 2300},
-]
 
-STATION_HEATMAP = [
-    {"station": "Central Station", "value": 88},
-    {"station": "East Junction", "value": 95},
-    {"station": "North Terminal", "value": 45},
-    {"station": "South Bridge", "value": 72},
-    {"station": "West Gate", "value": 31},
-    {"station": "Airport Link", "value": 58},
-]
+@router.get("/predictions")
+def get_prediction_analytics(
+    db: Session = Depends(get_db),
+):
+    # =========================================================
+    # CROWD PREDICTIONS
+    # =========================================================
 
-LINE_PERFORMANCE = [
-    {
-        "line": "Blue Line",
-        "total_trains": 12,
-        "on_time_count": 10,
-        "delayed_count": 1,
-        "cancelled_count": 1,
-        "on_time_percent": 83.3,
-        "avg_passengers": 1200,
-    },
-    {
-        "line": "Red Line",
-        "total_trains": 8,
-        "on_time_count": 6,
-        "delayed_count": 2,
-        "cancelled_count": 0,
-        "on_time_percent": 75.0,
-        "avg_passengers": 980,
-    },
-    {
-        "line": "Green Line",
-        "total_trains": 6,
-        "on_time_count": 6,
-        "delayed_count": 0,
-        "cancelled_count": 0,
-        "on_time_percent": 100.0,
-        "avg_passengers": 640,
-    },
-    {
-        "line": "Yellow Line",
-        "total_trains": 4,
-        "on_time_count": 4,
-        "delayed_count": 0,
-        "cancelled_count": 0,
-        "on_time_percent": 100.0,
-        "avg_passengers": 520,
-    },
-]
+    crowd_query = text("""
+        SELECT
+            cp.id,
+            'Crowd' AS type,
+            s.station_name,
+            cp.prediction_time,
+            cp.predicted_entries,
+            cp.predicted_exits,
+            cp.predicted_crowd_level,
+            cp.confidence_score
+        FROM crowd_predictions cp
+        LEFT JOIN stations s
+            ON cp.station_id = s.id
+        ORDER BY cp.prediction_time DESC
+    """)
 
-# Period-specific multipliers for scaling demo data
-PERIOD_MULTIPLIERS = {
-    "today": 1.0,
-    "week": 6.8,
-    "month": 29.5,
-}
+    crowd_rows = db.execute(crowd_query).mappings().all()
 
-
-# ---------------------------------------------------------------------------
-# GET /analytics/
-# ---------------------------------------------------------------------------
-@router.get(
-    "/",
-    summary="Get Analytics Summary",
-    description=(
-        "Returns aggregated performance analytics for the specified period. "
-        "Includes passenger counts, on-time performance, and hourly traffic data."
-    ),
-)
-async def get_analytics(
-    period: str = Query(
-        "today",
-        description="Reporting period: today | week | month",
-    ),
-) -> dict:
-    """
-    Returns aggregated analytics for the specified time period.
-
-    Args:
-        period: One of 'today', 'week', or 'month'.
-    """
-    multiplier = PERIOD_MULTIPLIERS.get(period, 1.0)
-
-    return success_response(
+    crowd = [
         {
-            "period": period,
-            "total_passengers": int(142850 * multiplier),
-            "peak_hour": "08:30 - 09:30",
-            "avg_crowd_level": 63.4,
-            "on_time_performance": 87.2,
-            "incidents_count": int(3 * multiplier),
-            "total_trains_operated": int(30 * multiplier),
-            "revenue_trips": int(142850 * multiplier * 0.94),
-            "hourly_traffic": HOURLY_TRAFFIC,
-            "station_heatmap": STATION_HEATMAP,
-        },
-        message=f"Analytics summary for '{period}' retrieved successfully",
+            "id": row["id"],
+            "type": "Crowd",
+            "station_name": row["station_name"],
+            "prediction_time": row["prediction_time"],
+            "predicted_entries": row["predicted_entries"],
+            "predicted_exits": row["predicted_exits"],
+            "predicted_crowd_level": (
+                str(row["predicted_crowd_level"])
+                if row["predicted_crowd_level"] is not None
+                else None
+            ),
+            "confidence_score": row["confidence_score"],
+        }
+        for row in crowd_rows
+    ]
+
+    # =========================================================
+    # RIDERSHIP PREDICTIONS
+    # =========================================================
+
+    ridership_query = text("""
+        SELECT
+            rp.id,
+            'Ridership' AS type,
+            s.station_name,
+            rp.prediction_time,
+            rp.predicted_entries,
+            rp.predicted_exits,
+            rp.prediction,
+            rp.confidence_score
+        FROM ridership_predictions rp
+        LEFT JOIN stations s
+            ON rp.station_id = s.id
+        ORDER BY rp.prediction_time DESC
+    """)
+
+    ridership_rows = (
+        db.execute(ridership_query)
+        .mappings()
+        .all()
     )
 
-
-# ---------------------------------------------------------------------------
-# GET /analytics/lines
-# ---------------------------------------------------------------------------
-@router.get(
-    "/lines",
-    summary="Per-Line Performance Breakdown",
-    description="Returns on-time performance and passenger statistics broken down by metro line.",
-)
-async def get_line_performance() -> dict:
-    """Returns per-line performance metrics."""
-    return success_response(
-        {"total_lines": len(LINE_PERFORMANCE), "lines": LINE_PERFORMANCE},
-        message="Line performance data retrieved successfully",
-    )
-
-
-# ---------------------------------------------------------------------------
-# GET /analytics/export
-# ---------------------------------------------------------------------------
-@router.get(
-    "/export",
-    summary="Export Analytics Report",
-    description=(
-        "Initiates generation of a downloadable analytics report. "
-        "Milestone 1: Returns a stub response. "
-        "Milestone 3: Will trigger a Celery background task and return a download URL."
-    ),
-)
-async def export_analytics(
-    period: str = Query("today", description="Period to export: today | week | month"),
-    fmt: str = Query("csv", alias="format", description="Export format: csv | pdf | excel"),
-) -> dict:
-    """
-    Export analytics as a file (stub for Milestone 3).
-
-    Args:
-        period: Time period for the report.
-        fmt:    Output file format.
-    """
-    return success_response(
+    ridership = [
         {
-            "message": "Report export is prepared for Milestone 3",
-            "requested_period": period,
-            "requested_format": fmt.upper(),
-            "status": "not_implemented",
-            "eta": "Available in Milestone 3",
-        },
-        message="Export endpoint acknowledged",
+            "id": row["id"],
+            "type": "Ridership",
+            "station_name": row["station_name"],
+            "prediction_time": row["prediction_time"],
+            "predicted_entries": row["predicted_entries"],
+            "predicted_exits": row["predicted_exits"],
+            "prediction": row["prediction"],
+            "confidence_score": row["confidence_score"],
+        }
+        for row in ridership_rows
+    ]
+
+    # =========================================================
+    # FREQUENCY ADJUSTMENTS
+    # =========================================================
+
+    frequency_query = text("""
+        SELECT
+            fa.id,
+            'Frequency' AS type,
+            s.station_name,
+            fa.prediction_time,
+            fa.occupancy,
+            fa.capacity,
+            fa.occupancy_percentage,
+            fa.current_frequency,
+            fa.recommended_frequency,
+            fa.frequency_action,
+            fa.action_code,
+            fa.additional_trains_required,
+            fa.priority,
+            fa.action_required,
+            fa.recommendation,
+            fa.reason,
+            fa.estimated_wait_time_impact
+        FROM frequency_adjustments fa
+        LEFT JOIN stations s
+            ON fa.station_id = s.id
+        ORDER BY fa.prediction_time DESC
+    """)
+
+    frequency_rows = (
+        db.execute(frequency_query)
+        .mappings()
+        .all()
     )
+
+    frequency = [
+        {
+            "id": row["id"],
+            "type": "Frequency",
+            "station_name": row["station_name"],
+            "prediction_time": row["prediction_time"],
+            "occupancy": row["occupancy"],
+            "capacity": row["capacity"],
+            "occupancy_percentage": row[
+                "occupancy_percentage"
+            ],
+            "current_frequency": row[
+                "current_frequency"
+            ],
+            "recommended_frequency": row[
+                "recommended_frequency"
+            ],
+            "frequency_action": row[
+                "frequency_action"
+            ],
+            "action_code": row["action_code"],
+            "additional_trains_required": row[
+                "additional_trains_required"
+            ],
+            "priority": row["priority"],
+            "action_required": row[
+                "action_required"
+            ],
+            "recommendation": row[
+                "recommendation"
+            ],
+            "reason": row["reason"],
+            "estimated_wait_time_impact": row[
+                "estimated_wait_time_impact"
+            ],
+        }
+        for row in frequency_rows
+    ]
+
+    # =========================================================
+    # DELAY PREDICTIONS
+    # =========================================================
+
+    delay_query = text("""
+        SELECT
+            dp.id,
+            'Delay' AS type,
+            dp.route_id,
+            dp.transport_type,
+            dp.prediction_time,
+            dp.predicted_delay_minutes,
+            dp.delay_level,
+            dp.confidence_score
+        FROM delay_predictions dp
+        ORDER BY dp.prediction_time DESC
+    """)
+
+    delay_rows = (
+        db.execute(delay_query)
+        .mappings()
+        .all()
+    )
+
+    delay = [
+        {
+            "id": row["id"],
+            "type": "Delay",
+            "station_name": None,
+            "route_id": row["route_id"],
+            "transport_type": row[
+                "transport_type"
+            ],
+            "prediction_time": row[
+                "prediction_time"
+            ],
+            "predicted_delay": row[
+                "predicted_delay_minutes"
+            ],
+            "predicted_delay_minutes": row[
+                "predicted_delay_minutes"
+            ],
+            "delay_level": row[
+                "delay_level"
+            ],
+            "confidence_score": row[
+                "confidence_score"
+            ],
+        }
+        for row in delay_rows
+    ]
+
+    # =========================================================
+    # SCHEDULE PREDICTIONS
+    # =========================================================
+
+    schedule_query = text("""
+        SELECT
+            sp.id,
+            'Schedule' AS type,
+            s.station_name,
+            sp.prediction_time,
+            sp.train_id,
+            sp.schedule_action,
+            sp.action_code,
+            sp.reschedule_required,
+            sp.current_departure_time,
+            sp.recommended_departure_time,
+            sp.current_platform,
+            sp.recommended_platform,
+            sp.predicted_passengers,
+            sp.crowd_level,
+            sp.current_frequency,
+            sp.recommended_frequency,
+            sp.delay_minutes,
+            sp.train_to_allocate,
+            sp.recommendation,
+            sp.reason
+        FROM schedule_predictions sp
+        LEFT JOIN stations s
+            ON sp.station_id = s.id
+        ORDER BY sp.prediction_time DESC
+    """)
+
+    schedule_rows = (
+        db.execute(schedule_query)
+        .mappings()
+        .all()
+    )
+
+    schedule = [
+        {
+            "id": row["id"],
+            "type": "Schedule",
+            "station_name": row[
+                "station_name"
+            ],
+            "prediction_time": row[
+                "prediction_time"
+            ],
+            "train_id": row[
+                "train_id"
+            ],
+            "schedule_action": row[
+                "schedule_action"
+            ],
+            "action_code": row[
+                "action_code"
+            ],
+            "reschedule_required": row[
+                "reschedule_required"
+            ],
+            "current_departure_time": row[
+                "current_departure_time"
+            ],
+            "recommended_departure_time": row[
+                "recommended_departure_time"
+            ],
+            "current_platform": row[
+                "current_platform"
+            ],
+            "recommended_platform": row[
+                "recommended_platform"
+            ],
+            "predicted_passengers": row[
+                "predicted_passengers"
+            ],
+            "crowd_level": (
+                str(row["crowd_level"])
+                if row["crowd_level"] is not None
+                else None
+            ),
+            "current_frequency": row[
+                "current_frequency"
+            ],
+            "recommended_frequency": row[
+                "recommended_frequency"
+            ],
+            "delay_minutes": row[
+                "delay_minutes"
+            ],
+            "train_to_allocate": row[
+                "train_to_allocate"
+            ],
+            "recommendation": row[
+                "recommendation"
+            ],
+            "reason": row[
+                "reason"
+            ],
+        }
+        for row in schedule_rows
+    ]
+
+    # =========================================================
+    # FINAL RESPONSE
+    # =========================================================
+
+    return {
+        "crowd": crowd,
+        "ridership": ridership,
+        "frequency": frequency,
+        "delay": delay,
+        "schedule": schedule,
+    }

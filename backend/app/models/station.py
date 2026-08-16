@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from datetime import date
 
 from sqlalchemy import Boolean, Float, Integer, String, Date
-
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, TimestampMixin
@@ -20,17 +19,28 @@ if TYPE_CHECKING:
     from .sensor_telemetry import SensorTelemetry
     from .crowd_history import CrowdHistory
     from .crowd_prediction import CrowdPrediction
+    from .schedule_prediction import SchedulePrediction
     from .delay import Delay
 
 
 class Station(Base, TimestampMixin):
+
     __tablename__ = "stations"
+
+    # ---------------------------------------------------------
+    # PRIMARY KEY
+    # ---------------------------------------------------------
 
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
-        autoincrement=False,
+        autoincrement=True,
+        nullable=False,
     )
+
+    # ---------------------------------------------------------
+    # STATION INFORMATION
+    # ---------------------------------------------------------
 
     station_name: Mapped[str] = mapped_column(
         String(100),
@@ -40,50 +50,57 @@ class Station(Base, TimestampMixin):
     )
 
     distance_from_start_km: Mapped[float | None] = mapped_column(
-    Float,
-    nullable=True,
-)
+        Float,
+        nullable=True,
+    )
 
     line: Mapped[str | None] = mapped_column(
         String(50),
+        nullable=True,
         index=True,
     )
 
     opening_date: Mapped[date | None] = mapped_column(
-    Date,
-    nullable=True,
-)
+        Date,
+        nullable=True,
+    )
 
     station_layout: Mapped[str | None] = mapped_column(
-        String(50)
+        String(50),
+        nullable=True,
     )
 
     latitude: Mapped[float | None] = mapped_column(
-    Float,
-    nullable=True,
-)
+        Float,
+        nullable=True,
+    )
 
     longitude: Mapped[float | None] = mapped_column(
-    Float,
-    nullable=True,
-)
+        Float,
+        nullable=True,
+    )
 
     coord_invalid: Mapped[bool | None] = mapped_column(
-    Boolean,
-    nullable=True,
-)
+        Boolean,
+        nullable=True,
+    )
 
     distance_from_start_km_outlier: Mapped[bool | None] = mapped_column(
-    Boolean,
-    nullable=True,
-)
+        Boolean,
+        nullable=True,
+    )
 
     opening_year: Mapped[int | None] = mapped_column(
-    Integer,
-    nullable=True,
-)
+        Integer,
+        nullable=True,
+    )
 
-    # ---------------- RELATIONSHIPS ----------------
+    # ---------------------------------------------------------
+    # RELATIONSHIPS
+    # ---------------------------------------------------------
+# ---------------------------------------------------------
+    # RELATIONSHIPS
+    # ---------------------------------------------------------
 
     trains = relationship(
         "Train",
@@ -135,7 +152,7 @@ class Station(Base, TimestampMixin):
     occupancy_records = relationship(
         "Occupancy",
         back_populates="station",
-         cascade="all, delete-orphan",
+        cascade="all, delete-orphan",
     )
 
     sensor_records = relationship(
@@ -169,3 +186,16 @@ class Station(Base, TimestampMixin):
         back_populates="destination_station",
         cascade="all, delete-orphan",
     )
+
+    ridership_predictions = relationship(
+        "RidershipPrediction",
+        back_populates="station",
+        cascade="all, delete-orphan",
+    )
+    schedule_predictions = relationship(
+        "SchedulePrediction",
+        back_populates="station",
+        cascade="all, delete-orphan",
+    )
+
+   

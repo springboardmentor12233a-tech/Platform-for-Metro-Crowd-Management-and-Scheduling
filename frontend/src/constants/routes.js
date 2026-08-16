@@ -11,7 +11,11 @@ export const ROUTES = {
   ANALYTICS: '/analytics',
   ALERTS: '/alerts',
   SETTINGS: '/settings',
+  FREQUENCY_ADJUSTMENT: '/frequency-adjustment',
+  SCHEDULE_OPTIMIZER: "/schedule-optimizer",
+  OPERATIONS_DASHBOARD: "/operations-dashboard",
 
+DELAY_PREDICTION: "/delay-prediction",
   /** Catch-all */
   NOT_FOUND: '*',
 }

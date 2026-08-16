@@ -43,6 +43,7 @@ class Delay(Base, TimestampMixin):
     id: Mapped[str] = mapped_column(
         String(50),
         primary_key=True,
+         nullable=False,
     )
 
     # =====================================================
@@ -53,6 +54,11 @@ class Delay(Base, TimestampMixin):
         ForeignKey("trains.id", ondelete="SET NULL"),
         index=True,
     )
+    route_id: Mapped[str | None] = mapped_column(
+    String(50),
+    nullable=True,
+    index=True,
+)
 
     origin_station_id: Mapped[int] = mapped_column(
         ForeignKey("stations.id", ondelete="RESTRICT"),

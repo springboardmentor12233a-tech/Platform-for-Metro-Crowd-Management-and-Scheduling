@@ -1,4 +1,5 @@
 from .base import Base, TimestampMixin
+from .user import User
 from .station import Station
 from .train import Train
 from .schedules import Schedule
@@ -10,4 +11,10 @@ from .ticket import Ticket
 from .crowd_history import CrowdHistory
 from .crowd_prediction import CrowdPrediction
 from .passenger_journey import PassengerJourney
+from .ridership_prediction import RidershipPrediction
+from .alert import Alert
+from app.models.frequency_adjustment import FrequencyAdjustment
+from .delay_prediction import DelayPrediction
+from .schedule_prediction import SchedulePrediction
+from .user_preferences import UserPreferences
 from .enums import *

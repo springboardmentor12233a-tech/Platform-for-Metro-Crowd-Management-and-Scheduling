@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     auth,
     crowd,
-    scheduling,
     analytics,
     alerts,
     health,
@@ -14,7 +13,6 @@ from app.api.v1.endpoints.crowd_history import router as crowd_history_router
 from app.api.v1.endpoints.crowd_prediction import (
     router as crowd_prediction_router,
 )
-from app.api.v1.endpoints import crowd_prediction
 
 from app.api.v1.endpoints.schedule import (
     router as schedule_router,
@@ -40,6 +38,15 @@ from app.api.v1.endpoints.trip import (
 from app.api.v1.endpoints.ridership_prediction import (
     router as ridership_prediction_router,
 )
+from app.api.v1.endpoints import frequency_adjustment
+from app.api.v1.endpoints import train_status
+from app.api.v1.endpoints import schedule_recommendation
+from app.api.v1.endpoints import train_schedule_optimizer
+from app.api.v1.endpoints import delay_prediction
+from app.api.v1.endpoints import operations_dashboard
+from app.api.v1.endpoints import schedule_prediction
+from app.api.v1.endpoints.train_location import router as train_location_router
+from app.api.v1.endpoints import settings
 # ---------------------------------------------------------------------------
 # Root v1 Router
 # This router is mounted at /api/v1 in app/main.py
@@ -105,11 +112,38 @@ api_router.include_router(
     prefix="/trips",
     tags=["Trips"],
 )
+
 api_router.include_router(
-    crowd_prediction.router,
-    prefix="/crowd-predictions",
-    tags=["Crowd Prediction"],
+    frequency_adjustment.router,
+    prefix="/frequency-adjustment",
+    tags=["Frequency Adjustment"],
 )
+api_router.include_router(
+    train_status.router,
+    prefix="/train-status",
+    tags=["Train Status"],
+)
+api_router.include_router(
+    schedule_recommendation.router,
+    prefix="/schedule-recommendation",
+    tags=["Schedule Recommendation"],
+)
+api_router.include_router(
+    train_schedule_optimizer.router,
+    prefix="/schedule-optimizer",
+    tags=["Train Schedule Optimizer"],
+)
+api_router.include_router(
+    delay_prediction.router,
+    prefix="/delay-prediction",
+    tags=["Delay Prediction"],
+)
+api_router.include_router(
+    operations_dashboard.router,
+    prefix="/operations-dashboard",
+    tags=["Operations Dashboard"],
+)
+
 # Authentication — login / logout / profile
 api_router.include_router(
     auth.router,
@@ -130,10 +164,11 @@ api_router.include_router(
 )
 
 # Train Scheduling — schedule list and detail
+
 api_router.include_router(
-    scheduling.router,
-    prefix="/schedules",
-    tags=["Scheduling"],
+    schedule_prediction.router,
+    prefix="/schedule-prediction",
+    tags=["Schedule Prediction"],
 )
 
 # Analytics — aggregated performance reports
@@ -155,4 +190,14 @@ api_router.include_router(
     train.router,
     prefix="/trains",
     tags=["Train Status"],
+)
+api_router.include_router(
+    settings.router,
+    prefix="/settings",
+    tags=["Settings"],
+)
+# Train Location — real-time train location tracking
+
+api_router.include_router(
+    train_location_router,
 )

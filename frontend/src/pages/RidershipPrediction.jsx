@@ -2,72 +2,79 @@ import { useEffect, useState } from "react";
 import ridershipService from "../services/ridershipService";
 
 export default function RidershipPrediction() {
-
   const [stations, setStations] = useState([]);
+  const [loadingStations, setLoadingStations] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   const [formData, setFormData] = useState({
     station_name: "",
-    platform_count: "",
-    concourse_count: "",
     date: "",
     time: "",
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const [result, setResult] = useState(null);
-
   useEffect(() => {
-
     const loadStations = async () => {
-
       try {
+        setLoadingStations(true);
 
         const response =
           await ridershipService.getStations();
 
-        setStations(response.data);
+        let stationList = [];
 
+        if (Array.isArray(response?.data)) {
+          stationList = response.data;
+        } else if (
+          Array.isArray(response?.data?.data)
+        ) {
+          stationList = response.data.data;
+        } else if (
+          Array.isArray(response?.data?.stations)
+        ) {
+          stationList = response.data.stations;
+        }
+
+        setStations(stationList);
       } catch (error) {
+        console.error(
+          "Failed to load stations:",
+          error
+        );
 
-        console.error(error);
-
+        setStations([]);
+      } finally {
+        setLoadingStations(false);
       }
-
     };
 
     loadStations();
-
   }, []);
 
   const handleChange = (e) => {
-
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "number"
-          ? Number(value)
-          : value,
+      [name]: value,
     }));
 
+    setResult(null);
   };
 
   const predictRidership = async () => {
-
     if (!formData.station_name) {
-      alert("Please select station");
+      alert("Please select a station.");
       return;
     }
 
     if (!formData.date) {
-      alert("Please select date");
+      alert("Please select a date.");
       return;
     }
 
     if (!formData.time) {
-      alert("Please select time");
+      alert("Please select a time.");
       return;
     }
 
@@ -75,117 +82,197 @@ export default function RidershipPrediction() {
       `${formData.date}T${formData.time}`
     );
 
-    const requestData = {
+    if (Number.isNaN(selectedDate.getTime())) {
+      alert("Invalid date or time.");
+      return;
+    }
 
+    const hour = selectedDate.getHours();
+
+    const day = selectedDate.getDate();
+
+    const month =
+      selectedDate.getMonth() + 1;
+
+    const jsDay =
+      selectedDate.getDay();
+
+    // Convert JavaScript Sunday=0 convention
+    // to Python/Pandas Monday=0 convention.
+    const dayOfWeek =
+      jsDay === 0
+        ? 6
+        : jsDay - 1;
+
+    const weekend =
+      dayOfWeek === 5 ||
+      dayOfWeek === 6
+        ? 1
+        : 0;
+
+    const requestData = {
       station_name: formData.station_name,
 
-      platform_count: Number(
-        formData.platform_count
-      ),
+      hour: hour,
 
-      concourse_count: Number(
-        formData.concourse_count
-      ),
+      day: day,
 
-      hour: selectedDate.getHours(),
+      month: month,
 
-      day: selectedDate.getDate(),
+      day_of_week: dayOfWeek,
 
-      month: selectedDate.getMonth() + 1,
-
-      day_of_week:
-        selectedDate.getDay(),
-
-      weekend:
-        selectedDate.getDay() === 0 ||
-        selectedDate.getDay() === 6
-          ? 1
-          : 0,
-
+      weekend: weekend,
     };
 
+    console.log(
+      "Ridership prediction request:",
+      requestData
+    );
+
     setLoading(true);
+    setResult(null);
 
     try {
-
       const response =
         await ridershipService.predictRidership(
           requestData
         );
 
-      setResult(response.data);
+      console.log(
+        "Ridership prediction response:",
+        response.data
+      );
 
+      const prediction =
+        response?.data?.data ||
+        response?.data;
+
+      setResult({
+        ...prediction,
+        station_name:
+          formData.station_name,
+        prediction_date:
+          formData.date,
+        prediction_time:
+          formData.time,
+      });
     } catch (error) {
+      console.error(
+        "Ridership prediction failed:",
+        error.response?.data ||
+          error
+      );
 
-      console.error(error);
+      const detail =
+        error?.response?.data?.detail;
 
-      alert("Prediction failed");
+      let message =
+        "Ridership prediction failed.";
 
+      if (typeof detail === "string") {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        message = detail
+          .map(
+            (item) =>
+              item.msg ||
+              "Invalid input."
+          )
+          .join("\n");
+      } else if (
+        error?.response?.data?.message
+      ) {
+        message =
+          error.response.data.message;
+      }
+
+      alert(message);
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   return (
-
     <div className="p-8">
 
-      <h1 className="text-3xl font-bold text-white mb-6">
-        Ridership Prediction
-      </h1>
+      <div className="mb-8">
 
-      <div className="bg-slate-800 rounded-xl p-6">
+        <h1 className="text-3xl font-bold text-white">
+          Ridership Prediction
+        </h1>
+
+        <p className="text-slate-400 mt-2">
+          Predict passenger entry and exit
+          counts based on date and time.
+        </p>
+
+      </div>
+
+      <div className="bg-slate-800 rounded-xl p-6 shadow-lg">
+
+        <h2 className="text-xl font-semibold text-white mb-6">
+          Prediction Parameters
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-          <div>
+          <div className="md:col-span-2">
 
             <label className="block text-slate-300 mb-2">
               Station
             </label>
 
-            <select
+            <input
+              type="text"
               name="station_name"
-              value={formData.station_name}
+              list="station-suggestions"
+              value={
+                formData.station_name
+              }
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-slate-700 text-white"
-            >
+              placeholder={
+                loadingStations
+                  ? "Loading stations..."
+                  : "Search or select a station"
+              }
+              disabled={loadingStations}
+              autoComplete="off"
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none"
+            />
 
-              <option value="">
-                Select Station
-              </option>
+            <datalist id="station-suggestions">
 
-              {stations.map((station) => (
+              {stations.map(
+                (station, index) => (
+                  <option
+                    key={
+                      station.id ??
+                      `${station.station_name}-${index}`
+                    }
+                    value={
+                      station.station_name
+                    }
+                  />
+                )
+              )}
 
-                <option
-                  key={station.id}
-                  value={station.station_name}
-                >
-                  {station.station_name}
-                </option>
+            </datalist>
 
-              ))}
+            <div className="mt-2">
 
-            </select>
+              <p className="text-xs text-slate-500">
+                {loadingStations
+                  ? "Loading station list..."
+                  : `${stations.length} station${
+                      stations.length !== 1
+                        ? "s"
+                        : ""
+                    } available`}
+              </p>
+
+            </div>
 
           </div>
-
-          <Input
-            label="Platform Count"
-            name="platform_count"
-            value={formData.platform_count}
-            onChange={handleChange}
-          />
-
-          <Input
-            label="Concourse Count"
-            name="concourse_count"
-            value={formData.concourse_count}
-            onChange={handleChange}
-          />
 
           <div>
 
@@ -198,7 +285,7 @@ export default function RidershipPrediction() {
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-slate-700 text-white"
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none"
             />
 
           </div>
@@ -214,8 +301,26 @@ export default function RidershipPrediction() {
               name="time"
               value={formData.time}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-slate-700 text-white"
+              className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none"
             />
+
+          </div>
+
+        </div>
+
+        <div className="mt-5 p-4 rounded-lg bg-slate-700/50 border border-slate-600">
+
+          <p className="text-slate-300 text-sm">
+            The AI model uses:
+          </p>
+
+          <div className="flex flex-wrap gap-2 mt-3">
+
+            <FeatureBadge text="Hour" />
+            <FeatureBadge text="Day" />
+            <FeatureBadge text="Month" />
+            <FeatureBadge text="Day of Week" />
+            <FeatureBadge text="Weekend" />
 
           </div>
 
@@ -224,26 +329,38 @@ export default function RidershipPrediction() {
         <button
           onClick={predictRidership}
           disabled={loading}
-          className="mt-6 px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white"
+          className="mt-6 px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-
           {loading
             ? "Predicting..."
             : "Predict Ridership"}
-
         </button>
 
       </div>
 
       {result && (
 
-        <div className="mt-8 bg-slate-800 rounded-xl p-6">
+        <div className="mt-8 bg-slate-800 rounded-xl p-6 shadow-lg">
 
-          <h2 className="text-xl text-white font-bold mb-5">
-            Prediction Result
-          </h2>
+          <div className="mb-6">
 
-          <div className="grid md:grid-cols-2 gap-6">
+            <h2 className="text-xl text-white font-bold">
+              Prediction Result
+            </h2>
+
+            <p className="text-slate-400 text-sm mt-1">
+
+              Predicted passenger movement for{" "}
+
+              <span className="text-cyan-400 font-semibold">
+                {result.station_name}
+              </span>
+
+            </p>
+
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <div className="bg-slate-700 rounded-lg p-5">
 
@@ -252,7 +369,16 @@ export default function RidershipPrediction() {
               </h3>
 
               <p className="text-3xl text-cyan-400 font-bold mt-3">
-                {result.predicted_entry_count}
+
+                {formatNumber(
+                  result.predicted_entry_count ??
+                    result.predicted_entries
+                )}
+
+              </p>
+
+              <p className="text-slate-400 text-sm mt-2">
+                Expected passenger entries
               </p>
 
             </div>
@@ -264,48 +390,132 @@ export default function RidershipPrediction() {
               </h3>
 
               <p className="text-3xl text-cyan-400 font-bold mt-3">
-                {result.predicted_exit_count}
+
+                {formatNumber(
+                  result.predicted_exit_count ??
+                    result.predicted_exits
+                )}
+
+              </p>
+
+              <p className="text-slate-400 text-sm mt-2">
+                Expected passenger exits
               </p>
 
             </div>
 
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+            <InfoCard
+              label="Date"
+              value={
+                result.prediction_date
+              }
+            />
+
+            <InfoCard
+              label="Time"
+              value={
+                result.prediction_time
+              }
+            />
+
+            <InfoCard
+              label="Day"
+              value={getDayName(
+                formData.date
+              )}
+            />
+
+          </div>
+
+          {result.id && (
+
+            <div className="mt-6">
+
+              <p className="text-slate-400 text-sm">
+                Prediction ID
+              </p>
+
+              <p className="text-cyan-400 font-mono mt-1">
+                {result.id}
+              </p>
+
+            </div>
+
+          )}
+
         </div>
 
       )}
 
     </div>
-
   );
-
 }
 
-function Input({
-  label,
-  name,
-  value,
-  onChange,
-}) {
-
+function FeatureBadge({ text }) {
   return (
+    <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs">
+      {text}
+    </span>
+  );
+}
 
-    <div>
+function InfoCard({ label, value }) {
+  return (
+    <div className="bg-slate-700 rounded-lg p-4">
 
-      <label className="block text-slate-300 mb-2">
+      <p className="text-slate-400 text-sm">
         {label}
-      </label>
+      </p>
 
-      <input
-        type="number"
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="w-full p-3 rounded-lg bg-slate-700 text-white"
-      />
+      <p className="text-white font-semibold mt-1">
+        {value || "-"}
+      </p>
 
     </div>
+  );
+}
 
+function getDayName(dateString) {
+  if (!dateString) {
+    return "-";
+  }
+
+  const date = new Date(
+    `${dateString}T00:00:00`
   );
 
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return date.toLocaleDateString(
+    "en-IN",
+    {
+      weekday: "long",
+    }
+  );
+}
+
+function formatNumber(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return "N/A";
+  }
+
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return "N/A";
+  }
+
+  return Math.round(number).toLocaleString(
+    "en-IN"
+  );
 }

@@ -1,232 +1,339 @@
-/**
- * Settings Page
- * Profile, notifications, system configuration, and API settings.
- */
-import { useState } from 'react'
-import { User, Bell, Sliders, Globe, Shield, Check, Wifi } from 'lucide-react'
-import { useAuth } from '../hooks/useAuth'
-import { getInitials } from '../utils/helpers'
+import { useEffect, useState } from "react";
+import {
+    User,
+    Bell,
+    Shield,
+    Save,
+    RefreshCw,
+} from "lucide-react";
 
-function Toggle({ enabled, onChange, id }) {
-  return (
-    <button
-      id={id}
-      role="switch"
-      aria-checked={enabled}
-      onClick={() => onChange(!enabled)}
-      className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
-        enabled ? 'bg-gradient-to-r from-cyan-500 to-blue-500' : 'bg-slate-600'
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
-          enabled ? 'translate-x-5' : 'translate-x-0'
-        }`}
-      />
-    </button>
-  )
-}
-
-function Section({ icon: Icon, title, children }) {
-  return (
-    <div className="glass-card p-6">
-      <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-slate-700/50">
-        <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-          <Icon size={16} className="text-cyan-400" />
-        </div>
-        <h3 className="text-white font-semibold">{title}</h3>
-      </div>
-      {children}
-    </div>
-  )
-}
+import {
+    getSettings,
+    updateSettings,
+} from "../services/settingsService";
 
 export default function Settings() {
-  const { user } = useAuth()
+    const [settings, setSettings] = useState({
+        full_name: "",
+        email: "",
+        username: "",
+        email_notifications: true,
+        browser_notifications: true,
+        alert_notifications: true,
+        prediction_notifications: true,
+    });
 
-  const [notifications, setNotifications] = useState({
-    emailAlerts: true,
-    pushNotifications: true,
-    crowdThreshold: true,
-    trainDelays: true,
-    systemUpdates: false,
-    weeklyReport: true,
-  })
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
 
-  const [system, setSystem] = useState({
-    refreshInterval: '30',
-    timezone: 'Asia/Kolkata',
-    language: 'en',
-    theme: 'dark',
-  })
+    useEffect(() => {
+        loadSettings();
+    }, []);
 
-  const [saved, setSaved] = useState(false)
+    async function loadSettings() {
+        try {
+            setLoading(true);
+            setError("");
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
-  }
+            const response = await getSettings();
 
-  const toggleNotification = (key) => (val) => setNotifications((p) => ({ ...p, [key]: val }))
+            console.log("Settings API response:", response);
 
-  return (
-    <div className="space-y-6 animate-fade-in max-w-4xl">
-      <div className="page-header">
-        <h2 className="page-title">Settings</h2>
-        <p className="page-subtitle">Manage your account preferences and system configuration</p>
-      </div>
+            if (response) {
+                setSettings((previous) => ({
+                    ...previous,
+                    ...response,
+                }));
+            }
+        } catch (err) {
+            console.error("Failed to load settings:", err);
 
-      {/* Profile */}
-      <Section icon={User} title="Profile Settings">
-        <div className="flex items-center gap-5 mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-            {user ? getInitials(user.name) : 'U'}
-          </div>
-          <div>
-            <div className="text-white font-bold text-lg">{user?.name || 'Metro Admin'}</div>
-            <div className="text-slate-400 text-sm">{user?.email || 'admin@metro.com'}</div>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold border border-cyan-500/30 mt-1 capitalize">
-              {user?.role || 'admin'}
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[
-            { label: 'Full Name', value: user?.name || 'Metro Admin', id: 'setting-name' },
-            { label: 'Email Address', value: user?.email || 'admin@metro.com', id: 'setting-email' },
-            { label: 'Role', value: user?.role || 'admin', id: 'setting-role' },
-            { label: 'Employee ID', value: 'EMP-001', id: 'setting-empid' },
-          ].map((f) => (
-            <div key={f.id}>
-              <label className="block text-slate-400 text-xs font-medium mb-1.5">{f.label}</label>
-              <input
-                id={f.id}
-                readOnly
-                value={f.value}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-300 text-sm cursor-not-allowed capitalize"
-              />
+            setError(
+                err?.response?.data?.detail ||
+                "Could not load settings from the server."
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function handleChange(event) {
+        const { name, value, type, checked } = event.target;
+
+        setSettings((previous) => ({
+            ...previous,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+    }
+
+    async function handleSave() {
+        try {
+            setSaving(true);
+            setMessage("");
+            setError("");
+
+            const response = await updateSettings(settings);
+
+            console.log("Settings update response:", response);
+
+            if (response) {
+                setSettings((previous) => ({
+                    ...previous,
+                    ...response,
+                }));
+            }
+
+            setMessage("Settings saved successfully.");
+        } catch (err) {
+            console.error("Failed to save settings:", err);
+
+            setError(
+                err?.response?.data?.detail ||
+                "Failed to save settings."
+            );
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    return (
+        <div className="space-y-6">
+
+            {/* Header */}
+            <div className="flex items-center justify-between">
+
+                <div>
+                    <h1 className="text-3xl font-bold text-white">
+                        System Settings
+                    </h1>
+
+                    <p className="text-slate-400 mt-1">
+                        Manage your account and notification preferences
+                    </p>
+                </div>
+
+                <button
+                    onClick={loadSettings}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 hover:bg-slate-700"
+                >
+                    <RefreshCw size={18} />
+
+                    Refresh
+                </button>
+
             </div>
-          ))}
-        </div>
-        <p className="text-slate-500 text-xs mt-3">Profile edits require admin approval — available in Milestone 2.</p>
-      </Section>
 
-      {/* Notifications */}
-      <Section icon={Bell} title="Notification Preferences">
-        <div className="space-y-4">
-          {[
-            { key: 'emailAlerts', label: 'Email Alerts', desc: 'Receive critical alerts via email' },
-            { key: 'pushNotifications', label: 'Push Notifications', desc: 'Browser push notifications for incidents' },
-            { key: 'crowdThreshold', label: 'Crowd Threshold Alerts', desc: 'Alert when station exceeds 80% capacity' },
-            { key: 'trainDelays', label: 'Train Delay Notifications', desc: 'Notify when trains are delayed >5 minutes' },
-            { key: 'systemUpdates', label: 'System Update Notices', desc: 'Maintenance windows and system updates' },
-            { key: 'weeklyReport', label: 'Weekly Analytics Report', desc: 'Receive weekly performance summary email' },
-          ].map((n) => (
-            <div key={n.key} className="flex items-center justify-between py-3 border-b border-slate-700/40 last:border-0">
-              <div>
-                <div className="text-white text-sm font-medium">{n.label}</div>
-                <div className="text-slate-400 text-xs mt-0.5">{n.desc}</div>
-              </div>
-              <Toggle
-                id={`toggle-${n.key}`}
-                enabled={notifications[n.key]}
-                onChange={toggleNotification(n.key)}
-              />
+            {/* Error */}
+            {error && (
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-red-300">
+                    {error}
+                </div>
+            )}
+
+            {/* Success */}
+            {message && (
+                <div className="rounded-lg border border-green-500/40 bg-green-500/10 p-4 text-green-300">
+                    {message}
+                </div>
+            )}
+
+            {/* Account Settings */}
+            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+
+                <div className="flex items-center gap-3 mb-6">
+
+                    <div className="p-3 rounded-lg bg-blue-500/10">
+                        <User
+                            size={22}
+                            className="text-blue-400"
+                        />
+                    </div>
+
+                    <div>
+                        <h2 className="text-xl font-bold text-white">
+                            Account Information
+                        </h2>
+
+                        <p className="text-sm text-slate-400">
+                            Your information is loaded from the database.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label className="block text-sm text-slate-400 mb-2">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="full_name"
+                            value={settings.full_name || ""}
+                            onChange={handleChange}
+                            className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-white"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm text-slate-400 mb-2">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            value={settings.username || ""}
+                            onChange={handleChange}
+                            className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-white"
+                        />
+                    </div>
+
+                    <div className="md:col-span-2">
+
+                        <label className="block text-sm text-slate-400 mb-2">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value={settings.email || ""}
+                            onChange={handleChange}
+                            className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-white"
+                        />
+
+                    </div>
+
+                </div>
+
             </div>
-          ))}
-        </div>
-      </Section>
 
-      {/* System Config */}
-      <Section icon={Sliders} title="System Configuration">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-slate-400 text-xs font-medium mb-1.5">Data Refresh Interval</label>
-            <select
-              id="setting-refresh"
-              value={system.refreshInterval}
-              onChange={(e) => setSystem((s) => ({ ...s, refreshInterval: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-300 text-sm focus:outline-none focus:border-cyan-500"
-            >
-              <option value="10">10 seconds</option>
-              <option value="30">30 seconds</option>
-              <option value="60">1 minute</option>
-              <option value="300">5 minutes</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-slate-400 text-xs font-medium mb-1.5">Timezone</label>
-            <select
-              id="setting-timezone"
-              value={system.timezone}
-              onChange={(e) => setSystem((s) => ({ ...s, timezone: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-300 text-sm focus:outline-none focus:border-cyan-500"
-            >
-              <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
-              <option value="UTC">UTC</option>
-              <option value="Asia/Singapore">Asia/Singapore (SGT +8:00)</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-slate-400 text-xs font-medium mb-1.5">Language</label>
-            <select
-              id="setting-language"
-              value={system.language}
-              onChange={(e) => setSystem((s) => ({ ...s, language: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-300 text-sm focus:outline-none focus:border-cyan-500"
-            >
-              <option value="en">English</option>
-              <option value="hi">Hindi</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-slate-400 text-xs font-medium mb-1.5">Crowd Alert Threshold</label>
-            <select
-              id="setting-threshold"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-300 text-sm focus:outline-none focus:border-cyan-500"
-            >
-              <option>70% — Early Warning</option>
-              <option>80% — Standard Alert</option>
-              <option>90% — Critical Only</option>
-            </select>
-          </div>
-        </div>
-      </Section>
+            {/* Notification Settings */}
+            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
 
-      {/* API Config */}
-      <Section icon={Shield} title="API Configuration">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-            <Wifi size={16} className="text-green-400 flex-shrink-0" />
-            <div className="flex-1">
-              <div className="text-white text-sm font-medium">Backend API</div>
-              <div className="text-slate-400 text-xs font-mono mt-0.5">
-                {import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'}
-              </div>
+                <div className="flex items-center gap-3 mb-6">
+
+                    <div className="p-3 rounded-lg bg-purple-500/10">
+                        <Bell
+                            size={22}
+                            className="text-purple-400"
+                        />
+                    </div>
+
+                    <div>
+                        <h2 className="text-xl font-bold text-white">
+                            Notification Settings
+                        </h2>
+
+                        <p className="text-sm text-slate-400">
+                            Choose which notifications you want to receive.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div className="space-y-4">
+
+                    <SettingToggle
+                        name="email_notifications"
+                        title="Email Notifications"
+                        description="Receive important system notifications by email."
+                        checked={settings.email_notifications}
+                        onChange={handleChange}
+                    />
+
+                    <SettingToggle
+                        name="browser_notifications"
+                        title="Browser Notifications"
+                        description="Show notifications inside the web application."
+                        checked={settings.browser_notifications}
+                        onChange={handleChange}
+                    />
+
+                    <SettingToggle
+                        name="alert_notifications"
+                        title="Operational Alerts"
+                        description="Receive alerts about metro operations."
+                        checked={settings.alert_notifications}
+                        onChange={handleChange}
+                    />
+
+                    <SettingToggle
+                        name="prediction_notifications"
+                        title="Prediction Notifications"
+                        description="Receive notifications about prediction results."
+                        checked={settings.prediction_notifications}
+                        onChange={handleChange}
+                    />
+
+                </div>
+
             </div>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
-              Connected
-            </span>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-            <Globe size={16} className="text-slate-400 flex-shrink-0" />
-            <div className="flex-1">
-              <div className="text-white text-sm font-medium">WebSocket (Real-time)</div>
-              <div className="text-slate-400 text-xs font-mono mt-0.5">ws://localhost:8000/ws</div>
-            </div>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-600/50 text-slate-400 border border-slate-600">
-              Milestone 4
-            </span>
-          </div>
-        </div>
-      </Section>
 
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <button id="save-settings" onClick={handleSave} className="btn-primary flex items-center gap-2">
-          {saved ? <><Check size={16} /> Saved!</> : 'Save Settings'}
-        </button>
-      </div>
-    </div>
-  )
+            {/* Save */}
+            <div className="flex justify-end">
+
+                <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold disabled:opacity-50"
+                >
+
+                    <Save size={18} />
+
+                    {saving ? "Saving..." : "Save Settings"}
+
+                </button>
+
+            </div>
+
+            {loading && (
+                <p className="text-sm text-slate-500">
+                    Loading settings from database...
+                </p>
+            )}
+
+        </div>
+    );
+}
+
+
+function SettingToggle({
+    name,
+    title,
+    description,
+    checked,
+    onChange,
+}) {
+    return (
+        <label className="flex items-center justify-between gap-4 p-4 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer">
+
+            <div>
+
+                <h3 className="text-white font-semibold">
+                    {title}
+                </h3>
+
+                <p className="text-sm text-slate-400 mt-1">
+                    {description}
+                </p>
+
+            </div>
+
+            <input
+                type="checkbox"
+                name={name}
+                checked={Boolean(checked)}
+                onChange={onChange}
+                className="w-5 h-5 accent-cyan-500"
+            />
+
+        </label>
+    );
 }

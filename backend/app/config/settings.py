@@ -1,34 +1,89 @@
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # Application
-    APP_NAME: str = "Metro Crowd Management API"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
-    ENVIRONMENT: str = "development"
 
-    # Server
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    # ============================================================
+    # APPLICATION
+    # ============================================================
 
-    # Security
-    SECRET_KEY: str = "secret"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    app_name: str = "Metro Crowd Management API"
 
-    # Database
-    DATABASE_URL: str = "postgresql+psycopg://postgres:test1234@localhost:5432/metroflow"
+    app_version: str = "1.0.0"
 
+    debug: bool = True
+
+    environment: str = "development"
+
+
+    # ============================================================
+    # SERVER
+    # ============================================================
+
+    host: str = "0.0.0.0"
+
+    port: int = 8000
+
+
+    # ============================================================
+    # DATABASE
+    # ============================================================
+
+    database_url: str
+
+
+    # ============================================================
+    # JWT
+    # ============================================================
+
+    jwt_secret_key: str
+
+    jwt_algorithm: str = "HS256"
+
+    access_token_expire_minutes: int = 30
+
+    refresh_token_expire_days: int = 7
+
+
+    # ============================================================
+    # GOOGLE AUTHENTICATION
+    # ============================================================
+
+    google_client_id: str = ""
+
+
+    # ============================================================
     # CORS
-    ALLOWED_ORIGINS: str = Field(
-        default="http://localhost:5173,http://localhost:3000"
+    # ============================================================
+
+    allowed_origins: str = (
+        "http://localhost:5173,http://localhost:3000"
     )
+
+
+    # ============================================================
+    # CORS ORIGINS PROPERTY
+    # ============================================================
+
+    @property
+    def cors_origins(self) -> list[str]:
+
+        return [
+            origin.strip()
+            for origin in self.allowed_origins.split(",")
+            if origin.strip()
+        ]
+
+
+    # ============================================================
+    # PYDANTIC SETTINGS
+    # ============================================================
 
     model_config = SettingsConfigDict(
         env_file=".env",
+        env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",
     )
 
 

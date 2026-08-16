@@ -28,6 +28,7 @@ class TicketType(str, Enum):
     SMART_CARD = "Smart Card"
     TOKEN = "Token"
     PASS = "Pass"
+    TOURIST_CARD = "Tourist Card"
 
 
 class DeviceStatus(str, Enum):
@@ -51,10 +52,13 @@ class WeatherCondition(str, Enum):
     RAINY = "Rainy"
     STORM = "Storm"
     FOG = "Fog"
-
+    SNOW = "Snow"
 
 class TransportType(str, Enum):
     METRO = "Metro"
+    BUS = "Bus"
+    TRAIN = "Train"
+    TRAM = "Tram"
 
 
 class Weekday(str, Enum):

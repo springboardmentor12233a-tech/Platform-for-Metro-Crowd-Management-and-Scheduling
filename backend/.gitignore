@@ -1,2 +1,122 @@
+# ============================================================
+# Environment / Secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+# JWT / credentials / API keys
+*.pem
+*.key
+*.crt
+credentials.json
+service-account.json
+google-credentials.json
+
+
+# ============================================================
+# Python
+# ============================================================
+
 __pycache__/
 *.py[cod]
+*$py.class
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+.venv/
+venv/
+env/
+ENV/
+
+*.egg-info/
+dist/
+build/
+
+
+# ============================================================
+# IDE
+# ============================================================
+
+.vscode/
+.idea/
+
+*.code-workspace
+
+
+# ============================================================
+# Logs
+# ============================================================
+
+*.log
+logs/
+
+
+# ============================================================
+# Database / Local Data
+# ============================================================
+
+*.db
+*.sqlite
+*.sqlite3
+
+*.sql
+database_dump/
+db_backup/
+backups/
+
+
+# ============================================================
+# ML / Generated Files
+# ============================================================
+
+# Local trained models
+*.pkl
+*.joblib
+*.h5
+*.keras
+*.pt
+*.pth
+*.onnx
+
+# ML experiment outputs
+ml/runs/
+ml/outputs/
+ml/checkpoints/
+
+# Keep model directory structure if needed
+# but don't commit trained model binaries.
+
+
+# ============================================================
+# Dataset
+# ============================================================
+
+# Raw/private datasets
+data/raw/
+data/private/
+datasets/
+*.csv
+*.json
+
+# If specific JSON/CSV files are required by the project,
+# whitelist them below.
+
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+
+.DS_Store
+Thumbs.db
+backend/datasets/passenger_entry_exit_preprocessed.csv
+ml/data/processed/
+ml/metrics/

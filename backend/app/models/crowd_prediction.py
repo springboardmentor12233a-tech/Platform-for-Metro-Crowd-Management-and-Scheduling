@@ -36,6 +36,7 @@ class CrowdPrediction(Base, TimestampMixin):
     id: Mapped[str] = mapped_column(
         String(50),
         primary_key=True,
+         nullable=False,
     )
 
     # =====================================================

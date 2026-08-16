@@ -1,6 +1,13 @@
-import api from "./api";
+import axios from "axios";
 
-export const getStations = async () => {
-    const response = await api.get("/stations");
-    return response.data;
+const API = axios.create({
+  baseURL: "http://localhost:8000/api/v1",
+});
+
+const stationService = {
+  getStations() {
+    return API.get("/stations");
+  },
 };
+
+export default stationService;
