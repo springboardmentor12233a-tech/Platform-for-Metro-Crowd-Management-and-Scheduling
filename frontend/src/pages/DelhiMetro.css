@@ -1,0 +1,701 @@
+/* =========================================
+   DELHI METRO PAGE
+========================================= */
+
+.delhi-metro-page {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.metro-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 25px;
+
+  margin-bottom: 25px;
+}
+
+.metro-page-header h1 {
+  margin: 0;
+
+  text-align: left;
+
+  color: #123b68;
+
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.metro-page-header p {
+  margin: 8px 0 0;
+
+  color: #475569;
+
+  font-size: 16px;
+}
+
+
+/* =========================================
+   STATION COUNT
+========================================= */
+
+.station-count {
+  min-width: 140px;
+
+  padding: 15px 25px;
+
+  background: rgba(255, 255, 255, 0.70);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.10);
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.station-count strong {
+  display: block;
+
+  font-size: 25px;
+
+  color: #123b68;
+}
+
+.station-count span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+
+/* =========================================
+   ERROR MESSAGE
+========================================= */
+
+.metro-error-message {
+  background: #fee2e2;
+
+  color: #991b1b;
+
+  padding: 15px;
+
+  border-radius: 10px;
+
+  margin-bottom: 20px;
+}
+
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.metro-layout {
+  display: grid;
+
+  grid-template-columns:
+    320px minmax(0, 1fr);
+
+  gap: 22px;
+
+  align-items: start;
+}
+
+
+/* =========================================
+   STATION PANEL
+========================================= */
+
+.station-panel {
+  height: 650px;
+
+  padding: 22px;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 18px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.70);
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.10);
+
+  box-sizing: border-box;
+}
+
+.station-panel h2 {
+  margin-top: 0;
+
+  margin-bottom: 18px;
+
+  color: #123b68;
+
+  font-size: 22px;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.station-panel input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  border:
+    1px solid
+    #cbd5e1;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.90);
+
+  outline: none;
+}
+
+.station-panel input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================
+   STATION LIST
+========================================= */
+
+.station-list {
+  height: 500px;
+
+  margin-top: 18px;
+
+  overflow-y: auto;
+
+  padding-right: 5px;
+}
+
+.station-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.station-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 10px;
+}
+
+.station-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+/* =========================================
+   STATION ITEM
+========================================= */
+
+.metro-station {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px 10px;
+
+  border-bottom:
+    1px solid
+    rgba(148, 163, 184, 0.25);
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.metro-station:hover {
+  background:
+    rgba(219, 234, 254, 0.65);
+
+  transform:
+    translateX(3px);
+}
+
+.metro-station strong {
+  display: block;
+
+  color: #1e293b;
+
+  font-size: 15px;
+}
+
+.metro-station span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   STATION DOT
+========================================= */
+
+.station-dot {
+  width: 12px;
+
+  height: 12px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  border:
+    2px solid white;
+
+  box-shadow:
+    0 0 0 1px #2563eb;
+}
+
+
+/* =========================================
+   INTERCHANGE LABEL
+========================================= */
+
+.interchange-label {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #7c3aed;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   NO SEARCH RESULTS
+========================================= */
+
+.no-stations {
+  padding: 25px 10px;
+
+  text-align: center;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+
+/* =========================================
+   LOADING TEXT
+========================================= */
+
+.loading-text {
+  color: #64748b;
+
+  text-align: center;
+
+  padding: 20px;
+}
+
+
+/* =========================================
+   MAP PANEL
+========================================= */
+
+.map-panel {
+  min-width: 0;
+
+  height: 650px;
+
+  background:
+    rgba(255, 255, 255, 0.45);
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.10);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.70);
+
+  box-sizing: border-box;
+}
+
+/* =========================================
+   MAP HEADER
+========================================= */
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+
+  padding: 18px 22px;
+
+  box-sizing: border-box;
+}
+
+.map-header > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-header h2 {
+  margin: 0;
+
+  color: #123b68;
+
+  font-size: 25px;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+.map-header p {
+  margin: 6px 0 0;
+
+  color: #475569;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   MAP STATS
+========================================= */
+
+.map-stats {
+  display: flex;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.map-stats > div {
+  min-width: 78px;
+
+  padding: 10px 12px;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  border-radius: 10px;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.map-stats strong {
+  display: block;
+
+  color: #123b68;
+
+  font-size: 18px;
+
+  line-height: 1.2;
+}
+
+.map-stats span {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  line-height: 1.2;
+}
+
+/* =========================================
+   METRO MAP
+========================================= */
+
+.map-panel .metro-map-container {
+  width: 100%;
+
+  height: 570px;
+
+  position: relative;
+}
+
+
+/* =========================================
+   MAP LOADING
+========================================= */
+
+.map-loading {
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  text-align: center;
+
+  color: #123b68;
+}
+
+.map-loading p {
+  color: #64748b;
+}
+
+
+/* =========================================
+   AI CROWD PREDICTION SECTION
+========================================= */
+
+.crowd-prediction-section {
+  width: 100%;
+
+  margin-top: 30px;
+
+  padding: 25px;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.70);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 25px
+    rgba(0, 0, 0, 0.10);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   CROWD HEADER
+========================================= */
+
+.crowd-section-header {
+  margin-bottom: 20px;
+}
+
+.crowd-section-header h2 {
+  margin: 0;
+
+  color: #123b68;
+
+  font-size: 25px;
+
+  font-weight: 700;
+}
+
+.crowd-section-header p {
+  margin: 7px 0 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   CROWD COMPONENT WIDTH
+========================================= */
+
+.crowd-prediction-section > * {
+  max-width: 100%;
+}
+
+
+/* =========================================
+   RESPONSIVE — 1100px
+========================================= */
+
+@media (max-width: 1100px) {
+
+  .metro-layout {
+    grid-template-columns:
+      280px minmax(0, 1fr);
+  }
+
+}
+
+
+/* =========================================
+   RESPONSIVE — 900px
+========================================= */
+
+@media (max-width: 900px) {
+
+  .metro-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .station-panel {
+    height: auto;
+  }
+
+  .station-list {
+    height: 350px;
+  }
+
+  .map-panel {
+    height: 650px;
+  }
+
+  .map-panel .metro-map-container {
+    height: 570px;
+  }
+
+}
+
+
+/* =========================================
+   RESPONSIVE — 700px
+========================================= */
+
+@media (max-width: 700px) {
+
+  .metro-page-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .metro-page-header h1 {
+    font-size: 28px;
+  }
+
+  .station-count {
+    width: 100%;
+  }
+
+  .map-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .map-stats {
+    width: 100%;
+  }
+
+  .map-stats {
+  width: 100%;
+}
+
+  .map-panel {
+    height: 600px;
+  }
+
+  .map-panel .metro-map-container {
+    height: 500px;
+  }
+
+  .crowd-prediction-section {
+    margin-top: 20px;
+
+    padding: 18px;
+  }
+
+  .crowd-section-header h2 {
+    font-size: 22px;
+  }
+
+}
+
+
+/* =========================================
+   RESPONSIVE — 600px
+========================================= */
+
+@media (max-width: 600px) {
+
+  .delhi-metro-page {
+    padding: 6px;
+  }
+
+  .metro-page-header h1 {
+    font-size: 25px;
+  }
+
+  .metro-page-header p {
+    font-size: 14px;
+  }
+
+  .station-panel {
+    padding: 18px;
+  }
+
+  .map-panel {
+    height: 500px;
+  }
+
+  .map-panel .metro-map-container {
+    height: 400px;
+  }
+
+}

@@ -1,129 +1,191 @@
-import pandas as pd
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import joblib
-import numpy as np
+import pandas as pd
+import os
 
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score,
+# =========================================================
+# Create FastAPI app
+# =========================================================
+
+app = FastAPI(title="MetroFlow AI Prediction API")
+
+
+# =========================================================
+# CORS Configuration
+# =========================================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# ==========================
-# Load Dataset
-# ==========================
-df = pd.read_excel("dataset/delhi_metro_featured_final.csv.xlsx")
 
-print("First 5 Rows")
-print(df.head())
+# =========================================================
+# Load Model and Encoders
+# =========================================================
 
-print("\nDataset Information")
-print(df.info())
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "..", "model")
 
-# ==========================
-# Encode Categorical Columns
-# ==========================
-text_columns = [
-    "From_Station",
-    "To_Station",
-    "Ticket_Type",
-    "Remarks",
-    "Month_Name",
-    "Day_Name",
-    "Route",
-    "Capacity Status",
-    "AI Recommendation",
-    "Recommended Frequency",
-    "Delay Risk"
-]
-
-encoders = {}
-
-for col in text_columns:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col].astype(str))
-    encoders[col] = le
-
-# Save Label Encoders
-joblib.dump(encoders, "model/label_encoders.pkl")
-
-# ==========================
-# Dataset Analysis
-# ==========================
-print("\nPassenger Statistics")
-print(df["Passengers"].describe())
-
-print("\nPassenger Distribution")
-print(df["Passengers"].value_counts().head(20))
-
-print("\nCorrelation with Passengers")
-print(df.corr(numeric_only=True)["Passengers"])
-
-# ==========================
-# Features and Target
-# ==========================
-X = df[
-    [
-        "From_Station",
-        "To_Station",
-        "Distance_km",
-        "Fare",
-        "Cost_per_passenger",
-        "Ticket_Type",
-        "Year",
-        "Month",
-        "Day",
-        "Day_Name",
-        "Is_Weekend",
-        "Route",
-    ]
-]
-
-y = df["Passengers"]
-
-# ==========================
-# Train-Test Split
-# ==========================
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.20,
-    random_state=42,
+model = joblib.load(
+    os.path.join(
+        MODEL_DIR,
+        "passenger_prediction_model.pkl"
+    )
 )
 
-# ==========================
-# Train Model
-# ==========================
-model = RandomForestRegressor(
-    n_estimators=100,
-    random_state=42,
+encoders = joblib.load(
+    os.path.join(
+        MODEL_DIR,
+        "label_encoders.pkl"
+    )
 )
 
-model.fit(X_train, y_train)
 
-# ==========================
-# Predictions
-# ==========================
-predictions = model.predict(X_test)
+# =========================================================
+# Input Schema
+# =========================================================
 
-# ==========================
-# Evaluation
-# ==========================
-mae = mean_absolute_error(y_test, predictions)
-rmse = np.sqrt(mean_squared_error(y_test, predictions))
-r2 = r2_score(y_test, predictions)
+class PassengerInput(BaseModel):
+    From_Station: str
+    To_Station: str
+    Distance_km: float
+    Fare: float
+    Cost_per_passenger: float
+    Ticket_Type: str
+    Year: int
+    Month: int
+    Day: int
+    Day_Name: str
+    Is_Weekend: bool
+    Route: str
 
-print("\n========== MODEL PERFORMANCE ==========")
-print(f"MAE  : {mae:.4f}")
-print(f"RMSE : {rmse:.4f}")
-print(f"R²   : {r2:.4f}")
 
-# ==========================
-# Save Model
-# ==========================
-joblib.dump(model, "model/passenger_prediction_model.pkl")
+# =========================================================
+# Home Route
+# =========================================================
 
-print("\nModel Saved Successfully!")
-print("Label Encoders Saved Successfully!")
+@app.get("/")
+def home():
+    return {
+        "message": "MetroFlow AI Backend Running Successfully 🚇"
+    }
+
+
+# =========================================================
+# Prediction Route
+# =========================================================
+
+@app.post("/predict")
+def predict(data: PassengerInput):
+
+    # -----------------------------------------------------
+    # Encode categorical values
+    # -----------------------------------------------------
+
+    from_station = encoders["From_Station"].transform(
+        [data.From_Station]
+    )[0]
+
+    to_station = encoders["To_Station"].transform(
+        [data.To_Station]
+    )[0]
+
+    ticket_type = encoders["Ticket_Type"].transform(
+        [data.Ticket_Type]
+    )[0]
+
+    day_name = encoders["Day_Name"].transform(
+        [data.Day_Name]
+    )[0]
+
+    # FIX:
+    # Route must be encoded using the SAME encoder
+    # that was used during model training.
+    route = encoders["Route"].transform(
+        [data.Route]
+    )[0]
+
+
+    # -----------------------------------------------------
+    # Create input DataFrame
+    # -----------------------------------------------------
+
+    input_data = pd.DataFrame([
+        {
+            "From_Station": from_station,
+            "To_Station": to_station,
+            "Distance_km": data.Distance_km,
+            "Fare": data.Fare,
+            "Cost_per_passenger": data.Cost_per_passenger,
+            "Ticket_Type": ticket_type,
+            "Year": data.Year,
+            "Month": data.Month,
+            "Day": data.Day,
+            "Day_Name": day_name,
+            "Is_Weekend": data.Is_Weekend,
+            "Route": route
+        }
+    ])
+
+
+    # -----------------------------------------------------
+    # Predict passenger demand
+    # -----------------------------------------------------
+
+    prediction = model.predict(input_data)[0]
+
+
+    # -----------------------------------------------------
+    # Calculate occupancy
+    # -----------------------------------------------------
+
+    occupancy = (prediction / 30) * 100
+
+
+    # -----------------------------------------------------
+    # Operational decision logic
+    # -----------------------------------------------------
+
+    if occupancy < 60:
+
+        status = "Normal"
+        recommendation = "Maintain Current Schedule"
+        frequency = "Every 8 Minutes"
+        delay = "Low"
+
+    elif occupancy < 90:
+
+        status = "Busy"
+        recommendation = "Monitor Crowd"
+        frequency = "Every 5 Minutes"
+        delay = "Medium"
+
+    else:
+
+        status = "Overloaded"
+        recommendation = "Increase Train Frequency"
+        frequency = "Every 3 Minutes"
+        delay = "High"
+
+
+    # -----------------------------------------------------
+    # Return prediction
+    # -----------------------------------------------------
+
+    return {
+        "Predicted Passengers": round(float(prediction), 2),
+        "Occupancy (%)": round(float(occupancy), 2),
+        "Capacity Status": status,
+        "AI Recommendation": recommendation,
+        "Recommended Frequency": frequency,
+        "Delay Risk": delay
+    }

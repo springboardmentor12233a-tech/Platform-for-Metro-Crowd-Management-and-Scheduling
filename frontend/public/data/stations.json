@@ -1,0 +1,298 @@
+[
+  {
+    "id": "DL-SB",
+    "name": "Samaypur Badli",
+    "lines": ["Yellow"],
+    "latitude": 28.7449,
+    "longitude": 77.1376,
+    "interchange": false
+  },
+  {
+    "id": "DL-RS1819",
+    "name": "Rohini Sector 18, 19",
+    "lines": ["Yellow"],
+    "latitude": 28.7383,
+    "longitude": 77.1421,
+    "interchange": false
+  },
+  {
+    "id": "DL-HBM",
+    "name": "Haiderpur Badli Mor",
+    "lines": ["Yellow"],
+    "latitude": 28.7285,
+    "longitude": 77.1498,
+    "interchange": false
+  },
+  {
+    "id": "DL-JP",
+    "name": "Jahangirpuri",
+    "lines": ["Yellow"],
+    "latitude": 28.7256,
+    "longitude": 77.1627,
+    "interchange": false
+  },
+  {
+    "id": "DL-AN",
+    "name": "Adarsh Nagar",
+    "lines": ["Yellow"],
+    "latitude": 28.7166,
+    "longitude": 77.1704,
+    "interchange": false
+  },
+  {
+    "id": "DL-AZ",
+    "name": "Azadpur",
+    "lines": ["Yellow", "Pink"],
+    "latitude": 28.7071,
+    "longitude": 77.1804,
+    "interchange": true
+  },
+  {
+    "id": "DL-MT",
+    "name": "Model Town",
+    "lines": ["Yellow"],
+    "latitude": 28.7027,
+    "longitude": 77.1940,
+    "interchange": false
+  },
+  {
+    "id": "DL-GTBN",
+    "name": "GTB Nagar",
+    "lines": ["Yellow"],
+    "latitude": 28.6959,
+    "longitude": 77.2070,
+    "interchange": false
+  },
+  {
+    "id": "DL-VS",
+    "name": "Vishwavidyalaya",
+    "lines": ["Yellow"],
+    "latitude": 28.6942,
+    "longitude": 77.2140,
+    "interchange": false
+  },
+  {
+    "id": "DL-VSABHA",
+    "name": "Vidhan Sabha",
+    "lines": ["Yellow"],
+    "latitude": 28.6863,
+    "longitude": 77.2218,
+    "interchange": false
+  },
+  {
+    "id": "DL-CL",
+    "name": "Civil Lines",
+    "lines": ["Yellow"],
+    "latitude": 28.6769,
+    "longitude": 77.2251,
+    "interchange": false
+  },
+  {
+    "id": "DL-KG",
+    "name": "Kashmere Gate",
+    "lines": ["Red", "Yellow", "Violet"],
+    "latitude": 28.6675,
+    "longitude": 77.2285,
+    "interchange": true
+  },
+  {
+    "id": "DL-CC",
+    "name": "Chandni Chowk",
+    "lines": ["Yellow"],
+    "latitude": 28.6584,
+    "longitude": 77.2304,
+    "interchange": false
+  },
+  {
+    "id": "DL-CB",
+    "name": "Chawri Bazar",
+    "lines": ["Yellow"],
+    "latitude": 28.6493,
+    "longitude": 77.2265,
+    "interchange": false
+  },
+  {
+    "id": "DL-ND",
+    "name": "New Delhi",
+    "lines": ["Yellow", "Airport Express"],
+    "latitude": 28.6430,
+    "longitude": 77.2195,
+    "interchange": true
+  },
+  {
+    "id": "DL-RC",
+    "name": "Rajiv Chowk",
+    "lines": ["Yellow", "Blue"],
+    "latitude": 28.6328,
+    "longitude": 77.2197,
+    "interchange": true
+  },
+  {
+    "id": "DL-PC",
+    "name": "Patel Chowk",
+    "lines": ["Yellow"],
+    "latitude": 28.6301,
+    "longitude": 77.2182,
+    "interchange": false
+  },
+  {
+    "id": "DL-CS",
+    "name": "Central Secretariat",
+    "lines": ["Yellow", "Violet"],
+    "latitude": 28.6159,
+    "longitude": 77.2123,
+    "interchange": true
+  },
+  {
+    "id": "DL-UB",
+    "name": "Udyog Bhawan",
+    "lines": ["Yellow"],
+    "latitude": 28.6095,
+    "longitude": 77.2118,
+    "interchange": false
+  },
+  {
+    "id": "DL-LKM",
+    "name": "Lok Kalyan Marg",
+    "lines": ["Yellow"],
+    "latitude": 28.5974,
+    "longitude": 77.2111,
+    "interchange": false
+  },
+  {
+    "id": "DL-JB",
+    "name": "Jor Bagh",
+    "lines": ["Yellow"],
+    "latitude": 28.5866,
+    "longitude": 77.2126,
+    "interchange": false
+  },
+  {
+    "id": "DL-INA",
+    "name": "Dilli Haat-INA",
+    "lines": ["Yellow", "Pink"],
+    "latitude": 28.5742,
+    "longitude": 77.2093,
+    "interchange": true
+  },
+  {
+    "id": "DL-AI",
+    "name": "AIIMS",
+    "lines": ["Yellow"],
+    "latitude": 28.5669,
+    "longitude": 77.2078,
+    "interchange": false
+  },
+  {
+    "id": "DL-GP",
+    "name": "Green Park",
+    "lines": ["Yellow"],
+    "latitude": 28.5580,
+    "longitude": 77.2068,
+    "interchange": false
+  },
+  {
+    "id": "DL-HK",
+    "name": "Hauz Khas",
+    "lines": ["Yellow", "Magenta"],
+    "latitude": 28.5443,
+    "longitude": 77.2067,
+    "interchange": true
+  },
+  {
+    "id": "DL-MN",
+    "name": "Malviya Nagar",
+    "lines": ["Yellow"],
+    "latitude": 28.5291,
+    "longitude": 77.2049,
+    "interchange": false
+  },
+  {
+    "id": "DL-SK",
+    "name": "Saket",
+    "lines": ["Yellow"],
+    "latitude": 28.5209,
+    "longitude": 77.2019,
+    "interchange": false
+  },
+  {
+    "id": "DL-QM",
+    "name": "Qutub Minar",
+    "lines": ["Yellow"],
+    "latitude": 28.5129,
+    "longitude": 77.1865,
+    "interchange": false
+  },
+  {
+    "id": "DL-CH",
+    "name": "Chhatarpur",
+    "lines": ["Yellow"],
+    "latitude": 28.5067,
+    "longitude": 77.1750,
+    "interchange": false
+  },
+  {
+    "id": "DL-SP",
+    "name": "Sultanpur",
+    "lines": ["Yellow"],
+    "latitude": 28.4990,
+    "longitude": 77.1610,
+    "interchange": false
+  },
+  {
+    "id": "DL-GH",
+    "name": "Ghitorni",
+    "lines": ["Yellow"],
+    "latitude": 28.4938,
+    "longitude": 77.1494,
+    "interchange": false
+  },
+  {
+    "id": "DL-AG",
+    "name": "Arjan Garh",
+    "lines": ["Yellow"],
+    "latitude": 28.4804,
+    "longitude": 77.1256,
+    "interchange": false
+  },
+  {
+    "id": "DL-GD",
+    "name": "Guru Dronacharya",
+    "lines": ["Yellow"],
+    "latitude": 28.4828,
+    "longitude": 77.1026,
+    "interchange": false
+  },
+  {
+    "id": "DL-SKGR",
+    "name": "Sikanderpur",
+    "lines": ["Yellow"],
+    "latitude": 28.4817,
+    "longitude": 77.0910,
+    "interchange": false
+  },
+  {
+    "id": "DL-MGR",
+    "name": "MG Road",
+    "lines": ["Yellow"],
+    "latitude": 28.4795,
+    "longitude": 77.0799,
+    "interchange": false
+  },
+  {
+    "id": "DL-IC",
+    "name": "IFFCO Chowk",
+    "lines": ["Yellow"],
+    "latitude": 28.4723,
+    "longitude": 77.0725,
+    "interchange": false
+  },
+  {
+    "id": "DL-MCC",
+    "name": "Millennium City Centre Gurugram",
+    "lines": ["Yellow"],
+    "latitude": 28.4593,
+    "longitude": 77.0727,
+    "interchange": false
+  }
+]

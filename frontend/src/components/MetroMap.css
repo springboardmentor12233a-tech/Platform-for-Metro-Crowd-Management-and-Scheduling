@@ -1,0 +1,695 @@
+/* =========================================================
+   METRO MAP CONTAINER
+   ========================================================= */
+
+.metro-map-container {
+  position: relative;
+  width: 100%;
+  height: 650px;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.18);
+
+  pointer-events: auto !important;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   GOOGLE MAP
+   ========================================================= */
+
+.metro-google-map {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 650px;
+
+  pointer-events: auto !important;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   GOOGLE MAP INTERNAL CONTAINER
+   ========================================================= */
+
+.google-map-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 650px;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  pointer-events: auto !important;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STATION MARKERS
+   ========================================================= */
+
+.metro-marker {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  pointer-events: auto !important;
+
+  user-select: none;
+}
+
+
+/* =========================================================
+   NORMAL STATION
+   ========================================================= */
+
+.normal-marker {
+  width: 15px;
+  height: 15px;
+
+  border-radius: 50%;
+
+  border: 3px solid white;
+
+  box-shadow:
+    0 2px 7px rgba(0, 0, 0, 0.4);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   INTERCHANGE STATION
+   ========================================================= */
+
+.interchange-marker {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: auto !important;
+}
+
+
+.interchange-ring {
+  width: 25px;
+  height: 25px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 3px;
+
+  box-sizing: border-box;
+
+  border: 2px solid white;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+
+.marker-inner {
+  width: 9px;
+  height: 9px;
+
+  background: white;
+
+  border-radius: 50%;
+
+  border: 2px solid #1e293b;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STATION INFO WINDOW
+   ========================================================= */
+
+.station-info {
+  min-width: 180px;
+
+  padding: 4px;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+.station-info h3 {
+  margin: 0 0 10px;
+
+  color: #123b68;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+.station-lines {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 5px;
+}
+
+
+.line-badge {
+  display: inline-block;
+
+  color: white;
+
+  padding: 4px 8px;
+
+  border-radius: 12px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+.interchange-text {
+  margin: 10px 0 0;
+
+  color: #7c3aed;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+
+.station-coordinates {
+  margin-top: 8px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   MAP LEGEND
+   ========================================================= */
+
+.metro-map-legend {
+  position: absolute;
+
+  top: 20px;
+  left: 20px;
+
+  z-index: 10;
+
+  width: 190px;
+
+  padding: 16px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.18);
+
+  pointer-events: none;
+
+  box-sizing: border-box;
+}
+
+
+.metro-map-legend h3,
+.metro-map-legend h4 {
+  margin: 0 0 12px;
+
+  color: #123b68;
+
+  font-size: 15px;
+
+  font-weight: 700;
+}
+
+
+.legend-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 9px;
+
+  color: #334155;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   METRO LINE LEGEND
+   ========================================================= */
+
+.legend-color {
+  width: 28px;
+  height: 5px;
+
+  border-radius: 5px;
+
+  display: inline-block;
+
+  flex-shrink: 0;
+}
+
+
+.legend-line {
+  width: 28px;
+  height: 5px;
+
+  border-radius: 5px;
+
+  display: inline-block;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   NORMAL STATION LEGEND
+   ========================================================= */
+
+.legend-normal {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  border: 2px solid white;
+
+  box-shadow:
+    0 0 0 1px #64748b;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   INTERCHANGE LEGEND
+   ========================================================= */
+
+.legend-interchange {
+  width: 17px;
+  height: 17px;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      #f4c430,
+      #2563eb,
+      #ef4444,
+      #8b5cf6,
+      #d946ef,
+      #f4c430
+    );
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+
+.legend-interchange span {
+  width: 7px;
+  height: 7px;
+
+  background: white;
+
+  border-radius: 50%;
+}
+
+
+.legend-divider {
+  height: 1px;
+
+  background: #e2e8f0;
+
+  margin: 12px 0;
+}
+
+
+/* =========================================================
+   STATION COUNT
+   ========================================================= */
+
+.metro-map-count {
+  position: absolute;
+
+  right: 20px;
+  bottom: 20px;
+
+  z-index: 10;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 10px 15px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.15);
+
+  pointer-events: none;
+}
+
+
+.metro-map-count strong {
+  color: #123b68;
+
+  font-size: 18px;
+}
+
+
+.metro-map-count span {
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   MAP LOADING
+   ========================================================= */
+
+.metro-map-loading {
+  width: 100%;
+  min-height: 300px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.75);
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 16px;
+
+  box-sizing: border-box;
+}
+
+
+.metro-map-loading h3 {
+  margin: 12px 0 0;
+
+  color: #123b68;
+}
+
+
+.metro-map-loading p {
+  margin-top: 10px;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   MAP ERROR
+   ========================================================= */
+
+.metro-map-error,
+.map-error {
+  min-height: 300px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.75);
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 16px;
+
+  color: #b91c1c;
+
+  box-sizing: border-box;
+}
+
+
+.metro-map-error h3,
+.map-error h3 {
+  margin-bottom: 8px;
+}
+
+
+.metro-map-error p,
+.map-error p {
+  color: #475569;
+}
+
+
+.metro-map-error code,
+.map-error code {
+  padding: 8px 12px;
+
+  background: #f1f5f9;
+
+  border-radius: 6px;
+
+  color: #334155;
+}
+
+
+/* =========================================================
+   LOADING SPINNER
+   ========================================================= */
+
+.loading-spinner {
+  width: 35px;
+  height: 35px;
+
+  border: 4px solid #dbeafe;
+
+  border-top-color: #2563eb;
+
+  border-radius: 50%;
+
+  animation:
+    metro-spin 0.8s linear infinite;
+}
+
+
+@keyframes metro-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   GOOGLE MAP INTERACTION
+   ========================================================= */
+
+/*
+   IMPORTANT:
+   The map itself MUST receive mouse/touch events.
+   The legend and count overlay must NOT block them.
+*/
+
+.metro-map-container,
+.metro-google-map {
+  touch-action: auto;
+
+  user-select: none;
+}
+
+
+.metro-google-map {
+  pointer-events: auto !important;
+}
+
+
+/*
+   Prevent overlay elements from blocking
+   Google Maps dragging and zooming.
+*/
+
+.metro-map-legend {
+  pointer-events: none !important;
+}
+
+
+.metro-map-count {
+  pointer-events: none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .metro-map-container {
+    height: 600px;
+  }
+
+  .metro-google-map {
+    height: 600px;
+
+    min-height: 600px;
+  }
+
+  .google-map-wrapper {
+    height: 600px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .metro-map-container {
+    height: 550px;
+  }
+
+  .metro-google-map {
+    height: 550px;
+
+    min-height: 550px;
+  }
+
+  .google-map-wrapper {
+    height: 550px;
+  }
+
+  .metro-map-legend {
+    top: 10px;
+
+    left: 10px;
+
+    width: 150px;
+
+    padding: 12px;
+  }
+
+  .metro-map-count {
+    right: 10px;
+
+    bottom: 10px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .metro-map-container {
+    height: 450px;
+
+    border-radius: 12px;
+  }
+
+  .metro-google-map {
+    height: 450px;
+
+    min-height: 450px;
+  }
+
+  .google-map-wrapper {
+    height: 450px;
+  }
+
+  .metro-map-legend {
+    display: none;
+  }
+
+  .metro-map-count {
+    right: 10px;
+
+    bottom: 10px;
+
+    padding: 8px 12px;
+  }
+
+}

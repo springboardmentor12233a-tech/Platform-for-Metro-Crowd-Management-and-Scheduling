@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment / secrets
+.env
+.env.*
+
+# Machine learning model files
+*.pkl
+*.joblib
+
+# Frontend dependencies
+node_modules/
+frontend/dist/
+
+# Temporary / backup files
+*.log
+
+# Python generated files
+.pytest_cache/
+
+# Excel / CSV temporary exports
+~$*
+
+# Backup and temporary source files
+*_backup.py
+*_backup.jsx
+*_backup.js
+backend/auth.py.txt
+backend/security.py.txt
+backend/users.py.txt
+

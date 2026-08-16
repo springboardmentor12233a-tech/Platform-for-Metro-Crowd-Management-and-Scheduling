@@ -1,0 +1,604 @@
+/* =========================================================
+   AI PREDICTION
+========================================================= */
+
+.ai-prediction {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 26px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.85);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.10);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.ai-prediction-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.ai-prediction-header h2 {
+  margin: 0;
+
+  color: #123b68;
+
+  font-size: 28px;
+
+  font-weight: 800;
+
+  line-height: 1.2;
+}
+
+.ai-prediction-header p {
+  margin: 8px 0 0;
+
+  max-width: 850px;
+
+  color: #475569;
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   AI MODEL BADGE
+========================================================= */
+
+.ai-model-badge {
+  flex-shrink: 0;
+
+  padding: 12px 18px;
+
+  border-radius: 24px;
+
+  background: #e0efff;
+
+  color: #123b68;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.prediction-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1.4fr)
+    minmax(220px, 1.4fr)
+    minmax(150px, 0.8fr)
+    minmax(150px, 0.8fr);
+
+  gap: 16px;
+
+  align-items: end;
+
+  width: 100%;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+
+/* =========================================================
+   FORM FIELD
+========================================================= */
+
+.prediction-field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  min-width: 0;
+}
+
+.prediction-field label {
+  color: #334155;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.prediction-field select,
+.prediction-field input {
+  width: 100%;
+
+  height: 48px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #1e293b;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.prediction-field select:focus,
+.prediction-field input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   DATE INFORMATION
+========================================================= */
+
+.prediction-date-info {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  min-height: 48px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  color: #475569;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.prediction-date-info span:first-child {
+  color: #123b68;
+}
+
+.prediction-date-info span:last-child {
+  padding: 4px 8px;
+
+  border-radius: 12px;
+
+  background: #e0efff;
+
+  color: #1d4ed8;
+}
+
+
+/* =========================================================
+   PREDICTION BUTTON
+========================================================= */
+
+.prediction-button {
+  width: 100%;
+
+  min-height: 48px;
+
+  margin-top: 18px;
+
+  padding: 0 24px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #123b68;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.prediction-button:hover {
+  background: #0f3156;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 14px rgba(18, 59, 104, 0.20);
+}
+
+.prediction-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.prediction-error {
+  margin-top: 15px;
+
+  padding: 15px;
+
+  border-radius: 10px;
+
+  background: #fee2e2;
+
+  border: 1px solid #fecaca;
+
+  color: #991b1b;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.prediction-results {
+  width: 100%;
+
+  margin-top: 22px;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 6px 18px rgba(15, 23, 42, 0.07);
+}
+
+
+/* =========================================================
+   RESULT HEADER
+========================================================= */
+
+.prediction-results-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+}
+
+.prediction-results-header h3 {
+  margin: 0;
+
+  color: #123b68;
+
+  font-size: 21px;
+}
+
+.prediction-results-header p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   CAPACITY STATUS
+========================================================= */
+
+.capacity-status {
+  padding: 8px 16px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status-normal {
+  background: #dcfce7;
+
+  color: #166534;
+}
+
+.status-busy {
+  background: #fef3c7;
+
+  color: #92400e;
+}
+
+.status-overloaded {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+/* =========================================================
+   KPI GRID
+========================================================= */
+
+.prediction-kpis {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+
+  width: 100%;
+}
+
+.prediction-kpi {
+  min-width: 0;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+}
+
+.prediction-kpi span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.prediction-kpi strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #123b68;
+
+  font-size: 21px;
+
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   AI RECOMMENDATION
+========================================================= */
+
+.prediction-recommendation {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 18px;
+
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  border-radius: 12px;
+
+  background: #eff6ff;
+
+  border: 1px solid #bfdbfe;
+}
+
+.prediction-recommendation > div:first-child {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.prediction-recommendation span {
+  color: #1e40af;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.prediction-recommendation strong {
+  color: #123b68;
+
+  font-size: 14px;
+}
+
+.recommendation-icon {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 42px;
+
+  height: 42px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #dbeafe;
+
+  color: #1d4ed8;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .prediction-form {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .prediction-date-info {
+    justify-content: flex-start;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .ai-prediction-header {
+    align-items: flex-start;
+  }
+
+  .prediction-kpis {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .ai-prediction {
+    padding: 18px;
+  }
+
+  .ai-prediction-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .ai-model-badge {
+    align-self: flex-start;
+  }
+
+  .prediction-form {
+    grid-template-columns: 1fr;
+
+    padding: 18px;
+  }
+
+  .prediction-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .prediction-results-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .prediction-recommendation {
+    align-items: flex-start;
+  }
+
+}

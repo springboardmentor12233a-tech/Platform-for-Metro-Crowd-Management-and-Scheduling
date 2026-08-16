@@ -1,0 +1,92 @@
+[
+  {
+    "id": "red",
+    "name": "Red Line",
+    "color": "#E53935",
+    "stations": [
+      "DL-DG",
+      "DL-JH",
+      "DL-MP",
+      "DL-SH",
+      "DL-WE",
+      "DL-SE",
+      "DL-SP",
+      "DL-KG"
+    ]
+  },
+  {
+    "id": "yellow",
+    "name": "Yellow Line",
+    "color": "#F4C430",
+    "stations": [
+      "DL-SB",
+      "DL-R18",
+      "DL-HBM",
+      "DL-JP",
+      "DL-AN",
+      "DL-AZ",
+      "DL-MT",
+      "DL-GTB",
+      "DL-VV",
+      "DL-VS",
+      "DL-CV",
+      "DL-KG",
+      "DL-CC",
+      "DL-CB",
+      "DL-ND",
+      "DL-RC",
+      "DL-PC",
+      "DL-CS",
+      "DL-UB",
+      "DL-INA",
+      "DL-AI",
+      "DL-GP",
+      "DL-HK",
+      "DL-MN",
+      "DL-SK",
+      "DL-QM",
+      "DL-CT",
+      "DL-SU",
+      "DL-GH",
+      "DL-AG",
+      "DL-GD",
+      "DL-MGR",
+      "DL-IC",
+      "DL-MCG"
+    ]
+  },
+  {
+    "id": "blue",
+    "name": "Blue Line",
+    "color": "#2563EB",
+    "stations": [
+      "DL-D21",
+      "DL-DM",
+      "DL-JPE",
+      "DL-JPW",
+      "DL-TN",
+      "DL-KB",
+      "DL-RJ",
+      "DL-KG",
+      "DL-RC",
+      "DL-MH"
+    ]
+  },
+  {
+    "id": "violet",
+    "name": "Violet Line",
+    "color": "#8B5CF6",
+    "stations": [
+      "DL-KG",
+      "DL-MH"
+    ]
+  },
+  {
+    "id": "magenta",
+    "name": "Magenta Line",
+    "color": "#D946EF",
+    "stations": [
+      "DL-HK"
+    ]
+  }
+]

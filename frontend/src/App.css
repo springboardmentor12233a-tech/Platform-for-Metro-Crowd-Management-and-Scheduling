@@ -1,0 +1,1011 @@
+/* =========================================
+   GLOBAL
+   ========================================= */
+
+body {
+  margin: 0;
+  background: #f4f7fb;
+  font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+  color: #1e293b;
+}
+
+
+/* =========================================
+   APP LAYOUT
+   ========================================= */
+
+.app {
+  position: relative;
+  min-height: 100vh;
+}
+
+
+/* =========================================
+   METROFLOW BACKGROUND
+   ========================================= */
+
+.metroflow-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.metroflow-background-image {
+  position: absolute;
+  inset: 0;
+
+  background-image: url("/images/metroflow-light.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.metroflow-background-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.30) 0%,
+    rgba(255, 255, 255, 0.38) 50%,
+    rgba(255, 255, 255, 0.48) 100%
+  );
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   CONTENT ABOVE BACKGROUND
+   ========================================= */
+
+.app-content {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  min-height: 100vh;
+}
+
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+
+.sidebar {
+  width: 260px;
+
+  background: rgba(11, 30, 61, 0.92);
+
+  color: white;
+
+  padding: 25px;
+
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  height: 100vh;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: 700;
+
+  text-align: center;
+
+  margin-bottom: 35px;
+
+  line-height: 1.15;
+}
+
+
+/* =========================================
+   SIDEBAR MENU
+   ========================================= */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  color: white;
+
+  text-decoration: none;
+
+  padding: 12px 16px;
+
+  border-radius: 10px;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+
+  font-size: 16px;
+
+  font-weight: 500;
+
+  background: transparent;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.10);
+
+  transform: translateX(4px);
+}
+
+.menu-item.active {
+  background: rgba(25, 118, 210, 0.72);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+.main-content {
+  flex: 1;
+
+  margin-left: 310px;
+
+  padding: 35px;
+
+  min-width: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   GLOBAL HEADINGS
+   ========================================= */
+
+h1,
+h2,
+h3 {
+  font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-size: 32px;
+
+  font-weight: 700;
+
+  color: #123b68;
+
+  margin: 0 0 20px 0;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================
+   GLASS CARDS
+   ========================================= */
+
+.card {
+  width: 100%;
+
+  /* Semi-transparent white */
+  background: rgba(255, 255, 255, 0.58);
+
+  /* Glass effect */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  padding: 30px;
+
+  border-radius: 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.12);
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+
+  background: rgba(255, 255, 255, 0.64);
+
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
+
+/* =========================================
+   FORM
+   ========================================= */
+
+label {
+  margin-top: 15px;
+
+  margin-bottom: 6px;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  color: #334155;
+}
+
+input,
+select {
+  width: 100%;
+
+  padding: 12px;
+
+  border-radius: 8px;
+
+  border: 1px solid #cbd5e1;
+
+  font-size: 15px;
+
+  outline: none;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.96);
+}
+
+input:focus,
+select:focus {
+  border-color: #1976d2;
+
+  box-shadow:
+    0 0 5px rgba(25, 118, 210, 0.22);
+}
+
+
+/* =========================================
+   BUTTON
+   ========================================= */
+
+button {
+  width: 100%;
+
+  margin-top: 25px;
+
+  padding: 14px;
+
+  background: #1976d2;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+button:hover {
+  background: #0f5ec2;
+
+  transform: translateY(-2px);
+}
+
+
+/* =========================================
+   PREDICTION RESULT
+   ========================================= */
+
+.result-card {
+  margin-top: 25px;
+
+  background: rgba(238, 246, 255, 0.65);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+
+  padding: 20px;
+
+  border-radius: 10px;
+
+  width: 100%;
+
+  box-sizing: border-box;
+}
+
+.result-card h2 {
+  margin-top: 0;
+
+  color: #123b68;
+}
+
+.result-card p {
+  margin: 8px 0;
+
+  font-size: 15px;
+}
+
+
+/* =========================================
+   DASHBOARD GRID
+   ========================================= */
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(300px, 1fr);
+
+  gap: 25px;
+
+  margin-top: 30px;
+
+  align-items: start;
+}
+
+.dashboard-grid .card {
+  width: auto;
+
+  background: rgba(255, 255, 255, 0.60);
+}
+
+
+/* =========================================
+   TABLE
+   ========================================= */
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+
+  padding: 12px;
+
+  background: rgba(245, 247, 251, 0.75);
+
+  color: #334155;
+
+  font-weight: 600;
+}
+
+td {
+  padding: 12px;
+
+  color: #475569;
+}
+
+tr:hover {
+  background: rgba(248, 251, 255, 0.75);
+}
+
+
+/* =========================================
+   DASHBOARD HEADER
+   ========================================= */
+
+.dashboard-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 25px;
+}
+
+.header-title {
+  flex: 1;
+
+  min-width: 0;
+
+  text-align: center;
+}
+
+.header-brand {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.header-brand h1 {
+  margin: 0;
+
+  font-size: 38px;
+
+  line-height: 1.15;
+
+  /* White for strong contrast */
+  color: #ffffff;
+
+  font-weight: 750;
+
+  white-space: nowrap;
+
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.65),
+    0 0 12px rgba(0, 0, 0, 0.25);
+}
+
+.metro-icon {
+  font-size: 30px;
+}
+
+.header-title p {
+  margin: 10px 0 0;
+
+  font-size: 17px;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-weight: 500;
+
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.60);
+}
+
+
+/* =========================================
+   SYSTEM ONLINE
+   ========================================= */
+
+.system-online {
+  flex-shrink: 0;
+
+  min-width: 150px;
+
+  padding: 15px 20px;
+
+  background: rgba(255, 255, 255, 0.62);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255, 255, 255, 0.70);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.12);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  color: #26364a;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  box-sizing: border-box;
+}
+
+.status-dot {
+  width: 10px;
+
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: #4ade80;
+
+  display: inline-block;
+
+  box-shadow:
+    0 0 8px rgba(74, 222, 128, 0.55);
+}
+
+
+/* =========================================
+   DELHI METRO PAGE SUPPORT
+   ========================================= */
+
+.delhi-metro-page {
+  width: 100%;
+}
+
+
+/* =========================================
+   RESPONSIVE — 1200px
+   ========================================= */
+
+@media (max-width: 1200px) {
+
+  .header-brand h1 {
+    font-size: 32px;
+  }
+
+  .header-title p {
+    font-size: 16px;
+  }
+}
+
+
+/* =========================================
+   RESPONSIVE — 1100px
+   ========================================= */
+
+@media (max-width: 1100px) {
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .main-content {
+    margin-left: 220px;
+  }
+}
+
+
+/* =========================================
+   RESPONSIVE — 900px
+   ========================================= */
+
+@media (max-width: 900px) {
+
+  .dashboard-header {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .system-online {
+    align-self: center;
+  }
+
+  .header-brand h1 {
+    white-space: normal;
+
+    text-align: center;
+  }
+}
+
+
+/* =========================================
+   RESPONSIVE — 768px
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .app-content {
+    display: block;
+  }
+
+  .sidebar {
+    position: relative;
+
+    width: 100%;
+
+    height: auto;
+
+    padding: 20px;
+  }
+
+  .main-content {
+    margin-left: 0;
+
+    padding: 20px;
+  }
+
+  .metroflow-background-image {
+    background-position: center;
+  }
+
+  .header-brand h1 {
+    font-size: 28px;
+  }
+
+  .header-title p {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
+
+/* =========================================================
+   PREDICTION HISTORY - PAGE SPECIFIC STYLING
+   ========================================================= */
+
+.history-page {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------
+   HISTORY HEADER
+   --------------------------------------------------------- */
+
+.history-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.history-header h1 {
+  margin: 0 0 8px 0;
+  color: #123b68;
+}
+
+.history-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.history-count {
+  min-width: 110px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.history-count strong {
+  display: block;
+  font-size: 24px;
+  color: #123b68;
+}
+
+.history-count span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+
+/* ---------------------------------------------------------
+   HISTORY CARD
+   --------------------------------------------------------- */
+
+.history-page > .card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+
+/* ---------------------------------------------------------
+   CARD HEADER
+   --------------------------------------------------------- */
+
+.history-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.history-card-header h2 {
+  margin: 0 0 6px 0;
+  color: #123b68;
+}
+
+.history-card-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.history-card-header input {
+  width: 280px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* ---------------------------------------------------------
+   TABLE CONTAINER
+   --------------------------------------------------------- */
+
+.history-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  /*
+     Prevent 11+ records from making the whole
+     page unnecessarily tall.
+  */
+  max-height: 360px;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  border-radius: 10px;
+}
+
+
+/* ---------------------------------------------------------
+   HISTORY TABLE
+   --------------------------------------------------------- */
+
+.history-table {
+  width: 100%;
+  min-width: 850px;
+
+  /*
+     Forces columns to respect the available width.
+  */
+  table-layout: fixed;
+
+  border-collapse: collapse;
+}
+
+
+/* ---------------------------------------------------------
+   COLUMN WIDTHS
+   --------------------------------------------------------- */
+
+.history-table th:nth-child(1),
+.history-table td:nth-child(1) {
+  width: 55px;
+}
+
+.history-table th:nth-child(2),
+.history-table td:nth-child(2) {
+  width: 180px;
+}
+
+.history-table th:nth-child(3),
+.history-table td:nth-child(3) {
+  width: 105px;
+}
+
+.history-table th:nth-child(4),
+.history-table td:nth-child(4) {
+  width: 85px;
+}
+
+.history-table th:nth-child(5),
+.history-table td:nth-child(5) {
+  width: 105px;
+}
+
+.history-table th:nth-child(6),
+.history-table td:nth-child(6) {
+  width: 110px;
+}
+
+.history-table th:nth-child(7),
+.history-table td:nth-child(7) {
+  width: 105px;
+}
+
+.history-table th:nth-child(8),
+.history-table td:nth-child(8) {
+  width: 180px;
+}
+
+
+/* ---------------------------------------------------------
+   TABLE CELLS
+   --------------------------------------------------------- */
+
+.history-table th,
+.history-table td {
+  padding: 12px 10px;
+
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
+  vertical-align: middle;
+}
+
+
+/* ---------------------------------------------------------
+   STICKY TABLE HEADER
+   --------------------------------------------------------- */
+
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: rgba(245, 247, 251, 0.96);
+}
+
+
+/* ---------------------------------------------------------
+   STATION
+   --------------------------------------------------------- */
+
+.history-table td:nth-child(2) strong {
+  color: #123b68;
+}
+
+
+/* ---------------------------------------------------------
+   CROWD STATUS
+   --------------------------------------------------------- */
+
+.history-status {
+  display: inline-block;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.history-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.history-medium {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.history-low {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+
+.history-empty {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.history-empty-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.history-empty h3 {
+  margin: 0 0 8px 0;
+  color: #123b68;
+}
+
+.history-empty p {
+  margin: 0;
+  color: #64748b;
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 800px) {
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-count {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .history-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .history-card-header input {
+    width: 100%;
+  }
+
+  .history-page > .card {
+    padding: 18px;
+  }
+
+  .history-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  max-height: 460px;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  border-radius: 10px;
+}
+}
+/* =========================================
+   LOGOUT BUTTON
+========================================= */
+
+.logout-button {
+  width: calc(100% - 24px);
+
+  margin: 20px 12px 0;
+
+  padding: 12px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.16);
+
+  transform: translateY(-1px);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
