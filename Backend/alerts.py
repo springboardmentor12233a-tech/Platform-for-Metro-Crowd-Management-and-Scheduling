@@ -24,6 +24,21 @@ def get_alerts(db: Session = Depends(get_db)):
     alerts = db.query(Alert).order_by(Alert.created_at.desc()).all()
     return alerts
 
+@router.get("/active")
+def get_active_alerts(db: Session = Depends(get_db)):
+    alerts = db.query(Alert).filter(Alert.is_resolved == False).order_by(Alert.created_at.desc()).all()
+    return alerts
+
+
+@router.put("/{alert_id}/resolve")
+def resolve_alert(alert_id: int, db: Session = Depends(get_db)):
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        return {"error": "Alert not found"}
+    alert.is_resolved = True
+    db.commit()
+    db.refresh(alert)
+    return {"message": f"Alert {alert_id} resolved", "alert": alert}
 
 @router.post("/")
 def create_alert(alert_type: str, station: str, message: str, severity: str, db: Session = Depends(get_db)):
