@@ -1,5 +1,27 @@
 [
     {
+        "Timestamp": "17-08-2026 20:14:33",
+        "Passenger_Count": 678.0,
+        "Occupancy_Percent": 90.0,
+        "Delay_Minutes": 8.0,
+        "Number_of_Trips": 98.0,
+        "Train_Frequency_Per_Hour": 58.0,
+        "Train_Speed_kmph": 99.0,
+        "Crowd_Level": "Low",
+        "Recommendation": "Low crowd is predicted on the Airport \u2192 Central route. Normal metro operation is recommended."
+    },
+    {
+        "Timestamp": "16-08-2026 19:57:34",
+        "Passenger_Count": 1234.0,
+        "Occupancy_Percent": 60.0,
+        "Delay_Minutes": 3.0,
+        "Number_of_Trips": 23.0,
+        "Train_Frequency_Per_Hour": 4.0,
+        "Train_Speed_kmph": 35.0,
+        "Crowd_Level": "Medium",
+        "Recommendation": "Moderate crowd is predicted on the University \u2192 North Gate route. Increase monitoring during busy periods."
+    },
+    {
         "Timestamp": "12-08-2026 19:34:49",
         "Passenger_Count": 2560.0,
         "Occupancy_Percent": 65.0,
