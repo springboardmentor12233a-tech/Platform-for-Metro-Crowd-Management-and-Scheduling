@@ -42,6 +42,21 @@ def get_operational_insights(db: Session = Depends(get_db)):
         .order_by(PredictionHistory.prediction_time.desc())
         .first()
     )
+    busiest_path = (
+    db.query(
+        PredictionHistory.from_station,
+        PredictionHistory.to_station,
+        func.sum(PredictionHistory.predicted_passengers).label("total_passengers")
+    )
+    .group_by(
+        PredictionHistory.from_station,
+        PredictionHistory.to_station
+    )
+    .order_by(
+        func.sum(PredictionHistory.predicted_passengers).desc()
+    )
+    .first()
+)
 
     return {
 
@@ -57,7 +72,11 @@ def get_operational_insights(db: Session = Depends(get_db)):
                 average_predicted_passengers, 2
             ) if average_predicted_passengers else 0,
 
-            "total_extra_trains_recommended": total_extra_trains if total_extra_trains else 0
+            "total_extra_trains_recommended": total_extra_trains if total_extra_trains else 0,
+            "busiest_path": (
+             f"{busiest_path.from_station} → {busiest_path.to_station}"
+                if busiest_path else "N/A"
+            )
 
         },
 

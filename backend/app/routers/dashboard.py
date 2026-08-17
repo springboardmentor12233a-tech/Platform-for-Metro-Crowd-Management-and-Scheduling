@@ -64,12 +64,20 @@ def get_dashboard(db: Session = Depends(get_db)):
     )
 
     # Latest Alert
-    latest_alert = (
-        db.query(MetroAlert)
-        .order_by(MetroAlert.created_at.desc())
-        .first()
+    latest_record = (
+        db.query(PredictionHistory, MetroAlert)
+    .join(
+        MetroAlert,
+        MetroAlert.prediction_id == PredictionHistory.id
     )
-
+    .order_by(MetroAlert.created_at.desc())
+    .first()
+)
+    if latest_record:
+        prediction, alert = latest_record
+    else:
+        prediction = None
+        alert = None
     # Recent Predictions
     recent_predictions = (
         db.query(PredictionHistory)
@@ -77,7 +85,9 @@ def get_dashboard(db: Session = Depends(get_db)):
         .limit(5)
         .all()
     )
-
+    print("Latest Record:", latest_record)
+    print("Prediction:", prediction)
+    print("Alert:", alert)    
     return {
 
         "latest_prediction": {
@@ -92,20 +102,24 @@ def get_dashboard(db: Session = Depends(get_db)):
         },
 
         "latest_alert": {
-            "priority": latest_alert.priority if latest_alert else None,
-            "title": latest_alert.title if latest_alert else None,
-            "message": latest_alert.message if latest_alert else None,
-            "notification_type": latest_alert.notification_type if latest_alert else None,
-            "passenger_advisory": latest_alert.passenger_advisory if latest_alert else None
-        },
+            "priority": alert.priority if alert else None,
+            "title": alert.title if alert else None,
+            "message": alert.message if alert else None,
+            "notification_type": alert.notification_type if alert else None,
+            "passenger_advisory": alert.passenger_advisory if alert else None,
 
-        "latest_announcement": {
-            "announcement": latest_alert.announcement if latest_alert else None
-        },
+            "from_station": prediction.from_station if prediction else None,
+            "to_station": prediction.to_station if prediction else None,
+            "predicted_passengers": prediction.predicted_passengers if prediction else None,
+            "crowd_level": prediction.crowd_level if prediction else None,
+},
 
-        "latest_ai_recommendation": {
-            "recommendation": latest_alert.recommendation if latest_alert else None
-        },
+       "latest_announcement": {
+         "announcement": alert.announcement if alert else None
+},
+    "latest_ai_recommendation": {
+        "recommendation": alert.recommendation if alert else None
+},
 
         "recent_predictions": [
             {
