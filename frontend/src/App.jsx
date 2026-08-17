@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AICopilotDrawer from "./components/AICopilotDrawer";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+              <AICopilotDrawer />
             </ProtectedRoute>
           }
         />
@@ -22,6 +24,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Reports />
+              <AICopilotDrawer />
             </ProtectedRoute>
           }
         />
