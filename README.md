@@ -1,127 +1,130 @@
-# AI MetroFlow 🚇
+# 🚇 AI MetroFlow: Crowd Management & Scheduling Platform
 
-**Platform for Metro Crowd Management and Scheduling**
-*Developed as part of the Infosys Springboard Internship*
+![Project Status](https://img.shields.io/badge/Status-Completed-success)
+![Platform](https://img.shields.io/badge/Platform-Web-blue)
+![Stack](https://img.shields.io/badge/Stack-React%20%7C%20FastAPI%20%7C%20MongoDB-blueviolet)
 
-AI MetroFlow is a comprehensive, full-stack, AI-powered platform designed to revolutionize urban transit management. It provides metro operators, analysts, and administrators with real-time insights, predictive analytics, and dynamic scheduling capabilities to optimize passenger flow, reduce congestion, and improve overall transit efficiency.
+> **Developed as a capstone project for the Infosys Springboard Internship.**
 
----
-
-## ✨ Key Features
-
-*   **Real-Time Crowd Monitoring:** Live passenger counting and congestion tracking across all network stations using WebSockets for instant updates.
-*   **AI-Powered Predictions:** Machine learning models (Random Forest) that forecast future station demand, detect anomalies, and predict train delays before they happen.
-*   **Dynamic Scheduling:** Automated frequency adjustment algorithms that optimize train dispatch intervals based on predicted peak traffic hours.
-*   **Congestion Heatmaps:** Interactive, geographical visualizations of crowd density across the entire metro network.
-*   **Live Alerts & Announcements:** Instant WebSocket-powered broadcast system for emergency alerts, weather warnings, and platform changes.
-*   **Analytics & Reporting:** Comprehensive dashboards and downloadable reports (CSV/PDF) for historical passenger trends and delay factors.
+AI MetroFlow is an advanced, AI-powered web application designed to solve real-world urban transit problems. It helps Metro administrators monitor live passenger crowds, predict future congestion using Machine Learning, and dynamically adjust train schedules to prevent overcrowding.
 
 ---
 
-## 🛠️ Technology Stack
+## 🌟 What Does This Project Do?
 
-**Frontend:**
-*   **React (Vite):** Fast, modern UI development.
-*   **Tailwind CSS:** Highly customizable utility-first styling with Glassmorphic design language.
-*   **Lucide React:** Beautiful, consistent iconography.
-*   **Recharts:** Dynamic data visualization and charting.
-
-**Backend:**
-*   **FastAPI (Python):** High-performance asynchronous API server.
-*   **MongoDB (Motor):** Flexible NoSQL database with asynchronous drivers for high concurrency.
-*   **Scikit-Learn / Pandas:** Machine learning model execution and data processing.
-*   **WebSockets:** Real-time bi-directional communication.
-*   **JWT Authentication:** Secure role-based access control (Admin, Analyst, Operator).
+1. **Live Dashboard:** Monitors active trains, passenger counts, and delayed schedules in real-time.
+2. **AI Delay & Demand Prediction:** Uses Machine Learning (`scikit-learn` Random Forest models) to predict if a train will be delayed and forecasts how many passengers will arrive at a station at a given time.
+3. **Congestion Heatmap:** A visual map showing exactly which stations are overcrowded (Red/Orange/Yellow/Green indicators).
+4. **Automated Scheduling:** If the AI detects heavy crowds, administrators can use the system to automatically calculate new train dispatch frequencies (e.g., sending a train every 5 minutes instead of 15).
+5. **Real-Time Alerts:** Uses WebSockets to instantly broadcast emergency notifications (like "Weather Delays") to all connected screens without refreshing the page.
+6. **AI Assistant Chatbot:** A built-in virtual assistant that operators can interact with to quickly query station metrics, ask about system status, and get AI-driven insights on demand.
 
 ---
 
-## 🚀 Getting Started
+## 💻 Tech Stack Used
 
-Follow these instructions to get a copy of the project up and running on your local machine.
-
-### Prerequisites
-*   Node.js (v18+)
-*   Python (3.10+)
-*   MongoDB (Running locally or via MongoDB Atlas)
-
-### 1. Database Setup
-Ensure your local MongoDB instance is running. The backend will automatically create the database (`metroflow_db`) and collections on the first run.
-
-### 2. Backend Installation
-Open a terminal and navigate to the `backend` folder:
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate      # On Windows
-pip install -r requirements.txt
-```
-
-### 3. Frontend Installation
-Open a new terminal and navigate to the `frontend` folder:
-```bash
-cd frontend
-npm install
-```
+*   **Frontend User Interface:** React.js, Vite, Tailwind CSS (Glassmorphism design), Recharts (for graphs)
+*   **Backend API Server:** Python, FastAPI, WebSockets
+*   **Database:** MongoDB (using Motor for async connections)
+*   **Artificial Intelligence:** Python Pandas, Scikit-Learn
 
 ---
 
-## 💻 Running the Application
+## 🛠️ Step-by-Step Installation Guide
 
-You need to run both the Backend and Frontend servers simultaneously in two separate terminals.
+Follow these exact steps to run the project on your local Windows computer.
 
-### Start the Backend (FastAPI)
-```bash
-cd backend
-venv\Scripts\activate      # Ensure your virtual environment is active
-uvicorn backend.main:app --reload --port 8000
-```
-*The backend API will be available at: http://127.0.0.1:8000*
-*Interactive API Docs (Swagger UI): http://127.0.0.1:8000/docs*
-
-### Start the Frontend (React)
-```bash
-cd frontend
-npm run dev
-```
-*The frontend application will be available at: http://localhost:5173*
+### Step 1: Install Prerequisites
+Before you start, make sure you have installed:
+1. **Node.js** (Download from nodejs.org)
+2. **Python 3.10+** (Download from python.org)
+3. **MongoDB** (Download MongoDB Community Server and make sure it is running in the background)
 
 ---
 
-## 🔐 Default Test Accounts
+### Step 2: Setup the Python Backend
+The backend powers the database, the AI models, and the APIs.
 
-When the database initializes, it automatically seeds default users with different roles for testing:
-
-*   **Admin:** `admin@metroflow.com` | Password: `admin123`
-*   **Analyst:** `analyst@metroflow.com` | Password: `analyst123`
-*   **Operator:** `operator@metroflow.com` | Password: `operator123`
+1. Open a terminal (Command Prompt or PowerShell).
+2. Navigate into the backend folder:
+   ```cmd
+   cd D:\Projects\Tejavardhan\AI_MetroFlow\backend
+   ```
+3. Create a virtual environment to hold the Python packages:
+   ```cmd
+   python -m venv venv
+   ```
+4. Activate the virtual environment:
+   ```cmd
+   venv\Scripts\activate
+   ```
+5. Install all required Python libraries:
+   ```cmd
+   pip install -r requirements.txt
+   ```
+6. Start the backend server:
+   ```cmd
+   uvicorn backend.main:app --reload --port 8000
+   ```
+*(Leave this terminal window open and running!)*
 
 ---
 
-## 📂 Project Structure
+### Step 3: Setup the React Frontend
+The frontend is the visual dashboard you interact with in your browser.
+
+1. Open a **second, brand new terminal window**.
+2. Navigate into the frontend folder:
+   ```cmd
+   cd D:\Projects\Tejavardhan\AI_MetroFlow\frontend
+   ```
+3. Install the required Node packages:
+   ```cmd
+   npm install
+   ```
+4. Start the frontend server:
+   ```cmd
+   npm run dev
+   ```
+5. Open your web browser and go to: **`http://localhost:5173`**
+
+---
+
+## 🔑 How to Log In (Test Accounts)
+
+The system automatically creates three user accounts when you start the backend for the first time. Use these to log in:
+
+| Role | Email Address | Password |
+| :--- | :--- | :--- |
+| **Administrator** | `admin@metroflow.com` | `admin123` |
+| **Data Analyst** | `analyst@metroflow.com` | `analyst123` |
+| **Metro Operator** | `operator@metroflow.com` | `operator123` |
+
+*(Note: Log in as the **Administrator** to have full access to all pages, including the Admin Panel and Settings).*
+
+---
+
+## 📁 Project Folder Structure
+
+If you need to explore the code, here is where everything lives:
 
 ```text
 AI_MetroFlow/
 │
-├── backend/                  # FastAPI Python Backend
-│   ├── main.py               # Application entry point & WebSocket hub
-│   ├── database.py           # MongoDB connection & seeding logic
-│   ├── auth.py               # JWT generation and validation
-│   ├── models/               # Pydantic data schemas
-│   ├── routers/              # API route controllers
-│   ├── ml/                   # Pre-trained ML models & metrics
-│   └── datasets/             # Source CSVs for analytics
+├── backend/                  <-- Everything related to Python, DB, and AI
+│   ├── datasets/             <-- Raw CSV data used to train the AI
+│   ├── ml/                   <-- Saved AI prediction models
+│   ├── models/               <-- Database structures (Users, Trains, etc.)
+│   ├── routers/              <-- The API endpoints (URLs)
+│   ├── main.py               <-- The core backend server file
+│   └── database.py           <-- MongoDB connection and setup
 │
-├── frontend/                 # React UI
-│   ├── index.html            # Main HTML wrapper
-│   ├── vite.config.js        # Vite bundler configuration
+├── frontend/                 <-- Everything related to the User Interface
 │   ├── src/
-│   │   ├── App.jsx           # Main router setup
-│   │   ├── main.jsx          # React entry point
-│   │   ├── pages/            # View components (Dashboard, Map, etc.)
-│   │   ├── components/       # Reusable UI parts (Navbar, Sidebar, Cards)
-│   │   └── index.css         # Global Tailwind styles
+│   │   ├── components/       <-- Reusable buttons, cards, and navbars
+│   │   ├── pages/            <-- The main screens (Dashboard, Map, Login)
+│   │   ├── App.jsx           <-- Routing configuration
+│   │   └── index.css         <-- Global styles
 │
-└── docs/                     # Additional Documentation
-    ├── API_Documentation.md  
-    └── Page_Descriptions.md  
+└── docs/                     <-- Technical API manuals
 ```
