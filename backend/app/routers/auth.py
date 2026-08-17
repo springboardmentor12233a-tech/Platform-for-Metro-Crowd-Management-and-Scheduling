@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -104,12 +106,39 @@ def login(
             detail="Invalid email or password",
         )
 
+    # --------------------------------------------------
+    # Check if account is active
+    # --------------------------------------------------
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=403,
+            detail="Your account is inactive. Please contact an administrator.",
+        )
+
+    # --------------------------------------------------
+    # Update Last Login
+    # --------------------------------------------------
+
+    user.last_login = datetime.now(timezone.utc)
+
+    db.commit()
+    db.refresh(user)
+
+    # --------------------------------------------------
+    # Create Access Token
+    # --------------------------------------------------
+
     access_token = create_access_token(
         {
             "sub": user.email,
             "role": user.role,
         }
     )
+
+    # --------------------------------------------------
+    # Activity Log
+    # --------------------------------------------------
 
     create_activity_log(
         db=db,
@@ -123,6 +152,10 @@ def login(
         ip_address=http_request.client.host,
     )
 
+    # --------------------------------------------------
+    # Response
+    # --------------------------------------------------
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -131,6 +164,7 @@ def login(
             "name": user.name,
             "email": user.email,
             "role": user.role,
+            "last_login": user.last_login,
         },
     }
 
@@ -226,6 +260,7 @@ def get_me(
         "name": current_user.name,
         "email": current_user.email,
         "role": current_user.role,
+        "last_login": current_user.last_login,
     }
 
 

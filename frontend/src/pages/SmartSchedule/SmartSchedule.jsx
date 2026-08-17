@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getScheduleRecommendation } from "../../api/schedule";
 
 export default function SmartSchedule() {
@@ -18,13 +18,12 @@ export default function SmartSchedule() {
   const predictionTime =
     localStorage.getItem("predictionTime") || "Not Available";
 
-  useEffect(() => {
-    if (predictedPassengers > 0) {
-      generateSchedule();
-    }
-  }, []);
-
   async function generateSchedule() {
+    if (predictedPassengers <= 0) {
+      alert("Please generate a passenger prediction first.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -32,13 +31,24 @@ export default function SmartSchedule() {
         predictedPassengers
       );
 
-      setSchedule(result);
-    } catch (error) {
-      console.error(error);
-      alert("Unable to generate AI schedule.");
-    }
+      console.log("AI Schedule Result:", result);
 
-    setLoading(false);
+      setSchedule(result);
+
+    } catch (error) {
+      console.error(
+        "Schedule generation failed:",
+        error.response?.data || error
+      );
+
+      alert(
+        error.response?.data?.detail ||
+        "Unable to generate AI schedule."
+      );
+
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -123,11 +133,24 @@ export default function SmartSchedule() {
 
           <button
             onClick={generateSchedule}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-semibold transition"
+            disabled={loading}
+            className={`
+              px-8
+              py-3
+              rounded-xl
+              font-semibold
+              text-white
+              transition
+              ${
+                loading
+                  ? "bg-indigo-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              }
+            `}
           >
             {loading
-              ? "Generating..."
-              : "Generate AI Schedule"}
+              ? "🤖 Generating AI Schedule..."
+              : "🤖 Generate AI Schedule"}
           </button>
 
           {/* AI Result */}

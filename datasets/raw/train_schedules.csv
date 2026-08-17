@@ -1,0 +1,6 @@
+train_id,line,from_station,to_station,departure_time,arrival_time,platform,status,ai_suggestion
+DM-101,Blue,Noida Electronic City,Dwarka Sector 21,08:30,09:35,2,On Time,Running normally
+DM-205,Yellow,Samaypur Badli,Huda City Centre,08:40,09:42,4,Delayed,Increase frequency
+DM-308,Red,Rithala,Shaheed Sthal,08:55,09:48,1,Boarding,Prepare platform
+DM-412,Green,Kirti Nagar,Brigadier Hoshiar Singh,09:10,09:58,3,On Time,Running normally
+DM-511,Magenta,Botanical Garden,Jankpuri West,09:20,10:07,5,On Time,Running normally

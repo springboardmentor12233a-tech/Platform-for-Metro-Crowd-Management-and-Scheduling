@@ -45,19 +45,19 @@ export default function DeleteUserModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 shadow-2xl dark:border-gray-800 dark:bg-gray-900"
+        className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-red-100 p-3 dark:bg-red-500/10">
+            <div className="rounded-full bg-red-100 p-3">
               <AlertTriangle
                 size={28}
-                className="text-red-600 dark:text-red-400"
+                className="text-red-600"
               />
             </div>
             <div>
-              <h2 className="text-xl font-bold">
+              <h2 className="text-xl font-bold text-gray-900">
                 Delete User
               </h2>
               <p className="text-sm text-gray-500">
@@ -68,16 +68,16 @@ export default function DeleteUserModal({
           <button
             onClick={handleCloseClick}
             disabled={loading}
-            className="rounded-lg p-2 transition hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-800"
+            className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 disabled:opacity-50"
           >
             <X size={20} />
           </button>
         </div>
         {/* Body */}
-        <div className="mt-8 rounded-2xl bg-red-50 p-5 dark:bg-red-500/10">
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="mt-8 rounded-2xl bg-red-50 p-5">
+          <p className="text-gray-700">
             Are you sure you want to permanently delete
-            <span className="mx-1 font-bold text-red-600 dark:text-red-400">
+            <span className="mx-1 font-bold text-red-600">
               {user.name}
             </span>
             ?
@@ -97,7 +97,7 @@ export default function DeleteUserModal({
           <button
             onClick={handleCloseClick}
             disabled={loading}
-            className="rounded-xl border border-gray-300 px-5 py-3 font-medium transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:cursor-not-allowed dark:border-gray-700 dark:hover:bg-gray-800"
+            className="rounded-xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:cursor-not-allowed"
           >
             Cancel
           </button>

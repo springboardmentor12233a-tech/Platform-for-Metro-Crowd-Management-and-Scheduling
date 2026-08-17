@@ -83,12 +83,6 @@ export default function UserModal({ open, onClose, onSave, editingUser }) {
   const attemptClose = () => {
     if (saving) return;
 
-    if (isDirty) {
-      const confirmed = window.confirm("Discard unsaved changes?");
-
-      if (!confirmed) return;
-    }
-
     onClose();
   };
 

@@ -1,14 +1,75 @@
 import { motion } from "framer-motion";
 import Background from "./Background";
+import metroLoginBg from "../../assets/metro-login-bg.png";
 
 export default function AuthLayout({ left, right }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#030712]">
-      {/* Background */}
-      <Background />
 
-      {/* Content */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 md:px-8 lg:px-10 xl:px-16">
+      {/* =========================================================
+          METRO BACKGROUND IMAGE
+          ========================================================= */}
+      <div
+        className="
+          absolute
+          inset-0
+          bg-cover
+          bg-center
+          bg-no-repeat
+        "
+        style={{
+          backgroundImage: `url(${metroLoginBg})`,
+        }}
+      />
+
+      {/* =========================================================
+          LIGHT DARK OVERLAY
+          Keeps the metro image clearly visible
+          ========================================================= */}
+      <div className="absolute inset-0 bg-black/20" />
+
+      {/* =========================================================
+          SUBTLE READABILITY GRADIENT
+          Slightly darkens edges without hiding the image
+          ========================================================= */}
+      <div
+        className="
+          absolute
+          inset-0
+          bg-gradient-to-r
+          from-[#020617]/40
+          via-transparent
+          to-[#020617]/45
+        "
+      />
+
+      {/* =========================================================
+          EXISTING ANIMATED BACKGROUND
+          Reduced opacity so it doesn't cover the metro image
+          ========================================================= */}
+      <div className="absolute inset-0 opacity-10">
+        <Background />
+      </div>
+
+      {/* =========================================================
+          CONTENT
+          ========================================================= */}
+      <div
+        className="
+          relative
+          z-10
+          flex
+          min-h-screen
+          items-center
+          justify-center
+          px-4
+          py-6
+          sm:px-6
+          md:px-8
+          lg:px-10
+          xl:px-16
+        "
+      >
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -31,7 +92,10 @@ export default function AuthLayout({ left, right }) {
               2xl:grid-cols-[minmax(0,1fr)_500px]
             "
           >
-            {/* Left Side */}
+
+            {/* =====================================================
+                LEFT SIDE
+                ===================================================== */}
             <section
               className="
                 hidden
@@ -54,7 +118,9 @@ export default function AuthLayout({ left, right }) {
               </motion.div>
             </section>
 
-            {/* Right Side */}
+            {/* =====================================================
+                RIGHT SIDE
+                ===================================================== */}
             <section
               className="
                 flex
@@ -79,26 +145,33 @@ export default function AuthLayout({ left, right }) {
                   xl:max-w-[500px]
                 "
               >
-                {/* Glow */}
+
+                {/* =================================================
+                    LOGIN CARD GLOW
+                    ================================================= */}
                 <div
                   className="
                     absolute
                     inset-0
                     -z-10
                     rounded-[36px]
-                    bg-cyan-500/10
+                    bg-cyan-500/15
                     blur-[80px]
                   "
                 />
 
                 {right}
+
               </motion.div>
             </section>
+
           </div>
         </motion.div>
       </div>
 
-      {/* Desktop Divider */}
+      {/* =========================================================
+          DESKTOP DIVIDER
+          ========================================================= */}
       <div
         className="
           pointer-events-none
@@ -118,7 +191,9 @@ export default function AuthLayout({ left, right }) {
         "
       />
 
-      {/* Mobile Branding */}
+      {/* =========================================================
+          MOBILE BRANDING
+          ========================================================= */}
       <div
         className="
           absolute
@@ -129,14 +204,29 @@ export default function AuthLayout({ left, right }) {
           z-20
         "
       >
-        <h1 className="text-xl font-bold tracking-wide text-white">
+        <h1
+          className="
+            text-xl
+            font-bold
+            tracking-wide
+            text-white
+          "
+        >
           MetroVision
         </h1>
 
-        <p className="mt-1 text-center text-xs text-slate-400">
+        <p
+          className="
+            mt-1
+            text-center
+            text-xs
+            text-slate-400
+          "
+        >
           AI Metro Management Platform
         </p>
       </div>
+
     </div>
   );
 }

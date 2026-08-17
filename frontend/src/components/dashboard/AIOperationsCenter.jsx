@@ -9,6 +9,7 @@ import {
   Gauge,
   Radar,
   TrainFront,
+  ArrowUpRight,
 } from "lucide-react";
 
 function AIOperationsCenter({
@@ -24,23 +25,33 @@ function AIOperationsCenter({
   onViewAllHistory,
 }) {
   // =====================================================
-  // Network Calculations
+  // NETWORK CALCULATIONS
   // =====================================================
 
-  const totalStations = summary?.total_stations ?? 0;
+  const totalStations = Number(
+    summary?.total_stations ?? 0
+  );
 
-  const alerts = recentAlerts ?? [];
+  const alerts = Array.isArray(recentAlerts)
+    ? recentAlerts
+    : [];
 
   const criticalAlerts = alerts.filter(
-    (alert) => alert.severity === "Critical"
+    (alert) =>
+      String(alert?.severity ?? "").toLowerCase() ===
+      "critical"
   ).length;
 
   const warningAlerts = alerts.filter(
-    (alert) => alert.severity === "Warning"
+    (alert) =>
+      String(alert?.severity ?? "").toLowerCase() ===
+      "warning"
   ).length;
 
   const healthyStations = Math.max(
-    totalStations - criticalAlerts - warningAlerts,
+    totalStations -
+      criticalAlerts -
+      warningAlerts,
     0
   );
 
@@ -54,51 +65,64 @@ function AIOperationsCenter({
   const healthPercentage =
     totalStations === 0
       ? 100
-      : Math.round((healthyStations / totalStations) * 100);
+      : Math.min(
+          Math.round(
+            (healthyStations / totalStations) *
+              100
+          ),
+          100
+        );
 
   // =====================================================
-  // AI Recommendation
+  // AI RECOMMENDATION
   // =====================================================
 
-  const riskLevel = recommendation?.risk_level || "Unknown";
+  const riskLevel =
+    recommendation?.risk_level || "Unknown";
 
   const riskColor =
     riskLevel === "Critical"
-      ? "bg-red-100 text-red-700 border-red-200"
+      ? "border-red-200 bg-red-50 text-red-700"
       : riskLevel === "High"
-      ? "bg-orange-100 text-orange-700 border-orange-200"
+      ? "border-orange-200 bg-orange-50 text-orange-700"
       : riskLevel === "Medium"
-      ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-      : "bg-green-100 text-green-700 border-green-200";
+      ? "border-amber-200 bg-amber-50 text-amber-700"
+      : "border-emerald-200 bg-emerald-50 text-emerald-700";
 
   const recommendationSummary =
-    recommendation?.summary ?? "Waiting for AI analysis...";
+    recommendation?.summary ??
+    "Waiting for AI analysis...";
 
   const expectedImpact =
-    recommendation?.expected_impact ?? "Impact prediction unavailable.";
+    recommendation?.expected_impact ??
+    "Impact prediction unavailable.";
 
   // =====================================================
-  // Recommendation Timeline Helpers
+  // HELPERS
   // =====================================================
 
   const getRiskBadge = (risk) => {
-    switch ((risk || "").toLowerCase()) {
+    switch (
+      String(risk || "").toLowerCase()
+    ) {
       case "critical":
-        return "bg-red-100 text-red-700 border-red-200";
+        return "border-red-200 bg-red-50 text-red-700";
 
       case "high":
-        return "bg-orange-100 text-orange-700 border-orange-200";
+        return "border-orange-200 bg-orange-50 text-orange-700";
 
       case "medium":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+        return "border-amber-200 bg-amber-50 text-amber-700";
 
       default:
-        return "bg-green-100 text-green-700 border-green-200";
+        return "border-emerald-200 bg-emerald-50 text-emerald-700";
     }
   };
 
   const getRiskDot = (risk) => {
-    switch ((risk || "").toLowerCase()) {
+    switch (
+      String(risk || "").toLowerCase()
+    ) {
       case "critical":
         return "bg-red-500";
 
@@ -106,47 +130,70 @@ function AIOperationsCenter({
         return "bg-orange-500";
 
       case "medium":
-        return "bg-yellow-500";
+        return "bg-amber-500";
 
       default:
-        return "bg-green-500";
+        return "bg-emerald-500";
     }
   };
 
   const formatHistoryTime = (date) => {
     if (!date) return "--";
 
-    return new Date(date).toLocaleTimeString([], {
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "--";
+    }
+
+    return parsedDate.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
-  const formatTime = (date) => (date ? date.toLocaleTimeString() : "--:--:--");
+  const formatTime = (date) => {
+    if (!date) return "--:--:--";
 
-  const latestRecommendations = Array.isArray(recommendationHistory)
-    ? recommendationHistory
-        .slice()
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime()
-        )
-        .slice(0, 5)
-    : [];
+    return date.toLocaleTimeString();
+  };
+
+  const latestRecommendations =
+    Array.isArray(
+      recommendationHistory
+    )
+      ? recommendationHistory
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(
+                b?.created_at ?? 0
+              ).getTime() -
+              new Date(
+                a?.created_at ?? 0
+              ).getTime()
+          )
+          .slice(0, 5)
+      : [];
 
   // =====================================================
-  // Dashboard Statistics
+  // SUMMARY VALUES
   // =====================================================
 
-  const totalPassengers = summary?.total_passengers ?? 0;
+  const totalPassengers = Number(
+    summary?.total_passengers ?? 0
+  );
 
-  const totalTrips = summary?.total_trips ?? 0;
+  const totalTrips = Number(
+    summary?.total_trips ?? 0
+  );
 
-  const totalRevenue = summary?.total_revenue ?? 0;
+  const totalRevenue = Number(
+    summary?.total_revenue ?? 0
+  );
 
   // =====================================================
-  // AI Status Cards
+  // AI STATUS
   // =====================================================
 
   const aiStatus = [
@@ -154,13 +201,17 @@ function AIOperationsCenter({
       title: "Gemini AI",
       value: "Online",
       icon: BrainCircuit,
-      color: "text-indigo-600",
+      color: "text-violet-400",
+      bg: "bg-violet-500/10",
+      border: "border-violet-400/10",
     },
     {
       title: "Prediction Engine",
       value: "Running",
       icon: Activity,
-      color: "text-green-600",
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-400/10",
     },
     {
       title: "Metro Network",
@@ -168,441 +219,594 @@ function AIOperationsCenter({
       icon: Radar,
       color:
         networkHealth === "Critical"
-          ? "text-red-600"
+          ? "text-red-400"
           : networkHealth === "Warning"
-          ? "text-yellow-600"
-          : "text-green-600",
+          ? "text-amber-400"
+          : "text-emerald-400",
+      bg:
+        networkHealth === "Critical"
+          ? "bg-red-500/10"
+          : networkHealth === "Warning"
+          ? "bg-amber-500/10"
+          : "bg-emerald-500/10",
+      border:
+        networkHealth === "Critical"
+          ? "border-red-400/10"
+          : networkHealth === "Warning"
+          ? "border-amber-400/10"
+          : "border-emerald-400/10",
     },
     {
       title: "Last Analysis",
       value: formatTime(lastUpdated),
       icon: Clock,
-      color: "text-slate-700",
+      color: "text-sky-400",
+      bg: "bg-sky-500/10",
+      border: "border-sky-400/10",
     },
   ];
 
+  // =====================================================
+  // STATION STATUS
+  // =====================================================
+
+  const getStationOccupancy = (passengers) => {
+    const value = Number(passengers ?? 0);
+
+    if (!value) return 0;
+
+    return Math.min(
+      Math.max(
+        Math.round(
+          (value / 320000) * 100
+        ),
+        0
+      ),
+      100
+    );
+  };
+
+  const getStationStatus = (occupancy) => {
+    if (occupancy >= 90) {
+      return {
+        label: "Critical",
+        badge:
+          "border-red-200 bg-red-50 text-red-600",
+        bar: "bg-red-500",
+      };
+    }
+
+    if (occupancy >= 75) {
+      return {
+        label: "Warning",
+        badge:
+          "border-amber-200 bg-amber-50 text-amber-600",
+        bar: "bg-amber-500",
+      };
+    }
+
+    return {
+      label: "Healthy",
+      badge:
+        "border-emerald-200 bg-emerald-50 text-emerald-600",
+      bar: "bg-emerald-500",
+    };
+  };
+
   return (
     <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="rounded-3xl"
+      initial={{
+        opacity: 0,
+        y: 12,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.45,
+      }}
+      className="w-full"
     >
       {/* =====================================================
-          METROVision AI HEADER
+          TOP HEADER
       ===================================================== */}
 
-      <div className="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
-        {/* Left Side */}
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-center gap-4">
 
-        <div className="flex items-start gap-6">
           <motion.div
-            initial={{ rotate: -15, scale: 0.8 }}
-            animate={{ rotate: 0, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{
+              rotate: -12,
+              scale: 0.85,
+            }}
+            animate={{
+              rotate: 0,
+              scale: 1,
+            }}
+            transition={{
+              duration: 0.5,
+            }}
             className="
-              rounded-3xl
+              flex
+              h-14
+              w-14
+              shrink-0
+              items-center
+              justify-center
+              rounded-2xl
               bg-gradient-to-br
-              from-indigo-600
-              via-violet-600
-              to-purple-700
-              p-5
-              shadow-xl
+              from-violet-600
+              via-indigo-600
+              to-blue-600
+              shadow-lg
+              shadow-indigo-600/20
             "
           >
-            <BrainCircuit size={42} className="text-white" />
+            <BrainCircuit
+              size={27}
+              className="text-white"
+            />
           </motion.div>
 
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h2 className="text-4xl font-extrabold text-slate-900">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+
+              <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
                 MetroVision AI
               </h2>
 
-              <div className="flex items-center gap-2 rounded-full bg-green-100 px-4 py-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-300">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                Live
+              </span>
 
-                <span className="font-semibold text-green-700">LIVE</span>
-              </div>
             </div>
 
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">
-              AI-powered operational intelligence for crowd monitoring,
-              passenger prediction, congestion management and real-time
-              metro decision support.
+            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-slate-400">
+              AI-powered operational intelligence for
+              crowd monitoring, prediction, congestion
+              management and real-time metro decision support.
             </p>
           </div>
         </div>
 
-        {/* Right */}
+        <div className="flex flex-wrap gap-2.5">
 
-        <div className="flex flex-wrap gap-4">
           <div
-            className={`
-            rounded-2xl
-            border
-            px-5
-            py-4
-            font-semibold
-            ${riskColor}
-          `}
+            className={`rounded-2xl border px-4 py-3 ${riskColor}`}
           >
-            <div className="text-xs uppercase opacity-70">AI Risk</div>
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] opacity-70">
+              AI Risk
+            </p>
 
-            <div className="mt-1 text-lg font-bold">{riskLevel}</div>
+            <p className="mt-1 text-sm font-black">
+              {riskLevel}
+            </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-100 px-5 py-4">
-            <div className="text-xs uppercase text-slate-500">
-              Network Health
-            </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">
+              Network
+            </p>
 
-            <div className="mt-1 text-lg font-bold">{healthPercentage}%</div>
+            <p className="mt-1 text-sm font-black text-white">
+              {healthPercentage}%
+            </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-100 px-5 py-4">
-            <div className="text-xs uppercase text-slate-500">
-              Last Analysis
-            </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">
+              Updated
+            </p>
 
-            <div className="mt-1 text-lg font-bold">
+            <p className="mt-1 text-sm font-black text-white">
               {formatTime(lastUpdated)}
-            </div>
+            </p>
           </div>
+
         </div>
       </div>
 
-      {/* Divider */}
-
-      <div className="my-10 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
-
       {/* =====================================================
-          LIVE KPI DASHBOARD
+          KPI STRIP
       ===================================================== */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {/* Network Health */}
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
 
+        {/* Network Health */}
         <motion.div
           whileHover={{
-            y: -8,
-            scale: 1.02,
+            y: -2,
           }}
-          transition={{
-            duration: 0.25,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-green-200
-            bg-gradient-to-br
-            from-green-50
-            to-emerald-100
-            p-7
-            shadow-lg
-          "
+          className="rounded-2xl border border-emerald-400/10 bg-emerald-500/[0.06] p-4"
         >
           <div className="flex items-center justify-between">
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 Network Health
               </p>
 
-              <h2 className="mt-3 text-5xl font-black text-slate-900">
+              <p className="mt-1 text-2xl font-black text-white">
                 {healthPercentage}%
-              </h2>
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow">
-              <ShieldCheck size={38} className="text-green-600" />
-            </div>
-          </div>
-
-          <div className="mt-7">
-            <div className="flex justify-between text-sm mb-2">
-              <span>Status</span>
-
-              <span className="font-semibold">{networkHealth}</span>
-            </div>
-
-            <div className="h-3 rounded-full bg-green-100 overflow-hidden">
-              <motion.div
-                initial={{
-                  width: 0,
-                }}
-                animate={{
-                  width: `${healthPercentage}%`,
-                }}
-                transition={{
-                  duration: 1.2,
-                }}
-                className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600"
+            <div className="rounded-xl bg-emerald-500/10 p-2.5">
+              <ShieldCheck
+                size={20}
+                className="text-emerald-400"
               />
             </div>
+
+          </div>
+
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/5">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{
+                width: `${healthPercentage}%`,
+              }}
+              transition={{
+                duration: 0.9,
+              }}
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400"
+            />
           </div>
         </motion.div>
 
-        {/* Passenger Analytics */}
-
+        {/* Passengers */}
         <motion.div
           whileHover={{
-            y: -8,
-            scale: 1.02,
+            y: -2,
           }}
-          className="
-            rounded-3xl
-            border
-            border-indigo-200
-            bg-gradient-to-br
-            from-indigo-50
-            to-violet-100
-            p-7
-            shadow-lg
-          "
+          className="rounded-2xl border border-indigo-400/10 bg-indigo-500/[0.06] p-4"
         >
           <div className="flex items-center justify-between">
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 Passengers
               </p>
 
-              <h2 className="mt-3 text-4xl font-black text-slate-900">
+              <p className="mt-1 text-2xl font-black text-white">
                 {totalPassengers.toLocaleString()}
-              </h2>
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow">
-              <TrendingUp size={38} className="text-indigo-600" />
+            <div className="rounded-xl bg-indigo-500/10 p-2.5">
+              <TrendingUp
+                size={20}
+                className="text-indigo-400"
+              />
             </div>
+
           </div>
 
-          <div className="mt-6 flex items-center justify-between">
-            <span className="text-slate-500">Daily Movement</span>
-
-            <span className="font-bold text-indigo-600">↑ Active</span>
-          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Current daily movement
+          </p>
         </motion.div>
 
-        {/* AI Prediction */}
-
+        {/* Prediction */}
         <motion.div
           whileHover={{
-            y: -8,
-            scale: 1.02,
+            y: -2,
           }}
-          className="
-            rounded-3xl
-            border
-            border-violet-200
-            bg-gradient-to-br
-            from-violet-50
-            to-purple-100
-            p-7
-            shadow-lg
-          "
+          className="rounded-2xl border border-violet-400/10 bg-violet-500/[0.06] p-4"
         >
           <div className="flex items-center justify-between">
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 AI Prediction
               </p>
 
-              <h2 className="mt-3 text-4xl font-black text-slate-900">
+              <p className="mt-1 text-2xl font-black text-white">
                 {latestPrediction
-                  ? latestPrediction.predicted_passengers.toLocaleString()
+                  ? Number(
+                      latestPrediction.predicted_passengers ??
+                        0
+                    ).toLocaleString()
                   : "--"}
-              </h2>
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow">
-              <BrainCircuit size={38} className="text-violet-600" />
+            <div className="rounded-xl bg-violet-500/10 p-2.5">
+              <BrainCircuit
+                size={20}
+                className="text-violet-400"
+              />
             </div>
+
           </div>
 
-          <div className="mt-6">
-            <p className="text-sm leading-6 text-slate-600">
-              {latestPrediction
-                ? `${latestPrediction.from_station} → ${latestPrediction.to_station}`
-                : "Waiting for live prediction..."}
-            </p>
-          </div>
+          <p className="mt-2 truncate text-xs text-slate-500">
+            {latestPrediction
+              ? `${latestPrediction.from_station} → ${latestPrediction.to_station}`
+              : "Awaiting prediction"}
+          </p>
         </motion.div>
 
         {/* Operations */}
-
         <motion.div
           whileHover={{
-            y: -8,
-            scale: 1.02,
+            y: -2,
           }}
-          className="
-            rounded-3xl
-            border
-            border-cyan-200
-            bg-gradient-to-br
-            from-cyan-50
-            to-sky-100
-            p-7
-            shadow-lg
-          "
+          className="rounded-2xl border border-cyan-400/10 bg-cyan-500/[0.06] p-4"
         >
           <div className="flex items-center justify-between">
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 Operations
               </p>
 
-              <h2 className="mt-3 text-4xl font-black text-slate-900">
+              <p className="mt-1 text-2xl font-black text-white">
                 {totalTrips.toLocaleString()}
-              </h2>
-            </div>
-
-            <div className="rounded-2xl bg-white p-4 shadow">
-              <TrainFront size={38} className="text-cyan-600" />
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-between">
-            <span className="text-slate-500">Revenue</span>
-
-            <span className="font-bold text-cyan-700">
-              ₹ {totalRevenue.toLocaleString()}
-            </span>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Divider */}
-
-      <div className="my-10 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
-
-      {/* =====================================================
-          AI OPERATIONS CONSOLE
-      ===================================================== */}
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* ======================================
-            Smart Station Monitor
-        ====================================== */}
-
-        <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">
-                🏆 Smart Station Monitor
-              </h2>
-
-              <p className="mt-1 text-slate-500">
-                AI monitored busiest stations
               </p>
             </div>
 
-            <span className="rounded-full bg-indigo-100 px-4 py-2 text-sm font-semibold text-indigo-700">
-              LIVE
-            </span>
+            <div className="rounded-xl bg-cyan-500/10 p-2.5">
+              <TrainFront
+                size={20}
+                className="text-cyan-400"
+              />
+            </div>
+
           </div>
 
-          <div className="mt-8 space-y-5">
-            {busiestStations.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center">
-                <Gauge size={40} className="mx-auto text-slate-400" />
+          <p className="mt-2 text-xs text-slate-500">
+            ₹ {totalRevenue.toLocaleString()} revenue
+          </p>
+        </motion.div>
 
-                <p className="mt-4 text-slate-500">
-                  Waiting for station data...
-                </p>
+      </div>
+
+      {/* =====================================================
+          MAIN AI OPERATIONS GRID
+      ===================================================== */}
+
+      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-12">
+
+        {/* ===================================================
+            SMART STATION MONITOR
+        =================================================== */}
+
+        <div className="flex min-h-[720px] flex-col rounded-3xl border border-white/10 bg-white/[0.035] p-5 xl:col-span-5">
+
+          {/* Header */}
+
+          <div className="flex items-start justify-between gap-3">
+
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-xl bg-indigo-500/10 p-2">
+                  <Gauge
+                    size={17}
+                    className="text-indigo-400"
+                  />
+                </div>
+
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-indigo-300">
+                  Network Monitoring
+                </span>
+              </div>
+
+              <h3 className="mt-2 text-xl font-black text-white">
+                Smart Station Monitor
+              </h3>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                AI-monitored passenger demand across
+                the busiest stations.
+              </p>
+            </div>
+
+            <span className="shrink-0 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-300">
+              Live
+            </span>
+
+          </div>
+
+          {/* Station List */}
+
+          <div className="mt-5 flex-1 space-y-3">
+
+            {busiestStations.length === 0 ? (
+              <div className="flex min-h-[450px] items-center justify-center rounded-2xl border border-dashed border-white/10">
+                <div className="text-center">
+                  <Gauge
+                    size={36}
+                    className="mx-auto text-slate-600"
+                  />
+
+                  <p className="mt-3 text-sm text-slate-500">
+                    Waiting for station data...
+                  </p>
+                </div>
               </div>
             ) : (
-              busiestStations.slice(0, 5).map((station, index) => {
-                const occupancy = Math.min(
-                  Math.round((station.passengers / 320000) * 100),
-                  100
-                );
+              busiestStations
+                .slice(0, 5)
+                .map((station, index) => {
+                  const passengers =
+                    Number(
+                      station?.passengers ??
+                        0
+                    );
 
-                const status =
-                  occupancy >= 90
-                    ? "Critical"
-                    : occupancy >= 75
-                    ? "Warning"
-                    : "Healthy";
+                  const occupancy =
+                    getStationOccupancy(
+                      passengers
+                    );
 
-                const badgeColor =
-                  occupancy >= 90
-                    ? "bg-red-100 text-red-700"
-                    : occupancy >= 75
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700";
+                  const status =
+                    getStationStatus(
+                      occupancy
+                    );
 
-                return (
-                  <motion.div
-                    key={station.station_id ?? index}
-                    whileHover={{
-                      scale: 1.02,
-                    }}
-                    className="rounded-2xl border border-slate-200 p-5"
-                  >
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="font-bold text-lg">
-                          {station.station}
-                        </h3>
+                  return (
+                    <motion.div
+                      key={
+                        station?.station_id ??
+                        index
+                      }
+                      whileHover={{
+                        y: -2,
+                      }}
+                      className="
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-white/[0.035]
+                        p-4
+                        transition
+                        hover:border-white/15
+                        hover:bg-white/[0.05]
+                      "
+                    >
 
-                        <p className="mt-1 text-slate-500">
-                          {station.passengers.toLocaleString()} passengers
-                        </p>
+                      <div className="flex items-center justify-between gap-3">
+
+                        <div className="flex min-w-0 items-center gap-3">
+
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10">
+                            <TrainFront
+                              size={16}
+                              className="text-indigo-400"
+                            />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold text-white">
+                              {station?.station ??
+                                "Unknown Station"}
+                            </p>
+
+                            <p className="mt-0.5 text-[10px] text-slate-500">
+                              {passengers.toLocaleString()} passengers
+                            </p>
+                          </div>
+
+                        </div>
+
+                        <span
+                          className={`shrink-0 rounded-full border px-2.5 py-1 text-[9px] font-bold ${status.badge}`}
+                        >
+                          {status.label}
+                        </span>
+
                       </div>
 
-                      <span
-                        className={`rounded-full px-4 py-2 text-sm font-semibold ${badgeColor}`}
-                      >
-                        {status}
-                      </span>
-                    </div>
+                      <div className="mt-4">
 
-                    <div className="mt-5">
-                      <div className="mb-2 flex justify-between text-sm">
-                        <span>Occupancy</span>
+                        <div className="mb-1.5 flex items-center justify-between text-[10px] text-slate-500">
+                          <span>
+                            Occupancy
+                          </span>
 
-                        <span>{occupancy}%</span>
+                          <span className="font-bold text-slate-300">
+                            {occupancy}%
+                          </span>
+                        </div>
+
+                        <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
+                          <motion.div
+                            initial={{
+                              width: 0,
+                            }}
+                            animate={{
+                              width: `${occupancy}%`,
+                            }}
+                            transition={{
+                              duration: 0.8,
+                              delay:
+                                index *
+                                0.08,
+                            }}
+                            className={`h-full rounded-full ${status.bar}`}
+                          />
+                        </div>
+
                       </div>
 
-                      <div className="h-3 overflow-hidden rounded-full bg-slate-200">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{
-                            width: `${occupancy}%`,
-                          }}
-                          transition={{
-                            duration: 1,
-                          }}
-                          className={`h-full rounded-full ${
-                            occupancy >= 90
-                              ? "bg-red-500"
-                              : occupancy >= 75
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
+                    </motion.div>
+                  );
+                })
             )}
+
           </div>
+
+          {/* Station Footer */}
+
+          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+
+              <span className="text-[10px] text-slate-500">
+                {busiestStations.length} stations monitored
+              </span>
+            </div>
+
+            <span className="text-[10px] text-slate-500">
+              Updated {formatTime(lastUpdated)}
+            </span>
+
+          </div>
+
         </div>
 
-        {/* ======================================
+        {/* ===================================================
             AI COMMAND CENTER
-        ====================================== */}
+        =================================================== */}
 
-        <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white shadow-2xl">
-          <div className="flex items-center gap-3">
-            <BrainCircuit className="text-cyan-400" />
+        <div className="flex min-h-[720px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#111a2d] via-[#0c1628] to-[#10182a] p-5 shadow-2xl xl:col-span-7">
 
-            <h2 className="text-2xl font-bold">AI Command Center</h2>
+          {/* Header */}
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-xl bg-cyan-500/10 p-2">
+                  <BrainCircuit
+                    size={17}
+                    className="text-cyan-400"
+                  />
+                </div>
+
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-cyan-300">
+                  Intelligence
+                </span>
+              </div>
+
+              <h3 className="mt-2 text-xl font-black text-white">
+                AI Command Center
+              </h3>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                Gemini-powered recommendations and
+                operational decision support.
+              </p>
+            </div>
+
+            <div
+              className={`rounded-full border px-3 py-1.5 text-[9px] font-bold uppercase tracking-wide ${getRiskBadge(
+                riskLevel
+              )}`}
+            >
+              Risk: {riskLevel}
+            </div>
+
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          {/* AI Status Grid */}
+
+          <div className="mt-5 grid grid-cols-2 gap-3">
+
             {aiStatus.map((item) => {
               const Icon = item.icon;
 
@@ -610,518 +814,533 @@ function AIOperationsCenter({
                 <motion.div
                   key={item.title}
                   whileHover={{
-                    scale: 1.04,
+                    y: -2,
                   }}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                  className={`rounded-2xl border p-3.5 ${item.bg} ${item.border}`}
                 >
-                  <Icon size={28} className={item.color} />
+                  <div className="flex items-center justify-between">
 
-                  <h3 className="mt-4 font-semibold">{item.title}</h3>
+                    <Icon
+                      size={17}
+                      className={item.color}
+                    />
 
-                  <p className="mt-2 text-sm text-slate-300">{item.value}</p>
+                    <ArrowUpRight
+                      size={13}
+                      className="text-white/20"
+                    />
+
+                  </div>
+
+                  <p className="mt-3 text-[10px] text-slate-500">
+                    {item.title}
+                  </p>
+
+                  <p className="mt-0.5 text-sm font-bold text-white">
+                    {item.value}
+                  </p>
+
                 </motion.div>
               );
             })}
+
           </div>
 
-          <div className="mt-8 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-6">
-            <div className="flex items-center gap-3">
-              <Sparkles className="text-cyan-400" />
+          {/* AI Insight */}
 
-              <h3 className="font-bold">AI Insight</h3>
+          <div className="mt-4 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.05] p-4">
+
+            <div className="flex items-center gap-2">
+              <Sparkles
+                size={15}
+                className="text-cyan-400"
+              />
+
+              <span className="text-xs font-bold text-cyan-300">
+                AI Insight
+              </span>
             </div>
 
-            <p className="mt-4 leading-8 text-slate-300">
+            <p className="mt-2 text-xs leading-6 text-slate-300">
               {loadingRecommendation
                 ? "Analyzing latest network data..."
                 : recommendationSummary}
             </p>
+
           </div>
 
-          <div className="mt-6 rounded-2xl border border-indigo-500/20 bg-indigo-500/10 p-6">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="text-indigo-300" />
+          {/* Expected Impact */}
 
-              <h3 className="font-bold">Expected Impact</h3>
+          <div className="mt-3 rounded-2xl border border-indigo-400/10 bg-indigo-400/[0.05] p-4">
+
+            <div className="flex items-center gap-2">
+              <TrendingUp
+                size={15}
+                className="text-indigo-300"
+              />
+
+              <span className="text-xs font-bold text-indigo-300">
+                Expected Impact
+              </span>
             </div>
 
-            <p className="mt-4 leading-8 text-slate-300">{expectedImpact}</p>
+            <p className="mt-2 text-xs leading-6 text-slate-300">
+              {expectedImpact}
+            </p>
+
           </div>
 
-          {/* =====================================================
-              AI RECOMMENDATION TIMELINE
-          ===================================================== */}
+          {/* =================================================
+              RECOMMENDATION TIMELINE
+          ================================================= */}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-            className="
-              mt-8
-              rounded-3xl
-              border
-              border-cyan-500/20
-              bg-gradient-to-br
-              from-slate-900/60
-              via-slate-800/70
-              to-slate-900/60
-              p-6
-              backdrop-blur-xl
-            "
-          >
-            <div className="mb-8 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-cyan-500/20 p-3">
-                  <Clock size={22} className="text-cyan-400" />
+          <div className="mt-4 flex min-h-0 flex-1 flex-col rounded-2xl border border-white/10 bg-black/10 p-4">
+
+            <div className="mb-3 flex items-center justify-between gap-3">
+
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg bg-cyan-500/10 p-2">
+                  <Clock
+                    size={15}
+                    className="text-cyan-400"
+                  />
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h4 className="text-sm font-bold text-white">
                     AI Recommendation Timeline
-                  </h3>
+                  </h4>
 
-                  <p className="text-sm text-slate-400">
-                    Latest Gemini AI operational decisions
+                  <p className="text-[9px] text-slate-500">
+                    Latest Gemini operational decisions
                   </p>
                 </div>
               </div>
 
-              {/* Live Badge */}
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-2.5 py-1 text-[8px] font-bold uppercase tracking-wide text-cyan-300">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+                Live
+              </span>
 
-              <div className="flex items-center gap-2 rounded-full bg-cyan-500/20 px-4 py-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-ping" />
-
-                <span className="font-bold uppercase tracking-widest text-cyan-300">
-                  LIVE
-                </span>
-              </div>
             </div>
 
-            {latestRecommendations.length === 0 ? (
-              /* Nice Empty State */
-              <div className="py-16 text-center">
-                <BrainCircuit
-                  size={60}
-                  className="mx-auto animate-pulse text-cyan-400"
-                />
+            {latestRecommendations.length ===
+            0 ? (
+              <div className="flex min-h-[250px] flex-1 items-center justify-center text-center">
 
-                <h3 className="mt-6 text-xl font-bold text-white">
-                  AI Recommendation Engine Ready
-                </h3>
+                <div>
+                  <BrainCircuit
+                    size={40}
+                    className="mx-auto text-cyan-400"
+                  />
 
-                <p className="mt-3 text-slate-400">
-                  Generate your first recommendation to build the
-                  operational timeline.
-                </p>
+                  <h4 className="mt-4 text-sm font-bold text-white">
+                    AI Engine Ready
+                  </h4>
+
+                  <p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">
+                    Generate a recommendation to
+                    populate the operational timeline.
+                  </p>
+                </div>
+
               </div>
             ) : (
               <>
-                {/* Scrollable Timeline */}
+                <div className="relative min-h-0 flex-1 overflow-y-auto pr-1">
 
-                <div className="relative max-h-[650px] overflow-y-auto pr-2 custom-scrollbar">
-                  {/* Animated Vertical Timeline Line */}
+                  {/* Timeline line */}
 
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: "100%" }}
-                    transition={{
-                      duration: 1.2,
-                      ease: "easeOut",
-                    }}
+                  <div
                     className="
                       absolute
-                      left-[22px]
-                      top-0
-                      w-[2px]
-                      rounded-full
+                      bottom-2
+                      left-[18px]
+                      top-2
+                      w-px
                       bg-gradient-to-b
-                      from-cyan-400
-                      via-indigo-500
+                      from-cyan-400/70
+                      via-indigo-500/50
                       to-transparent
                     "
                   />
 
-                  <div className="space-y-6">
-                    {latestRecommendations.map((item, index) => (
-                      <motion.div
-                        key={item.id ?? index}
-                        initial={{
-                          opacity: 0,
-                          x: -30,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          x: 0,
-                        }}
-                        transition={{
-                          delay: index * 0.15,
-                          duration: 0.4,
-                        }}
-                        whileHover={{
-                          scale: 1.02,
-                          x: 8,
-                          transition: {
-                            duration: 0.2,
-                          },
-                        }}
-                        className="relative pl-14"
-                      >
-                        {/* Glowing Timeline Dot */}
+                  <div className="space-y-3">
 
-                        <div
-                          className={`
-                            absolute
-                            left-[11px]
-                            top-7
-                            h-6
-                            w-6
-                            rounded-full
-                            border-4
-                            border-slate-900
-                            shadow-xl
-                            animate-pulse
-                            ${getRiskDot(item.risk_level)}
-                          `}
-                        />
-
-                        {/* Recommendation Card */}
-
-                        <div
-                          className="
-                            rounded-2xl
-                            border
-                            border-white/10
-                            bg-white/5
-                            p-5
-                            shadow-lg
-                            transition-all
-                            duration-300
-                            hover:border-cyan-400/40
-                            hover:bg-white/10
-                          "
+                    {latestRecommendations.map(
+                      (item, index) => (
+                        <motion.div
+                          key={
+                            item?.id ??
+                            index
+                          }
+                          initial={{
+                            opacity: 0,
+                            x: -10,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            x: 0,
+                          }}
+                          transition={{
+                            delay:
+                              index * 0.08,
+                            duration: 0.3,
+                          }}
+                          className="relative pl-9"
                         >
-                          {/* Header */}
 
-                          <div className="flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                              <div className="rounded-xl bg-cyan-500/20 p-2">
+                          {/* Timeline dot */}
+
+                          <div
+                            className={`
+                              absolute
+                              left-[10px]
+                              top-4
+                              h-4
+                              w-4
+                              rounded-full
+                              border-[3px]
+                              border-[#0f182a]
+                              ${getRiskDot(
+                                item?.risk_level
+                              )}
+                            `}
+                          />
+
+                          {/* Timeline Card */}
+
+                          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3.5">
+
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+
+                              <div className="flex min-w-0 items-center gap-2">
+
                                 <TrainFront
-                                  size={18}
-                                  className="text-cyan-400"
+                                  size={14}
+                                  className="shrink-0 text-cyan-400"
+                                />
+
+                                <span className="truncate text-xs font-bold text-white">
+                                  {item?.station_name ??
+                                    "Unknown Station"}
+                                </span>
+
+                              </div>
+
+                              <div className="flex items-center gap-2">
+
+                                <span className="text-[9px] text-slate-500">
+                                  {formatHistoryTime(
+                                    item?.created_at
+                                  )}
+                                </span>
+
+                                <span
+                                  className={`
+                                    rounded-full
+                                    border
+                                    px-2
+                                    py-0.5
+                                    text-[8px]
+                                    font-bold
+                                    ${getRiskBadge(
+                                      item?.risk_level
+                                    )}
+                                  `}
+                                >
+                                  {item?.risk_level ??
+                                    "Unknown"}
+                                </span>
+
+                              </div>
+
+                            </div>
+
+                            {/* Recommendation */}
+
+                            <div className="mt-3 rounded-lg bg-slate-900/50 p-3">
+
+                              <div className="flex items-center gap-2">
+                                <Sparkles
+                                  size={12}
+                                  className="text-indigo-300"
+                                />
+
+                                <span className="text-[9px] font-bold uppercase tracking-wide text-indigo-300">
+                                  Recommendation
+                                </span>
+                              </div>
+
+                              <p className="mt-1.5 text-[10px] leading-5 text-slate-400">
+                                {item?.recommendation ??
+                                  "No recommendation available."}
+                              </p>
+
+                            </div>
+
+                            {/* Impact */}
+
+                            <div className="mt-2 rounded-lg bg-cyan-500/[0.05] p-3">
+
+                              <div className="flex items-center gap-2">
+                                <TrendingUp
+                                  size={12}
+                                  className="text-cyan-300"
+                                />
+
+                                <span className="text-[9px] font-bold uppercase tracking-wide text-cyan-300">
+                                  Expected Impact
+                                </span>
+                              </div>
+
+                              <p className="mt-1.5 text-[10px] leading-5 text-slate-400">
+                                {item?.expected_impact ??
+                                  "Impact unavailable."}
+                              </p>
+
+                            </div>
+
+                            {/* Confidence */}
+
+                            <div className="mt-3">
+
+                              <div className="flex items-center justify-between text-[9px]">
+                                <span className="font-medium text-slate-500">
+                                  AI Confidence
+                                </span>
+
+                                <span className="font-bold text-emerald-400">
+                                  {item?.confidence ??
+                                    95}
+                                  %
+                                </span>
+                              </div>
+
+                              <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/5">
+                                <motion.div
+                                  initial={{
+                                    width: 0,
+                                  }}
+                                  animate={{
+                                    width: `${
+                                      item?.confidence ??
+                                      95
+                                    }%`,
+                                  }}
+                                  transition={{
+                                    duration: 0.7,
+                                  }}
+                                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
                                 />
                               </div>
 
-                              <div>
-                                <h4 className="font-semibold text-white">
-                                  {item.station_name}
-                                </h4>
-
-                                <p className="text-xs text-slate-400">
-                                  Metro Station
-                                </p>
-                              </div>
                             </div>
 
-                            <div className="flex items-center gap-3">
-                              <span className="flex items-center gap-1 text-xs text-slate-400">
-                                <Clock size={13} />
-                                {formatHistoryTime(item.created_at)}
-                              </span>
-
-                              <span
-                                className={`
-                                  rounded-full
-                                  border
-                                  px-3
-                                  py-1
-                                  text-xs
-                                  font-bold
-                                  ${getRiskBadge(item.risk_level)}
-                                `}
-                              >
-                                {item.risk_level}
-                              </span>
-                            </div>
                           </div>
+                        </motion.div>
+                      )
+                    )}
 
-                          {/* Recommendation */}
-
-                          <div className="mt-5 rounded-xl bg-slate-800/50 p-4">
-                            <div className="flex items-center gap-2">
-                              <Sparkles
-                                size={16}
-                                className="text-indigo-300"
-                              />
-
-                              <span className="text-sm font-semibold text-indigo-300">
-                                AI Recommendation
-                              </span>
-                            </div>
-
-                            <p className="mt-3 leading-7 text-slate-300">
-                              {item.recommendation}
-                            </p>
-                          </div>
-
-                          {/* Expected Impact */}
-
-                          <div className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4">
-                            <div className="flex items-center gap-2">
-                              <TrendingUp
-                                size={16}
-                                className="text-cyan-300"
-                              />
-
-                              <span className="text-sm font-semibold text-cyan-300">
-                                Expected Impact
-                              </span>
-                            </div>
-
-                            <p className="mt-3 text-sm leading-7 text-slate-300">
-                              {item.expected_impact}
-                            </p>
-                          </div>
-
-                          {/* AI Confidence */}
-
-                          <div className="mt-4 rounded-xl border border-green-500/20 bg-green-500/10 p-4">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-semibold text-green-300">
-                                AI Confidence
-                              </span>
-
-                              <span className="font-bold text-green-400">
-                                {item.confidence ?? 95}%
-                              </span>
-                            </div>
-
-                            <div className="mt-3 h-2 overflow-hidden rounded-full bg-green-900">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{
-                                  width: `${item.confidence ?? 95}%`,
-                                }}
-                                transition={{
-                                  duration: 0.8,
-                                }}
-                                className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
                   </div>
+
                 </div>
 
-                {/* View All History */}
-
-                <div className="mt-8 text-center">
-                  <button
-                    type="button"
-                    onClick={onViewAllHistory}
-                    className="
-                      rounded-xl
-                      border
-                      border-cyan-500/30
-                      bg-cyan-500/10
-                      px-5
-                      py-3
-                      text-sm
-                      font-semibold
-                      text-cyan-300
-                      transition
-                      hover:bg-cyan-500/20
-                    "
-                  >
-                    View Complete AI Recommendation History
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={onViewAllHistory}
+                  className="
+                    mt-3
+                    w-full
+                    rounded-xl
+                    border
+                    border-cyan-500/20
+                    bg-cyan-500/[0.06]
+                    px-4
+                    py-2.5
+                    text-[10px]
+                    font-bold
+                    text-cyan-300
+                    transition
+                    hover:bg-cyan-500/[0.12]
+                  "
+                >
+                  View Complete Recommendation History
+                </button>
               </>
             )}
-          </motion.div>
 
-          <div className="mt-8 flex items-center justify-between rounded-2xl border border-green-500/20 bg-green-500/10 px-6 py-5">
-            <div className="flex items-center gap-3">
-              <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse" />
+          </div>
 
-              <span className="font-semibold">
-                MetroVision AI Engine Active
+          {/* Active Engine */}
+
+          <div className="mt-3 flex items-center justify-between rounded-xl border border-emerald-400/10 bg-emerald-500/[0.05] px-3.5 py-2.5">
+
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+
+              <span className="text-[10px] font-semibold text-slate-300">
+                MetroVision AI Engine
               </span>
             </div>
 
-            <span className="rounded-full bg-green-500/20 px-4 py-2 text-sm text-green-300">
-              ONLINE
+            <span className="text-[9px] font-bold uppercase tracking-wide text-emerald-300">
+              Online
             </span>
+
           </div>
 
-          {/* Recent AI History */}
-
-          {recentHistory.length > 0 && (
-            <div className="mt-8">
-              <h3 className="mb-4 text-lg font-semibold">
-                Recent AI Predictions
-              </h3>
-
-              <div className="space-y-3">
-                {recentHistory.slice(0, 5).map((item, index) => (
-                  <div
-                    key={item.id ?? index}
-                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
-                  >
-                    <div>
-                      <p className="font-medium">
-                        {item.from_station} → {item.to_station}
-                      </p>
-
-                      <p className="text-xs text-slate-400">Prediction</p>
-                    </div>
-
-                    <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-sm text-indigo-300">
-                      {item.predicted_passengers.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
       {/* =====================================================
-          SYSTEM METRICS FOOTER
+          RECENT PREDICTIONS
       ===================================================== */}
 
-      <div className="mt-10 rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-50 via-white to-slate-50 p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          {/* Left */}
+      {recentHistory.length > 0 && (
+        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
 
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">
-              MetroVision AI Engine
-            </h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-bold text-white">
+                Recent AI Predictions
+              </h4>
 
-            <p className="mt-2 text-slate-500">
-              Real-time metro intelligence powered by FastAPI, PostgreSQL
-              and Gemini AI.
-            </p>
+              <p className="mt-1 text-[10px] text-slate-500">
+                Latest passenger movement predictions
+              </p>
+            </div>
+
+            <Activity
+              size={16}
+              className="text-slate-500"
+            />
           </div>
 
-          {/* Right */}
+          <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-5">
 
-          <div className="flex flex-wrap gap-4">
-            <div className="rounded-2xl bg-white border border-slate-200 px-6 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
-                Total Stations
-              </p>
+            {recentHistory
+              .slice(0, 5)
+              .map((item, index) => {
 
-              <h3 className="mt-2 text-3xl font-bold">
-                {summary?.total_stations ?? 0}
+                const predictedPassengers =
+                  Number(
+                    item?.predicted_passengers ??
+                      0
+                  );
+
+                return (
+                  <div
+                    key={
+                      item?.id ??
+                      index
+                    }
+                    className="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3"
+                  >
+
+                    <p className="truncate text-[10px] font-semibold text-white">
+                      {item?.from_station ??
+                        "Unknown"}{" "}
+                      →{" "}
+                      {item?.to_station ??
+                        "Unknown"}
+                    </p>
+
+                    <div className="mt-2 flex items-center justify-between">
+
+                      <span className="text-[9px] text-slate-500">
+                        Prediction
+                      </span>
+
+                      <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[9px] font-bold text-indigo-300">
+                        {predictedPassengers.toLocaleString()}
+                      </span>
+
+                    </div>
+
+                  </div>
+                );
+              })}
+
+          </div>
+
+        </div>
+      )}
+
+      {/* =====================================================
+          SYSTEM FOOTER
+      ===================================================== */}
+
+      <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5">
+
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+          <div>
+            <div className="flex items-center gap-2">
+              <Sparkles
+                size={16}
+                className="text-indigo-500"
+              />
+
+              <h3 className="text-sm font-black text-slate-900">
+                MetroVision AI Engine
               </h3>
             </div>
 
-            <div className="rounded-2xl bg-white border border-slate-200 px-6 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
-                Active Alerts
+            <p className="mt-1 text-xs text-slate-500">
+              Real-time intelligence powered by FastAPI,
+              PostgreSQL and Gemini AI.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <p className="text-[9px] uppercase tracking-wide text-slate-400">
+                Stations
               </p>
 
-              <h3 className="mt-2 text-3xl font-bold text-red-600">
+              <p className="mt-0.5 text-sm font-black text-slate-900">
+                {totalStations}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-red-100 bg-red-50 px-3 py-2">
+              <p className="text-[9px] uppercase tracking-wide text-red-400">
+                Alerts
+              </p>
+
+              <p className="mt-0.5 text-sm font-black text-red-600">
                 {alerts.length}
-              </h3>
+              </p>
             </div>
 
-            <div className="rounded-2xl bg-white border border-slate-200 px-6 py-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-slate-500">
-                AI Confidence
+            <div className="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2">
+              <p className="text-[9px] uppercase tracking-wide text-indigo-400">
+                Confidence
               </p>
 
-              <h3 className="mt-2 text-3xl font-bold text-indigo-600">
-                96%
-              </h3>
+              <p className="mt-0.5 text-sm font-black text-indigo-600">
+                {recommendation?.confidence ??
+                  96}
+                %
+              </p>
             </div>
+
+            <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+
+              <span className="text-[10px] font-bold text-emerald-700">
+                All Systems Operational
+              </span>
+            </div>
+
           </div>
+
         </div>
 
-        {/* Divider */}
-
-        <div className="my-8 h-px bg-slate-200" />
-
-        {/* Bottom Status */}
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="rounded-2xl bg-green-50 p-5">
-            <div className="flex items-center gap-3">
-              <ShieldCheck size={26} className="text-green-600" />
-
-              <div>
-                <p className="text-sm text-slate-500">Network</p>
-
-                <h3 className="font-bold text-green-700">Healthy</h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-indigo-50 p-5">
-            <div className="flex items-center gap-3">
-              <BrainCircuit size={26} className="text-indigo-600" />
-
-              <div>
-                <p className="text-sm text-slate-500">AI Engine</p>
-
-                <h3 className="font-bold text-indigo-700">Online</h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-cyan-50 p-5">
-            <div className="flex items-center gap-3">
-              <Radar size={26} className="text-cyan-600" />
-
-              <div>
-                <p className="text-sm text-slate-500">Monitoring</p>
-
-                <h3 className="font-bold text-cyan-700">Active</h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-yellow-50 p-5">
-            <div className="flex items-center gap-3">
-              <Clock size={26} className="text-yellow-600" />
-
-              <div>
-                <p className="text-sm text-slate-500">Last Sync</p>
-
-                <h3 className="font-bold text-yellow-700">
-                  {formatTime(lastUpdated)}
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-
-        <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="font-semibold text-slate-700">
-              MetroVision AI Operations Center v2.0
-            </p>
-
-            <p className="text-sm text-slate-500">
-              Built with React • FastAPI • PostgreSQL • Gemini AI
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 rounded-full bg-green-100 px-5 py-3">
-            <span className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></span>
-
-            <span className="font-semibold text-green-700">
-              All Systems Operational
-            </span>
-          </div>
-        </div>
       </div>
+
     </motion.section>
   );
 }

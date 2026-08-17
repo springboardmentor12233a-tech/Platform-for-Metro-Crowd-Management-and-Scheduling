@@ -9,7 +9,10 @@ from app.models.activity_log import ActivityLog
 from app.auth.hashing import hash_password
 from app.core.role_checker import require_roles
 
-from app.schemas.user import UserCreate
+from app.schemas.user import (
+    UserCreate,
+    UserUpdate,
+)
 
 from app.services.user_service import (
     get_users,
@@ -118,28 +121,62 @@ def add_user(
 @router.put("/{user_id}")
 def edit_user(
     user_id: int,
-    request: UserCreate,
+    request: UserUpdate,
     http_request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_roles("Admin")),
+    current_user: User = Depends(
+        require_roles("Admin")
+    ),
 ):
-    user = get_user_by_id(db, user_id)
+    user = get_user_by_id(
+        db,
+        user_id,
+    )
 
     if not user:
-        raise HTTPException(404, "User not found")
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
 
-    update_user_details(
-        db,
-        user,
-        request.name,
-        request.email,
-    )
+    # ==========================================
+    # Update Name
+    # ==========================================
 
-    update_user_role(
-        db,
-        user,
-        request.role,
-    )
+    user.name = request.name
+
+    # ==========================================
+    # Update Email
+    # ==========================================
+
+    user.email = request.email
+
+    # ==========================================
+    # Update Role
+    # ==========================================
+
+    user.role = request.role
+
+    # ==========================================
+    # Update Password
+    # Only if admin entered a new password
+    # ==========================================
+
+    if request.password:
+        user.password = hash_password(
+            request.password
+        )
+
+    # ==========================================
+    # Save Changes
+    # ==========================================
+
+    db.commit()
+    db.refresh(user)
+
+    # ==========================================
+    # Activity Log
+    # ==========================================
 
     create_activity_log(
         db=db,

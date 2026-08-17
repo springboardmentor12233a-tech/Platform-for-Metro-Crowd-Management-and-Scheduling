@@ -55,119 +55,254 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6"
+      className="space-y-5"
     >
-      {/* Error */}
+      {/* =========================================================
+          ERROR MESSAGE
+      ========================================================= */}
       {error && (
         <div
           className="
             flex
-            items-center
+            items-start
             gap-3
-            rounded-2xl
+            rounded-xl
+
             border
-            border-red-500/30
-            bg-red-500/10
+            border-red-400/20
+
+            bg-red-500/[0.08]
+
             px-4
             py-3
+
             backdrop-blur-xl
+
+            shadow-[0_8px_25px_rgba(0,0,0,0.25)]
+
+            animate-[fadeIn_0.2s_ease-out]
           "
         >
           <AlertCircle
-            size={18}
-            className="text-red-400 shrink-0"
+            size={17}
+            className="
+              mt-0.5
+              shrink-0
+              text-red-400
+            "
           />
 
-          <p className="text-sm font-medium text-red-300">
+          <p
+            className="
+              text-xs
+              font-medium
+              leading-5
+              text-red-300
+            "
+          >
             {error}
           </p>
         </div>
       )}
 
-      {/* Email */}
-      <GlassInput
-        label="Email Address"
-        name="email"
-        icon={Mail}
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        autoComplete="email"
-        disabled={loading}
-        required
-      />
+      {/* =========================================================
+          EMAIL
+      ========================================================= */}
+      <div>
+        <GlassInput
+          label="Email Address"
+          name="email"
+          icon={Mail}
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
 
-      {/* Password */}
-      <GlassInput
-        label="Password"
-        name="password"
-        icon={Lock}
-        type="password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        autoComplete="current-password"
-        disabled={loading}
-        required
-      />
-
-      {/* Remember + Forgot */}
-      <div className="flex items-center justify-between">
-        <label className="group flex cursor-pointer items-center gap-3">
-          <input
-            type="checkbox"
-            checked={remember}
-            disabled={loading}
-            onChange={(e) =>
-              setRemember(e.target.checked)
+            if (error) {
+              setError("");
             }
+          }}
+          autoComplete="email"
+          disabled={loading}
+          required
+        />
+      </div>
+
+      {/* =========================================================
+          PASSWORD
+      ========================================================= */}
+      <div>
+        <GlassInput
+          label="Password"
+          name="password"
+          icon={Lock}
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+
+            if (error) {
+              setError("");
+            }
+          }}
+          autoComplete="current-password"
+          disabled={loading}
+          required
+        />
+      </div>
+
+      {/* =========================================================
+          REMEMBER ME + FORGOT PASSWORD
+      ========================================================= */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          gap-4
+          pt-0.5
+        "
+      >
+        {/* Remember Me */}
+        <label
+          className="
+            group
+            flex
+            cursor-pointer
+            items-center
+            gap-2.5
+            select-none
+          "
+        >
+          <span
             className="
-              h-4
-              w-4
-              rounded
-              border-white/20
-              bg-white/10
-              accent-cyan-500
+              relative
+              flex
+              h-[17px]
+              w-[17px]
+              shrink-0
+              items-center
+              justify-center
             "
-          />
+          >
+            <input
+              type="checkbox"
+              checked={remember}
+              disabled={loading}
+              onChange={(e) =>
+                setRemember(e.target.checked)
+              }
+              className="
+                peer
+                h-[17px]
+                w-[17px]
+                cursor-pointer
+                appearance-none
+                rounded-[4px]
+
+                border
+                border-white/20
+
+                bg-white/[0.07]
+
+                transition-all
+                duration-200
+
+                checked:border-cyan-400
+                checked:bg-cyan-500
+
+                hover:border-white/35
+
+                focus:outline-none
+                focus:ring-2
+                focus:ring-cyan-400/20
+
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            />
+
+            {/* Custom check */}
+            <svg
+              viewBox="0 0 12 12"
+              className="
+                pointer-events-none
+                absolute
+                h-3
+                w-3
+                scale-0
+                text-white
+                opacity-0
+                transition-all
+                duration-150
+                peer-checked:scale-100
+                peer-checked:opacity-100
+              "
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6l2.2 2.2L9.5 3.5" />
+            </svg>
+          </span>
 
           <span
             className="
-              text-sm
-              text-slate-300
+              text-xs
+              font-medium
+              text-slate-400
+
               transition-colors
-              group-hover:text-white
+              duration-200
+
+              group-hover:text-slate-200
+
+              sm:text-[13px]
             "
           >
             Remember me
           </span>
         </label>
 
+        {/* Forgot Password */}
         <Link
           to="/forgot-password"
           className="
-            text-sm
-            font-medium
+            whitespace-nowrap
+
+            text-xs
+            font-semibold
             text-cyan-400
+
             transition-all
-            duration-300
+            duration-200
+
             hover:text-cyan-300
-            hover:underline
-            underline-offset-4
+
+            hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.25)]
+
+            sm:text-[13px]
           "
         >
           Forgot password?
         </Link>
       </div>
 
-      {/* Button */}
-      <PrimaryButton
-        type="submit"
-        loading={loading}
-      >
-        Sign In
-      </PrimaryButton>
+      {/* =========================================================
+          SIGN IN BUTTON
+      ========================================================= */}
+      <div className="pt-0.5">
+        <PrimaryButton
+          type="submit"
+          loading={loading}
+        >
+          Sign In
+        </PrimaryButton>
+      </div>
     </form>
   );
 }

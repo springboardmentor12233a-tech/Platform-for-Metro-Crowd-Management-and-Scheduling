@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 from pydantic import BaseModel, EmailStr
 
-from typing import Literal
+
 # ======================================================
 # Registration
 # ======================================================
@@ -13,6 +13,17 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: Literal["Admin", "Operator", "Analyst", "Member"] = "Member"
+
+
+# ======================================================
+# Update (Edit User)
+# ======================================================
+
+class UserUpdate(BaseModel):
+    name: str
+    email: EmailStr
+    role: str
+    password: Optional[str] = None
 
 
 # ======================================================

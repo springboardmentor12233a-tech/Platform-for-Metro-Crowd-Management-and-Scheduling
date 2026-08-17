@@ -167,11 +167,25 @@ export default function UserTable({ users, loading, onEdit, onDelete }) {
 
                 {/* ================= LOGIN ================= */}
                 <td className="px-6 py-6">
-                  <div className="text-sm">
-                    <p className="font-medium text-slate-700">
-                      {formatDate(user.last_login)}
-                    </p>
-                  </div>
+                  {user.last_login ? (
+                    <div className="text-sm">
+                      <p className="font-medium text-slate-700">
+                        {new Date(user.last_login).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {new Date(user.last_login).toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-slate-400">Never</span>
+                  )}
                 </td>
 
                 {/* ================= CREATED ================= */}

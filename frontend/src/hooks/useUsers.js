@@ -3,6 +3,7 @@ import {
   getUsers,
   createUser,
   updateUser,
+  updateUserStatus,
   deleteUser,
 } from "../services/userService";
 
@@ -45,9 +46,39 @@ export default function useUsers() {
     async (id, userData) => {
       try {
         setProcessing(true);
-        await updateUser(id, userData);
+
+        // Update name + email + role + password
+        await updateUser(id, {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          password: userData.password,
+        });
+
+        // Update Active / Inactive
+        let isActive;
+
+        if (userData.status !== undefined) {
+          isActive = userData.status === "Active";
+        }
+
+        if (userData.is_active !== undefined) {
+          isActive = userData.is_active;
+        }
+
+        if (isActive !== undefined) {
+          await updateUserStatus(id, isActive);
+        }
+
+        // Refresh table from database
         await fetchUsers();
+
       } catch (err) {
+        console.error(
+          "Failed to update user:",
+          err
+        );
+
         throw err;
       } finally {
         setProcessing(false);
