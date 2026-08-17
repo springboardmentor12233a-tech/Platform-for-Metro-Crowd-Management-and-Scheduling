@@ -1,194 +1,127 @@
-# AI MetroFlow – AI Metro Crowd Management & Scheduling Platform
+# AI MetroFlow 🚇
 
-AI MetroFlow is a production-ready, high-fidelity crowd intelligence and train dispatch scheduling platform designed for metropolitan rapid transit networks. By combining a **Python FastAPI** backend, a **MongoDB** database, **WebSockets**, and a **React + Vite** frontend (visualized via **Leaflet Maps** and **Recharts**), the system enables operators to manage timetables, predict congestion trends, monitor crowd inflows/outflows, and resolve delays in real-time.
+**Platform for Metro Crowd Management and Scheduling**
+*Developed as part of the Infosys Springboard Internship*
 
----
-
-## 🏗️ Project Folder Structure
-
-```text
-AI_MetroFlow/
-├── datasets/                   # Raw CSV datasets
-│   ├── Delhi-Metro-Network.csv
-│   └── delhi_metro_updated.csv
-│   └── public_transport_delays.csv
-├── ml/                         # Machine Learning pipeline
-│   ├── train_models.py         # Data cleaning & training script
-│   └── models/                 # Saved joblib models & metrics JSON
-├── backend/                    # Python FastAPI service
-│   ├── main.py                 # Application entrypoint
-│   ├── config.py               # Env configurations
-│   ├── database.py             # Motor client & csv database seeder
-│   ├── auth.py                 # Hashing & JWT role checks
-│   ├── models/                 # Pydantic schemas (User, Station, Train, etc.)
-│   └── routers/                # API route handlers
-├── frontend/                   # React Vite application
-│   ├── src/
-│   │   ├── components/         # Map, Sidebar, Navbar, Card, Guards
-│   │   ├── context/            # Auth, Theme, WebSockets contexts
-│   │   ├── pages/              # Dashboard, Map page, Scheduling, AI, Reports, CRUD
-│   │   ├── services/           # Axios instance configuration
-│   │   ├── index.css           # Tailwind v4 globals & theme colors
-│   │   └── App.jsx             # Router and page mappings
-│   ├── vite.config.js          # Vite configurations
-│   └── index.html              # Main HTML mounting fonts & Leaflet CDNs
-├── Dockerfile.backend          # Backend Docker compilation
-├── Dockerfile.frontend         # Frontend Docker compilation
-├── nginx.conf                  # Nginx production proxy rules
-├── docker-compose.yml          # Container orchestrator
-├── requirements.txt            # Python dependencies
-└── README.md                   # Setup and Deployment Guide
-```
+AI MetroFlow is a comprehensive, full-stack, AI-powered platform designed to revolutionize urban transit management. It provides metro operators, analysts, and administrators with real-time insights, predictive analytics, and dynamic scheduling capabilities to optimize passenger flow, reduce congestion, and improve overall transit efficiency.
 
 ---
 
-## ⚡ Key Features
+## ✨ Key Features
 
-- **JWT Authentication & RBAC**: Roles for `Admin`, `Metro Operator`, and `Analyst` with restricted endpoint scopes.
-- **Real-Time Map Operations**: Leaflet maps displaying metro line polyline shapes, glowing, color-coded stations indicating crowd occupancy (Green, Yellow, Orange, Red), and moving trains.
-- **WebSocket Streaming**: Async WebSocket loop at `/api/crowd/ws` broadcasting live station counts, train locations, and alert events.
-- **AI Forecasting**: Random Forest models trained on Delhi Metro datasets to predict passenger group sizes and delay minutes based on traffic index, weather, and calendar dates.
-- **Operations Scheduling**: Platform assignment, delay time log adjustments, and a frequency optimizer calculating headway recommendations for peak/off-peak windows.
-- **Analytics Export**: Compile reports of delays, occupancy ratios, and congestion trends, exporting them as CSV, Excel (`.xlsx`), or PDF documents.
-- **Automated Alerts**: Automated triggers mapping Red-level stations or severe train delays, publishing live toast notifications to console clients.
-
----
-
-## 📡 REST API Documentation
-
-### Authentication (`/api/auth`)
-- `POST /register`: Registers a new staff account (name, email, password, role).
-- `POST /login`: Validates credentials (username/password), returns JWT token.
-- `GET /profile`: Retrieves logged-in user profile details.
-- `PUT /profile`: Updates profile details or theme/language preferences.
-- `POST /change-password`: Changes password.
-- `GET /users` (Admin only): Lists all registered staff users.
-- `PUT /users/{id}/status` (Admin only): Toggles user account state (Active/Inactive).
-- `DELETE /users/{id}` (Admin only): Deletes a user account.
-
-### Stations (`/api/stations`)
-- `GET /`: Lists all stations (supports search, line filter, status filter, and pagination).
-- `GET /{id}`: Retrieves details for a specific station.
-- `POST /` (Admin only): Creates a new station record.
-- `PUT /{id}` (Admin/Operator): Updates station details.
-- `DELETE /{id}` (Admin only): Deletes a station.
-
-### Trains (`/api/trains`)
-- `GET /`: Lists trains (supports search, status filter, and pagination).
-- `GET /{id}`: Retrieves train details.
-- `POST /` (Admin only): Registers a new train in the fleet.
-- `PUT /{id}` (Admin/Operator): Edits train capacity, name, or service status.
-- `DELETE /{id}` (Admin only): Deletes a train record.
-
-### Schedules & Timetables (`/api/schedules`)
-- `GET /`: Lists all schedules (supports filters for train, station, route, status).
-- `GET /{id}`: Retrieves specific schedule details.
-- `POST /` (Admin only): Creates a timetable entry.
-- `PUT /{id}` (Admin/Operator): Edits platforms, logs delays, or updates status.
-- `DELETE /{id}` (Admin only): Deletes a schedule entry.
-- `POST /optimize-frequency` (Admin/Operator): Recommends optimal train headway schedules based on route demand.
-
-### AI Predictions (`/api/predictions` and Direct Aliases)
-- `GET /metrics` (Analyst/Admin): Returns trained models performance summaries (MAE, RMSE, confusion matrix, feature importances).
-- `POST /demand` (Analyst/Admin): Predicts passenger demand group size.
-- `POST /delay` (Analyst/Admin): Forecasts trip delay probabilities and duration.
-- `POST /api/predict-crowd` (Analyst/Admin): Returns predicted passenger count, crowd level classification (Green/Yellow/Orange/Red), congestion risk index, and model confidence score. Writes prediction log to the `predictions` collection.
-- `POST /api/forecast-demand` (Analyst/Admin): Predicts hourly, daily, or weekly demand trends with peak alerts and warning notifications.
-
-### Reports & Export (`/api/reports` and Direct Aliases)
-- `GET /generate` (Analyst/Admin): Compiles logs and streams downloads for `.csv`, `.xlsx`, or `.pdf` formats.
-- `GET /api/traffic-report` (Analyst/Admin): Compiles and streams passenger count traffic sheets.
-- `GET /api/frequency-report` (Analyst/Admin): Compiles and streams fleet utilization reports.
-
-### Monitoring WebSocket & REST API
-- `WS /api/crowd/ws`: Async WebSocket channel streaming active trains, delayed logs, and station footfall.
-- `GET /api/live-status`: Exposes a REST snapshot of the WebSocket state.
+*   **Real-Time Crowd Monitoring:** Live passenger counting and congestion tracking across all network stations using WebSockets for instant updates.
+*   **AI-Powered Predictions:** Machine learning models (Random Forest) that forecast future station demand, detect anomalies, and predict train delays before they happen.
+*   **Dynamic Scheduling:** Automated frequency adjustment algorithms that optimize train dispatch intervals based on predicted peak traffic hours.
+*   **Congestion Heatmaps:** Interactive, geographical visualizations of crowd density across the entire metro network.
+*   **Live Alerts & Announcements:** Instant WebSocket-powered broadcast system for emergency alerts, weather warnings, and platform changes.
+*   **Analytics & Reporting:** Comprehensive dashboards and downloadable reports (CSV/PDF) for historical passenger trends and delay factors.
 
 ---
 
-## 🗄️ Database Collections
+## 🛠️ Technology Stack
 
-The MongoDB layer uses the following collections to organize states:
-- `users`: Operator profile info, credentials, and console theme options.
-- `stations`: Metro network station metadata, coordinate positions, and status.
-- `routes`: Station sequences mapping individual metro line paths.
-- `trains`: Running metro cars fleet, capacities, and active schedules.
-- `schedules`: Live timetable dispatch entries, delays, and platforms.
-- `predictions`: Log entries of crowd predictions queried by analysts.
-- `passenger_history`: Aggregated logs of passenger station entries for analytics.
-- `traffic_reports`: Database records tracking generated and exported PDF/CSV documents.
-- `train_status`: Live status checkpoints tracking transit logs.
+**Frontend:**
+*   **React (Vite):** Fast, modern UI development.
+*   **Tailwind CSS:** Highly customizable utility-first styling with Glassmorphic design language.
+*   **Lucide React:** Beautiful, consistent iconography.
+*   **Recharts:** Dynamic data visualization and charting.
+
+**Backend:**
+*   **FastAPI (Python):** High-performance asynchronous API server.
+*   **MongoDB (Motor):** Flexible NoSQL database with asynchronous drivers for high concurrency.
+*   **Scikit-Learn / Pandas:** Machine learning model execution and data processing.
+*   **WebSockets:** Real-time bi-directional communication.
+*   **JWT Authentication:** Secure role-based access control (Admin, Analyst, Operator).
 
 ---
 
-## 🚀 Local Development Setup
+## 🚀 Getting Started
 
-### Prerequisite
-Ensure **Python 3.10+**, **Node.js v18+**, and **MongoDB** are installed and running locally.
+Follow these instructions to get a copy of the project up and running on your local machine.
 
-### Step 1: Clone and Setup ML Models
-First, install dependencies and pre-train the Random Forest classifiers:
+### Prerequisites
+*   Node.js (v18+)
+*   Python (3.10+)
+*   MongoDB (Running locally or via MongoDB Atlas)
+
+### 1. Database Setup
+Ensure your local MongoDB instance is running. The backend will automatically create the database (`metroflow_db`) and collections on the first run.
+
+### 2. Backend Installation
+Open a terminal and navigate to the `backend` folder:
 ```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate      # On Windows
 pip install -r requirements.txt
-python ml/train_models.py
 ```
-*This output files `demand_model.pkl`, `delay_classifier.pkl`, `delay_regressor.pkl`, and `metrics.json` under `ml/models/`.*
 
-### Step 2: Start the FastAPI Backend
-Start the uvicorn development server:
-```bash
-# Set environment variables if needed: MONGO_URI
-uvicorn backend.main:app --reload --port 8000
-```
-*Note: On startup, the backend automatically seeds default users, stations from Delhi-Metro-Network.csv, routes, mock trains, and initial timetable records if the database is blank.*
-- Default accounts:
-  - **Admin**: `admin@metroflow.com` (password: `admin123`)
-  - **Operator**: `operator@metroflow.com` (password: `operator123`)
-  - **Analyst**: `analyst@metroflow.com` (password: `analyst123`)
-
-### Step 3: Run the React Frontend
-Open another terminal pane, install Node dependencies, and start Vite:
+### 3. Frontend Installation
+Open a new terminal and navigate to the `frontend` folder:
 ```bash
 cd frontend
 npm install
+```
+
+---
+
+## 💻 Running the Application
+
+You need to run both the Backend and Frontend servers simultaneously in two separate terminals.
+
+### Start the Backend (FastAPI)
+```bash
+cd backend
+venv\Scripts\activate      # Ensure your virtual environment is active
+uvicorn backend.main:app --reload --port 8000
+```
+*The backend API will be available at: http://127.0.0.1:8000*
+*Interactive API Docs (Swagger UI): http://127.0.0.1:8000/docs*
+
+### Start the Frontend (React)
+```bash
+cd frontend
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
+*The frontend application will be available at: http://localhost:5173*
 
 ---
 
-## 🐳 Docker Deployment (Recommended)
+## 🔐 Default Test Accounts
 
-To run the entire ecosystem (MongoDB, FastAPI backend, React frontend) with a single command:
-```bash
-docker-compose up --build
+When the database initializes, it automatically seeds default users with different roles for testing:
+
+*   **Admin:** `admin@metroflow.com` | Password: `admin123`
+*   **Analyst:** `analyst@metroflow.com` | Password: `analyst123`
+*   **Operator:** `operator@metroflow.com` | Password: `operator123`
+
+---
+
+## 📂 Project Structure
+
+```text
+AI_MetroFlow/
+│
+├── backend/                  # FastAPI Python Backend
+│   ├── main.py               # Application entry point & WebSocket hub
+│   ├── database.py           # MongoDB connection & seeding logic
+│   ├── auth.py               # JWT generation and validation
+│   ├── models/               # Pydantic data schemas
+│   ├── routers/              # API route controllers
+│   ├── ml/                   # Pre-trained ML models & metrics
+│   └── datasets/             # Source CSVs for analytics
+│
+├── frontend/                 # React UI
+│   ├── index.html            # Main HTML wrapper
+│   ├── vite.config.js        # Vite bundler configuration
+│   ├── src/
+│   │   ├── App.jsx           # Main router setup
+│   │   ├── main.jsx          # React entry point
+│   │   ├── pages/            # View components (Dashboard, Map, etc.)
+│   │   ├── components/       # Reusable UI parts (Navbar, Sidebar, Cards)
+│   │   └── index.css         # Global Tailwind styles
+│
+└── docs/                     # Additional Documentation
+    ├── API_Documentation.md  
+    └── Page_Descriptions.md  
 ```
-Access the application on:
-- Frontend Client: `http://localhost:3000`
-- Backend API Docs: `http://localhost:8000/docs`
-
----
-
-## ☁️ Railway Deployment Guide
-
-To deploy AI MetroFlow to [Railway](https://railway.app):
-
-### Step 1: Provision MongoDB
-1. Open the Railway Console and click **New Project**.
-2. Select **Provision MongoDB**. This will start a MongoDB Atlas/Cloud container and configure the internal variable `MONGODB_URL`.
-
-### Step 2: Deploy the FastAPI Backend
-1. Click **New Service** -> **GitHub Repo** and select the clone of this repository.
-2. In the Service settings, configure variables:
-   - `MONGO_URI`: Reference Railway's connection string: `${{MONGODB_URL}}`
-   - `DATABASE_NAME`: `metroflow_db`
-   - `JWT_SECRET`: Generate a random hash
-   - `PORT`: `8000`
-3. Under the build options, ensure the **Build Command** runs `python ml/train_models.py` or specify the Dockerfile:
-   - Select **Dockerfile** and configure it to use `Dockerfile.backend`.
-
-### Step 3: Deploy the React Frontend
-1. Add another GitHub service pointing to the same repository.
-2. In the settings, select **Dockerfile** and configure it to use `Dockerfile.frontend`.
-3. Set service variables if needed.
-4. Expose the frontend container port (port `80` inside the Nginx container) by adding a custom domain or clicking **Generate Domain** in the settings. Nginx will handle proxying all `/api/` calls internally to the backend!
