@@ -1,11 +1,3 @@
-/**
- * Metro CMS Login
- *
- * Authentication:
- * 1. Admin    -> username + password
- * 2. User     -> Google Sign-In
- */
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +15,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import authService from "../services/authService";
 
+import metroImage from "../assets/metro.avif";
 
 // ============================================================
 // FEATURES
@@ -46,7 +39,6 @@ const features = [
   },
 ];
 
-
 // ============================================================
 // ADMIN DEMO CREDENTIALS
 // ============================================================
@@ -59,33 +51,29 @@ const demoCredentials = [
   },
 ];
 
-
 // ============================================================
 // LOGIN COMPONENT
 // ============================================================
 
 export default function Login() {
-
   const { login } = useAuth();
 
   const navigate = useNavigate();
 
   const googleButtonRef = useRef(null);
 
-
-  // ----------------------------------------------------------
+  // ============================================================
   // ADMIN FORM
-  // ----------------------------------------------------------
+  // ============================================================
 
   const [form, setForm] = useState({
     username: "admin",
     password: "test1234",
   });
 
-
-  // ----------------------------------------------------------
+  // ============================================================
   // UI STATE
-  // ----------------------------------------------------------
+  // ============================================================
 
   const [showPwd, setShowPwd] = useState(false);
 
@@ -95,63 +83,37 @@ export default function Login() {
 
   const [error, setError] = useState("");
 
-
-  // ==========================================================
+  // ============================================================
   // LOAD GOOGLE IDENTITY SERVICES
-  // ==========================================================
+  // ============================================================
 
   useEffect(() => {
-
     const initializeGoogle = () => {
-
-      if (
-        !window.google ||
-        !googleButtonRef.current
-      ) {
+      if (!window.google || !googleButtonRef.current) {
         return;
       }
 
-
-      const clientId =
-        import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
       if (!clientId) {
-
         console.error(
           "VITE_GOOGLE_CLIENT_ID is not configured."
         );
-
         return;
       }
 
-
       // Clear previously rendered button
-
       googleButtonRef.current.innerHTML = "";
 
-
-      // ------------------------------------------------------
-      // INITIALIZE GOOGLE
-      // ------------------------------------------------------
-
+      // Initialize Google
       window.google.accounts.id.initialize({
-
         client_id: clientId,
-
         callback: handleGoogleCredential,
-
       });
 
-
-      // ------------------------------------------------------
-      // RENDER GOOGLE BUTTON
-      // ------------------------------------------------------
-
+      // Render Google button
       window.google.accounts.id.renderButton(
-
         googleButtonRef.current,
-
         {
           theme: "outline",
           size: "large",
@@ -160,136 +122,87 @@ export default function Login() {
           shape: "rectangular",
           logo_alignment: "left",
         }
-
       );
-
     };
 
-
     // Google script already loaded
-
     if (window.google) {
-
       initializeGoogle();
-
       return;
-
     }
 
-
-    // --------------------------------------------------------
-    // LOAD GOOGLE SCRIPT
-    // --------------------------------------------------------
-
-    const existingScript =
-      document.querySelector(
-        'script[src="https://accounts.google.com/gsi/client"]'
-      );
-
+    // Check whether script already exists
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
 
     if (existingScript) {
-
       existingScript.addEventListener(
         "load",
         initializeGoogle
       );
 
       return () => {
-
         existingScript.removeEventListener(
           "load",
           initializeGoogle
         );
-
       };
-
     }
 
-
-    const script =
-      document.createElement("script");
-
+    // Load Google script
+    const script = document.createElement("script");
 
     script.src =
       "https://accounts.google.com/gsi/client";
 
     script.async = true;
-
     script.defer = true;
 
-
-    script.onload =
-      initializeGoogle;
-
+    script.onload = initializeGoogle;
 
     script.onerror = () => {
-
       console.error(
         "Failed to load Google Identity Services."
       );
-
     };
-
 
     document.head.appendChild(script);
 
-
     return () => {
-
       if (script.parentNode) {
-
         script.parentNode.removeChild(script);
-
       }
-
     };
-
   }, []);
 
-
-  // ==========================================================
+  // ============================================================
   // ADMIN LOGIN
-  // ==========================================================
+  // ============================================================
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     setLoading(true);
-
     setError("");
 
-
     try {
-
-      // ------------------------------------------------------
-      // CALL BACKEND
-      // ------------------------------------------------------
-
+      // Call backend
       const response =
         await authService.adminLogin(
           form.username,
           form.password
         );
 
-
       console.log(
         "Admin login response:",
         response
       );
 
-
-      // ------------------------------------------------------
-      // SAVE JWT
-      // ------------------------------------------------------
-
+      // Save JWT
       authService.saveAuth(response);
 
-
-      // ------------------------------------------------------
-      // UPDATE AUTH CONTEXT
-      // ------------------------------------------------------
-
+      // Update auth context
       login(
         {
           id: response.user_id || null,
@@ -299,20 +212,14 @@ export default function Login() {
         response.access_token
       );
 
-
-      // ------------------------------------------------------
-      // REDIRECT
-      // ------------------------------------------------------
-
+      // Redirect
       navigate("/");
 
     } catch (err) {
-
       console.error(
         "Admin login error:",
         err
       );
-
 
       setError(
         err.response?.data?.detail ||
@@ -320,205 +227,189 @@ export default function Login() {
       );
 
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
-
-  // ==========================================================
+  // ============================================================
   // GOOGLE LOGIN CALLBACK
-  // ==========================================================
+  // ============================================================
 
   const handleGoogleCredential =
     async (credentialResponse) => {
-
       setGoogleLoading(true);
-
       setError("");
 
-
       try {
-
         if (
           !credentialResponse ||
           !credentialResponse.credential
         ) {
-
           throw new Error(
             "Google did not return a valid credential."
           );
-
         }
-
 
         console.log(
           "Google credential received."
         );
 
-
-        // ----------------------------------------------------
-        // SEND GOOGLE TOKEN TO BACKEND
-        // ----------------------------------------------------
-
+        // Send Google token to backend
         const response =
           await authService.googleLogin(
             credentialResponse.credential
           );
-
 
         console.log(
           "Google login response:",
           response
         );
 
-
-        // ----------------------------------------------------
-        // SAVE JWT
-        // ----------------------------------------------------
-
+        // Save JWT
         authService.saveAuth(response);
 
-
-        // ----------------------------------------------------
-        // UPDATE AUTH CONTEXT
-        // ----------------------------------------------------
-
+        // Update auth context
         login(
           {
             id: response.user_id || null,
             email: response.email || null,
-            full_name: response.full_name || null,
+            full_name:
+              response.full_name || null,
             role: response.role || "user",
           },
           response.access_token
         );
 
-
-        // ----------------------------------------------------
-        // REDIRECT
-        // ----------------------------------------------------
-
+        // Redirect
         navigate("/");
 
       } catch (err) {
-
         console.error(
           "Google login error:",
           err
         );
-
 
         const message =
           err.response?.data?.detail ||
           err.message ||
           "Google Sign-In failed. Please try again.";
 
-
         setError(message);
 
       } finally {
-
         setGoogleLoading(false);
-
       }
-
     };
 
-
-  // ==========================================================
+  // ============================================================
   // FILL DEMO ADMIN
-  // ==========================================================
+  // ============================================================
 
   const fillDemo = (
     username,
     password
   ) => {
-
     setForm({
       username,
       password,
     });
 
     setError("");
-
   };
 
-
-  // ==========================================================
+  // ============================================================
   // UI
-  // ==========================================================
+  // ============================================================
 
   return (
+    <div className="relative min-h-screen w-full overflow-hidden">
 
-    <div className="min-h-screen bg-slate-950 flex">
+      {/* ========================================================
+          FULL SCREEN METRO BACKGROUND
+      ======================================================== */}
 
-      {/* ================================================== */}
-      {/* LEFT BRANDING PANEL */}
-      {/* ================================================== */}
+      <img
+        src={metroImage}
+        alt="Metro background"
+        className="
+          absolute
+          inset-0
+          w-full
+          h-full
+          object-cover
+          object-center
+        "
+      />
+
+      {/* ========================================================
+          DARK OVERLAY
+      ======================================================== */}
 
       <div
         className="
-          hidden lg:flex
-          flex-col
-          justify-center
-          px-16
-          w-1/2
-          relative
-          overflow-hidden
+          absolute
+          inset-0
+          bg-black/60
+          backdrop-blur-[2px]
+        "
+      />
+
+      {/* ========================================================
+          GRADIENT OVERLAY
+      ======================================================== */}
+
+      <div
+        className="
+          absolute
+          inset-0
           bg-gradient-to-br
-          from-slate-900
-          via-slate-900
-          to-slate-800
-          border-r
-          border-slate-800
+          from-slate-950/70
+          via-slate-950/30
+          to-cyan-950/40
+        "
+      />
+
+      {/* ========================================================
+          CENTER CONTENT
+      ======================================================== */}
+
+      <div
+        className="
+          relative
+          z-10
+          min-h-screen
+          w-full
+          flex
+          items-center
+          justify-center
+          px-4
+          py-8
         "
       >
 
-        {/* Background glow */}
+        {/* ======================================================
+            LOGIN CONTAINER
+        ====================================================== */}
 
-        <div
-          className="
-            absolute
-            inset-0
-            bg-[radial-gradient(
-              ellipse_at_top_left,
-              rgba(6,182,212,0.12),
-              transparent_60%
-            )]
-          "
-        />
+        <div className="w-full max-w-md">
 
-        <div
-          className="
-            absolute
-            bottom-0
-            right-0
-            w-96
-            h-96
-            bg-[radial-gradient(
-              circle,
-              rgba(14,165,233,0.07),
-              transparent_70%
-            )]
-          "
-        />
+          {/* ====================================================
+              LOGO / BRAND
+          ==================================================== */}
 
-
-        <div className="relative z-10">
-
-          {/* ------------------------------------------------ */}
-          {/* LOGO */}
-          {/* ------------------------------------------------ */}
-
-          <div className="flex items-center gap-3 mb-14">
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              mb-6
+            "
+          >
 
             <div
               className="
-                w-12
-                h-12
+                w-14
+                h-14
                 rounded-2xl
                 bg-gradient-to-br
                 from-cyan-500
@@ -526,26 +417,24 @@ export default function Login() {
                 flex
                 items-center
                 justify-center
-                shadow-lg
+                shadow-2xl
                 shadow-cyan-500/30
+                mb-3
               "
             >
-
               <Train
-                size={22}
+                size={26}
                 className="text-white"
               />
-
             </div>
 
-
-            <div>
+            <div className="text-center">
 
               <div
                 className="
                   text-white
                   font-bold
-                  text-xl
+                  text-2xl
                   tracking-tight
                 "
               >
@@ -554,8 +443,9 @@ export default function Login() {
 
               <div
                 className="
-                  text-slate-400
+                  text-slate-300
                   text-sm
+                  mt-1
                 "
               >
                 Crowd Management System
@@ -565,238 +455,36 @@ export default function Login() {
 
           </div>
 
-
-          {/* ------------------------------------------------ */}
-          {/* HEADING */}
-          {/* ------------------------------------------------ */}
-
-          <h2
-            className="
-              text-4xl
-              font-bold
-              text-white
-              leading-tight
-              mb-4
-            "
-          >
-
-            Smarter Metro
-
-            <br />
-
-            <span
-              className="
-                text-transparent
-                bg-clip-text
-                bg-gradient-to-r
-                from-cyan-400
-                to-blue-500
-              "
-            >
-              Crowd Control
-            </span>
-
-          </h2>
-
-
-          <p
-            className="
-              text-slate-400
-              text-base
-              mb-10
-              leading-relaxed
-              max-w-sm
-            "
-          >
-            Monitor passenger density, optimize train
-            schedules, and respond to incidents — all
-            from a single unified dashboard.
-          </p>
-
-
-          {/* ------------------------------------------------ */}
-          {/* FEATURES */}
-          {/* ------------------------------------------------ */}
-
-          {features.map((feature) => (
-
-            <div
-              key={feature.title}
-              className="
-                flex
-                items-start
-                gap-4
-                mb-5
-              "
-            >
-
-              <div
-                className="
-                  w-10
-                  h-10
-                  rounded-xl
-                  bg-slate-800
-                  border
-                  border-slate-700
-                  flex
-                  items-center
-                  justify-center
-                  text-lg
-                  flex-shrink-0
-                "
-              >
-                {feature.icon}
-              </div>
-
-
-              <div>
-
-                <div
-                  className="
-                    text-white
-                    font-semibold
-                    text-sm
-                  "
-                >
-                  {feature.title}
-                </div>
-
-                <div
-                  className="
-                    text-slate-400
-                    text-xs
-                    mt-0.5
-                  "
-                >
-                  {feature.desc}
-                </div>
-
-              </div>
-
-            </div>
-
-          ))}
-
-
-          {/* ------------------------------------------------ */}
-          {/* STATUS */}
-          {/* ------------------------------------------------ */}
+          {/* ====================================================
+              LOGIN CARD
+          ==================================================== */}
 
           <div
             className="
-              mt-12
-              flex
-              items-center
-              gap-2
-              text-xs
-              text-slate-500
+              rounded-3xl
+              bg-slate-950/85
+              backdrop-blur-xl
+              border
+              border-white/15
+              shadow-2xl
+              shadow-black/40
+              p-7
+              sm:p-8
             "
           >
 
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-green-500
-                animate-pulse
-              "
-            />
+            {/* ==================================================
+                HEADER
+            ================================================== */}
 
-            System operational — All 6 stations online
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================== */}
-      {/* RIGHT LOGIN PANEL */}
-      {/* ================================================== */}
-
-      <div
-        className="
-          flex-1
-          flex
-          items-center
-          justify-center
-          p-8
-          bg-slate-950
-        "
-      >
-
-        <div
-          className="
-            w-full
-            max-w-md
-          "
-        >
-
-          {/* ------------------------------------------------ */}
-          {/* MOBILE LOGO */}
-          {/* ------------------------------------------------ */}
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              mb-8
-              lg:hidden
-            "
-          >
-
-            <div
-              className="
-                w-9
-                h-9
-                rounded-xl
-                bg-gradient-to-br
-                from-cyan-500
-                to-blue-600
-                flex
-                items-center
-                justify-center
-              "
-            >
-
-              <Train
-                size={18}
-                className="text-white"
-              />
-
-            </div>
-
-            <span
-              className="
-                text-white
-                font-bold
-              "
-            >
-              Metro CMS
-            </span>
-
-          </div>
-
-
-          {/* ------------------------------------------------ */}
-          {/* LOGIN CARD */}
-          {/* ------------------------------------------------ */}
-
-          <div className="glass-card p-8">
-
-            {/* Header */}
-
-            <div className="mb-8">
+            <div className="text-center mb-7">
 
               <h1
                 className="
                   text-2xl
                   font-bold
                   text-white
-                  mb-1
+                  mb-2
                 "
               >
                 Welcome back
@@ -813,17 +501,15 @@ export default function Login() {
 
             </div>
 
-
-            {/* ------------------------------------------------ */}
-            {/* ERROR */}
-            {/* ------------------------------------------------ */}
+            {/* ==================================================
+                ERROR
+            ================================================== */}
 
             {error && (
-
               <div
                 className="
                   flex
-                  items-center
+                  items-start
                   gap-2
                   bg-red-500/10
                   border
@@ -838,20 +524,23 @@ export default function Login() {
               >
 
                 <AlertCircle
-                  size={14}
-                  className="flex-shrink-0"
+                  size={16}
+                  className="
+                    flex-shrink-0
+                    mt-0.5
+                  "
                 />
 
-                <span>{error}</span>
+                <span>
+                  {error}
+                </span>
 
               </div>
-
             )}
 
-
-            {/* ================================================= */}
-            {/* ADMIN LOGIN */}
-            {/* ================================================= */}
+            {/* ==================================================
+                ADMIN LOGIN
+            ================================================== */}
 
             <div>
 
@@ -859,6 +548,7 @@ export default function Login() {
                 className="
                   flex
                   items-center
+                  justify-center
                   gap-2
                   mb-4
                 "
@@ -881,7 +571,6 @@ export default function Login() {
 
               </div>
 
-
               <form
                 id="login-form"
                 onSubmit={handleSubmit}
@@ -893,6 +582,7 @@ export default function Login() {
                 <div>
 
                   <label
+                    htmlFor="username"
                     className="
                       block
                       text-slate-300
@@ -913,12 +603,13 @@ export default function Login() {
                     onChange={(e) =>
                       setForm((current) => ({
                         ...current,
-                        username: e.target.value,
+                        username:
+                          e.target.value,
                       }))
                     }
                     className="
                       w-full
-                      bg-slate-800
+                      bg-slate-800/80
                       border
                       border-slate-600
                       rounded-xl
@@ -938,12 +629,12 @@ export default function Login() {
 
                 </div>
 
-
                 {/* Password */}
 
                 <div>
 
                   <label
+                    htmlFor="password"
                     className="
                       block
                       text-slate-300
@@ -954,7 +645,6 @@ export default function Login() {
                   >
                     Password
                   </label>
-
 
                   <div className="relative">
 
@@ -971,17 +661,19 @@ export default function Login() {
                       onChange={(e) =>
                         setForm((current) => ({
                           ...current,
-                          password: e.target.value,
+                          password:
+                            e.target.value,
                         }))
                       }
                       className="
                         w-full
-                        bg-slate-800
+                        bg-slate-800/80
                         border
                         border-slate-600
                         rounded-xl
                         px-4
                         py-3
+                        pr-10
                         text-white
                         text-sm
                         placeholder-slate-500
@@ -990,17 +682,17 @@ export default function Login() {
                         focus:ring-1
                         focus:ring-cyan-500/50
                         transition-colors
-                        pr-10
                       "
                       placeholder="••••••••"
                     />
-
 
                     <button
                       type="button"
                       id="toggle-password"
                       onClick={() =>
-                        setShowPwd((value) => !value)
+                        setShowPwd(
+                          (value) => !value
+                        )
                       }
                       className="
                         absolute
@@ -1014,13 +706,9 @@ export default function Login() {
                     >
 
                       {showPwd ? (
-
                         <EyeOff size={16} />
-
                       ) : (
-
                         <Eye size={16} />
-
                       )}
 
                     </button>
@@ -1029,8 +717,7 @@ export default function Login() {
 
                 </div>
 
-
-                {/* Admin button */}
+                {/* Admin Button */}
 
                 <button
                   id="login-btn"
@@ -1040,21 +727,30 @@ export default function Login() {
                     googleLoading
                   }
                   className="
-                    btn-primary
                     w-full
                     flex
                     items-center
                     justify-center
                     gap-2
                     mt-2
+                    rounded-xl
+                    bg-gradient-to-r
+                    from-cyan-500
+                    to-blue-600
+                    hover:from-cyan-400
+                    hover:to-blue-500
+                    text-white
+                    font-semibold
+                    py-3
+                    transition-all
+                    shadow-lg
+                    shadow-cyan-500/20
                     disabled:opacity-60
                     disabled:cursor-not-allowed
-                    disabled:transform-none
                   "
                 >
 
                   {loading ? (
-
                     <>
                       <Loader2
                         size={16}
@@ -1062,18 +758,13 @@ export default function Login() {
                       />
 
                       Signing in...
-
                     </>
-
                   ) : (
-
                     <>
                       <Zap size={16} />
 
                       Sign in as Admin
-
                     </>
-
                   )}
 
                 </button>
@@ -1082,10 +773,9 @@ export default function Login() {
 
             </div>
 
-
-            {/* ================================================= */}
-            {/* DIVIDER */}
-            {/* ================================================= */}
+            {/* ==================================================
+                DIVIDER
+            ================================================== */}
 
             <div
               className="
@@ -1125,10 +815,9 @@ export default function Login() {
 
             </div>
 
-
-            {/* ================================================= */}
-            {/* GOOGLE USER LOGIN */}
-            {/* ================================================= */}
+            {/* ==================================================
+                GOOGLE USER LOGIN
+            ================================================== */}
 
             <div>
 
@@ -1136,8 +825,9 @@ export default function Login() {
                 className="
                   flex
                   items-center
+                  justify-center
                   gap-2
-                  mb-4
+                  mb-3
                 "
               >
 
@@ -1158,19 +848,19 @@ export default function Login() {
 
               </div>
 
-
               <p
                 className="
                   text-slate-400
                   text-xs
+                  text-center
                   mb-4
                 "
               >
-                Sign in securely with your Google account.
+                Sign in securely with your Google
+                account.
               </p>
 
-
-              {/* Google button */}
+              {/* Google Button */}
 
               <div
                 className="
@@ -1187,9 +877,7 @@ export default function Login() {
 
               </div>
 
-
               {googleLoading && (
-
                 <div
                   className="
                     flex
@@ -1210,21 +898,19 @@ export default function Login() {
                   Signing in with Google...
 
                 </div>
-
               )}
 
             </div>
 
-
-            {/* ================================================= */}
-            {/* DEMO ADMIN */}
-            {/* ================================================= */}
+            {/* ==================================================
+                DEMO ADMIN
+            ================================================== */}
 
             <div
               className="
                 mt-7
                 p-4
-                bg-slate-800/50
+                bg-slate-800/60
                 rounded-xl
                 border
                 border-slate-700
@@ -1239,15 +925,14 @@ export default function Login() {
                   mb-2.5
                 "
               >
-                Demo Admin Credentials — click to fill:
+                Demo Admin Credentials — click to
+                fill:
               </p>
-
 
               <div className="space-y-2">
 
                 {demoCredentials.map(
                   (credential) => (
-
                     <button
                       key={credential.username}
                       id={`demo-${credential.role.toLowerCase()}`}
@@ -1294,7 +979,6 @@ export default function Login() {
                       </span>
 
                     </button>
-
                   )
                 )}
 
@@ -1302,10 +986,9 @@ export default function Login() {
 
             </div>
 
-
-            {/* ------------------------------------------------ */}
-            {/* SECURITY MESSAGE */}
-            {/* ------------------------------------------------ */}
+            {/* ==================================================
+                SECURITY MESSAGE
+            ================================================== */}
 
             <div
               className="
@@ -1315,9 +998,11 @@ export default function Login() {
                 text-xs
               "
             >
-              Admin access uses secure JWT authentication.
+              Admin access uses secure JWT
+              authentication.
               <br />
-              User access is authenticated through Google.
+              User access is authenticated through
+              Google.
             </div>
 
           </div>
@@ -1327,7 +1012,5 @@ export default function Login() {
       </div>
 
     </div>
-
   );
-
 }

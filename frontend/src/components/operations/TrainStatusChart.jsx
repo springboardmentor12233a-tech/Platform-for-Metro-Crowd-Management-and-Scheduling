@@ -1,93 +1,93 @@
-import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    Tooltip,
-} from "recharts";
+    import {
+        PieChart,
+        Pie,
+        Cell,
+        ResponsiveContainer,
+        Tooltip,
+    } from "recharts";
 
-const COLORS = [
-    "#22c55e",
-    "#facc15",
-    "#ef4444",
-];
-
-export default function TrainStatusChart({ dashboard }) {
-
-    const data = [
-
-        {
-            name: "Running",
-            value: dashboard.running_trains,
-        },
-
-        {
-            name: "Idle",
-            value: dashboard.idle_trains,
-        },
-
-        {
-            name: "Maintenance",
-            value: dashboard.maintenance_trains,
-        },
-
+    const COLORS = [
+        "#22c55e",
+        "#facc15",
+        "#ef4444",
     ];
 
-    return (
+    export default function TrainStatusChart({ dashboard }) {
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6">
+        const data = [
 
-            <h2 className="text-xl font-bold text-white mb-5">
+            {
+                name: "Running",
+                value: dashboard.running_trains,
+            },
 
-                🚆 Train Status
+            {
+                name: "Idle",
+                value: dashboard.idle_trains,
+            },
 
-            </h2>
+            {
+                name: "Maintenance",
+                value: dashboard.maintenance_trains,
+            },
 
-            <ResponsiveContainer
-                width="100%"
-                height={280}
-            >
+        ];
 
-                <PieChart>
+        return (
 
-                    <Pie
+            <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6">
 
-                        data={data}
+                <h2 className="text-xl font-bold text-white mb-5">
 
-                        dataKey="value"
+                    🚆 Train Status
 
-                        outerRadius={95}
+                </h2>
 
-                        label
+                <ResponsiveContainer
+                    width="100%"
+                    height={280}
+                >
 
-                    >
+                    <PieChart>
 
-                        {
+                        <Pie
 
-                            data.map((entry, index) => (
+                            data={data}
 
-                                <Cell
+                            dataKey="value"
 
-                                    key={index}
+                            outerRadius={95}
 
-                                    fill={COLORS[index]}
+                            label
 
-                                />
+                        >
 
-                            ))
+                            {
 
-                        }
+                                data.map((entry, index) => (
 
-                    </Pie>
+                                    <Cell
 
-                    <Tooltip />
+                                        key={index}
 
-                </PieChart>
+                                        fill={COLORS[index]}
 
-            </ResponsiveContainer>
+                                    />
 
-        </div>
+                                ))
 
-    );
+                            }
 
-}
+                        </Pie>
+
+                        <Tooltip />
+
+                    </PieChart>
+
+                </ResponsiveContainer>
+
+            </div>
+
+        );
+
+    }
