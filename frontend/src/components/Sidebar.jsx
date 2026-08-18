@@ -5,11 +5,14 @@ import {
   CalendarDays,
   BrainCircuit,
   BarChart3,
+  Ticket,
   Settings,
   LogOut,
 } from "lucide-react";
 
-function Sidebar({ activePage, setActivePage }) {
+import { NavLink } from "react-router-dom";
+
+function Sidebar({ onLogout }) {
   return (
     <div
       style={{
@@ -21,6 +24,8 @@ function Sidebar({ activePage, setActivePage }) {
         left: 0,
         top: 0,
         boxShadow: "5px 0 20px rgba(0,0,0,0.25)",
+        zIndex: 1000,
+        overflowY: "auto",
       }}
     >
       {/* Logo */}
@@ -55,98 +60,106 @@ function Sidebar({ activePage, setActivePage }) {
       {/* Menu */}
       <div style={{ marginTop: "20px" }}>
         <Menu
-  icon={<LayoutDashboard size={20} />}
-  text="Dashboard"
-  active={activePage === "dashboard"}
-  onClick={() => setActivePage("dashboard")}
-/>
-<Menu
-  icon={<MapPinned size={20} />}
-  text="Stations"
-  active={activePage === "stations"}
-  onClick={() => setActivePage("stations")}
-/>
-
-       <Menu
-  icon={<TrainFront size={20} />}
-  text="Trains"
-  active={activePage === "trains"}
-  onClick={() => setActivePage("trains")}
-/>
-
-        <Menu
-  icon={<CalendarDays size={20} />}
-  text="Schedules"
-  active={activePage === "schedules"}
-  onClick={() => setActivePage("schedules")}
-/>
-
-<Menu
-  icon={<BrainCircuit size={20} />}
-  text="AI Prediction"
-  active={activePage === "prediction"}
-  onClick={() => setActivePage("prediction")}
-/>
-        <Menu
-  icon={<BarChart3 size={20} />}
-  text="Analytics"
-  active={activePage === "analytics"}
-  onClick={() => setActivePage("analytics")}
-/>
-        <Menu
-  icon={<Settings size={20} />}
-  text="Settings"
-  active={activePage === "settings"}
-  onClick={() => setActivePage("settings")}
-/>
-
-        <Menu
-          icon={<LogOut size={20} />}
-          text="Logout"
-          active={false}
-          onClick={() => {
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-            window.location.reload();
-          }}
+          to="/dashboard"
+          icon={<LayoutDashboard size={20} />}
+          text="Dashboard"
         />
+
+        <Menu
+          to="/stations"
+          icon={<MapPinned size={20} />}
+          text="Stations"
+        />
+
+        <Menu
+          to="/trains"
+          icon={<TrainFront size={20} />}
+          text="Trains"
+        />
+
+        <Menu
+          to="/schedules"
+          icon={<CalendarDays size={20} />}
+          text="Schedules"
+        />
+
+        <Menu
+          to="/ticket-booking"
+          icon={<Ticket size={20} />}
+          text="Ticket Booking"
+        />
+
+        <Menu
+          to="/prediction"
+          icon={<BrainCircuit size={20} />}
+          text="AI Prediction"
+        />
+
+        <Menu
+          to="/analytics"
+          icon={<BarChart3 size={20} />}
+          text="Analytics"
+        />
+
+        <Menu
+          to="/settings"
+          icon={<Settings size={20} />}
+          text="Settings"
+        />
+
+        {/* Logout */}
+        <div
+          onClick={onLogout}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            padding: "15px 25px",
+            cursor: "pointer",
+            transition: "0.3s",
+            marginTop: "10px",
+            borderLeft: "5px solid transparent",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#7f1d1d";
+            e.currentTarget.style.borderLeft = "5px solid #ef4444";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderLeft =
+              "5px solid transparent";
+          }}
+        >
+          <LogOut size={20} />
+          <span>Logout</span>
+        </div>
       </div>
     </div>
   );
 }
 
-function Menu({ icon, text, onClick, active }) {
+function Menu({ to, icon, text }) {
   return (
-    <div
-      onClick={onClick}
-      style={{
+    <NavLink
+      to={to}
+      style={({ isActive }) => ({
         display: "flex",
         alignItems: "center",
         gap: "15px",
         padding: "15px 25px",
         cursor: "pointer",
-        transition: ".3s",
-        background: active ? "#334155" : "transparent",
-        borderLeft: active
+        transition: "0.3s",
+        textDecoration: "none",
+        color: "white",
+        background: isActive ? "#334155" : "transparent",
+        borderLeft: isActive
           ? "5px solid #38bdf8"
           : "5px solid transparent",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "#334155";
-        e.currentTarget.style.borderLeft = "5px solid #38bdf8";
-      }}
-      onMouseLeave={(e) => {
-        if (!active) {
-          e.currentTarget.style.background = "transparent";
-          e.currentTarget.style.borderLeft =
-            "5px solid transparent";
-        }
-      }}
+      })}
     >
       {icon}
       <span>{text}</span>
-    </div>
+    </NavLink>
   );
 }
 

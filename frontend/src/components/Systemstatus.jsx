@@ -21,12 +21,13 @@ function SystemStatus({ data }) {
       </div>
 
       <div className="status-card">
-        <h3>📊 Total Records</h3>
-        <h2>
-          {data.total_stations + data.total_trains + data.passengers_today}
-        </h2>
-      </div>
-
+  <h3>📊 Total Records</h3>
+  <h2>
+    {(data?.total_stations ?? 0) +
+      (data?.total_trains ?? 0) +
+      (data?.passengers_today ?? 0)}
+  </h2>
+</div>
     </div>
   );
 }

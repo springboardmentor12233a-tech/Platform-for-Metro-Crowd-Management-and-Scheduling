@@ -28,11 +28,11 @@ function DownloadCenter() {
         }}
       >
         <button
-          onClick={() => downloadFile("pdf")}
-          style={buttonStyle}
-        >
-          📄 Download PDF
-        </button>
+  onClick={() => window.print()}
+  style={buttonStyle}
+>
+  📄 Download PDF
+</button>
 
         <button
           onClick={() => downloadFile("excel")}

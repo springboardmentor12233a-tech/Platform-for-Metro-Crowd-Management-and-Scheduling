@@ -1,95 +1,141 @@
-body{
-    margin:0;
-    font-family:Segoe UI,sans-serif;
-    background:#f4f7fb;
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
 }
 
-.container{
-    padding:30px;
+body {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  color: #f8fafc;
+  background: #020617;
 }
+
+/* =========================================================
+   MAIN APPLICATION
+========================================================= */
+
+.container {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: transparent !important;
+}
+
+/* =========================================================
+   PAGE BACKGROUND
+========================================================= */
+
+.page-background {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  background: #020617;
+  overflow-x: hidden;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-bg {
+  background: #020617;
+}
+/* =========================================================
+   OTHER PAGE BACKGROUNDS
+========================================================= */
+
+
+/* =========================================================
+   COMMON DARK GLASS CARDS
+========================================================= */
+
+.card,
+.dashboard-card,
+.metro-card,
+.table-container,
+.status-card {
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* =========================================================
+   DASHBOARD HEADER
+========================================================= */
+
 .header {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  color: white;
+  background: rgba(15, 23, 42, 0.90);
+  color: #f8fafc;
+
   padding: 30px;
   border-radius: 15px;
+
   text-align: center;
   margin-bottom: 30px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+
+  border: 1px solid rgba(56, 189, 248, 0.18);
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 .header h1 {
   margin: 0;
   font-size: 34px;
+  color: #38bdf8;
 }
 
 .header p {
   margin-top: 10px;
   font-size: 18px;
-  opacity: 0.9;
+  color: #cbd5e1;
 }
 
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
+/* =========================================================
+   NORMAL CARDS
+========================================================= */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
-.card{
-  background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 5px 12px rgba(0,0,0,0.15);
-  transition:0.3s;
+.card {
+  padding: 25px;
+  transition: 0.3s;
 }
 
-.card:hover{
-  transform:translateY(-6px);
+.card:hover {
+  transform: translateY(-6px);
 }
 
-.card h2{
-  margin-bottom:10px;
+.card h2 {
+  margin-bottom: 10px;
+  color: #f8fafc;
 }
 
-.card p{
-  font-size:28px;
-  font-weight:bold;
-  color:#1565c0;
+.card p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #38bdf8;
 }
 
-.card:nth-child(1){
-  border-top:6px solid #1976d2;
-}
-
-.card:nth-child(2){
-  border-top:6px solid #43a047;
-}
-
-.card:nth-child(3){
-  border-top:6px solid #fb8c00;
-}
-
-.card:nth-child(4){
-  border-top:6px solid #8e24aa;
-}
-
-footer{
-  margin-top:60px;
-  color:#666;
-}
-/* ==========================
-   Charts
-========================== */
-
-.charts-container{
-    display:flex;
-    justify-content:center;
-    gap:25px;
-    flex-wrap:wrap;
-    margin:35px 0;
-}
-/* ==========================
-   Dashboard Cards
-========================== */
+/* =========================================================
+   DASHBOARD KPI CARDS
+========================================================= */
 
 .dashboard-cards {
   display: flex;
@@ -101,99 +147,198 @@ footer{
 
 .dashboard-card {
   width: 220px;
-  background: white;
-  border-radius: 15px;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
   transition: 0.3s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(56, 189, 248, 0.08);
 }
 
 .dashboard-card h1 {
   font-size: 34px;
-  color: #2563eb;
+  color: #38bdf8;
 }
 
 .dashboard-card h2 {
   font-size: 34px;
+  color: #f8fafc;
 }
 
 .dashboard-card h3 {
-  color: #555;
-}
-.table-container{
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    margin-top:40px;
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
+  color: #cbd5e1;
 }
 
-.metro-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
+/* =========================================================
+   CHARTS
+========================================================= */
+
+.charts-container {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin: 35px 0;
 }
 
-.metro-table th{
-    background:#2563eb;
-    color:white;
-    padding:15px;
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+  padding: 25px;
+  margin-top: 40px;
 }
 
-.metro-table td{
-    padding:14px;
-    text-align:center;
+.table-container h2 {
+  color: #38bdf8;
 }
 
-.metro-table tr:nth-child(even){
-    background:#f4f8ff;
+.metro-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: #f8fafc;
 }
 
-.metro-table tr:hover{
-    background:#dbeafe;
-    transition:.2s;
+.metro-table th {
+  background: rgba(14, 116, 144, 0.8);
+  color: white;
+  padding: 15px;
 }
 
-.search-box{
-    width:350px;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #ddd;
-    font-size:16px;
-    margin:20px 0;
+.metro-table td {
+  padding: 14px;
+  text-align: center;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-.table-container h2{
-    color:#1e3a8a;
-}
-.status-container{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    flex-wrap:wrap;
-    margin:30px 0;
+.metro-table tr:nth-child(even) {
+  background: rgba(30, 41, 59, 0.55);
 }
 
-.status-card{
-    width:220px;
-    background:white;
-    padding:20px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 5px 15px rgba(0,0,0,.1);
-    transition:.3s;
+.metro-table tr:hover {
+  background: rgba(56, 189, 248, 0.12);
 }
 
-.status-card:hover{
-    transform:translateY(-5px);
+/* =========================================================
+   SEARCH BOX
+========================================================= */
+
+.search-box {
+  width: 350px;
+  padding: 12px;
+
+  border-radius: 8px;
+  border: 1px solid #475569;
+
+  background: rgba(15, 23, 42, 0.85);
+  color: white;
+
+  font-size: 16px;
+  margin: 20px 0;
+
+  outline: none;
 }
 
-.status-card h2{
-    color:#2563eb;
+.search-box::placeholder {
+  color: #94a3b8;
+}
+
+.search-box:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+}
+
+/* =========================================================
+   STATUS CARDS
+========================================================= */
+
+.status-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 30px 0;
+}
+
+.status-card {
+  width: 220px;
+  padding: 20px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.status-card:hover {
+  transform: translateY(-5px);
+}
+
+.status-card h2 {
+  color: #38bdf8;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  margin-top: 60px;
+  padding-bottom: 20px;
+  color: #94a3b8;
+}
+
+footer h3 {
+  color: #cbd5e1;
+}
+
+footer hr {
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .container {
+    margin-left: 0 !important;
+    padding: 15px !important;
+  }
+
+  .search-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dashboard-card {
+    width: 100%;
+  }
 }

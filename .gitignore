@@ -14,3 +14,5 @@ backend/node_modules/
 
 backend/ml/models/
 *.pkl
+
+.env
