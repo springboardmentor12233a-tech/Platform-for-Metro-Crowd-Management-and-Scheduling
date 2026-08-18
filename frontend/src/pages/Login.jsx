@@ -15,34 +15,55 @@ function Login() {
 
     setError("");
 
-    // Demo credentials
-    const DEMO_NAME = "admin";
-    const DEMO_PASSWORD = "metroflow123";
+    const enteredName = name.trim().toLowerCase();
 
-    if (!name.trim() || !password) {
+    // Demo accounts
+    const accounts = {
+      admin: {
+        password: "metroflow123",
+        role: "admin",
+      },
+
+      user: {
+        password: "metroflow123",
+        role: "user",
+      },
+    };
+
+    // Empty field validation
+    if (!enteredName || !password) {
       setError("Please enter both name and password.");
       return;
     }
 
-    if (
-      name.trim().toLowerCase() !== DEMO_NAME ||
-      password !== DEMO_PASSWORD
-    ) {
+    // Find account
+    const account = accounts[enteredName];
+
+    // Credential validation
+    if (!account || account.password !== password) {
       setError("Invalid name or password.");
       return;
     }
 
-    // Store login state for the current browser
+    // Store authentication state
     localStorage.setItem(
       "metroflowAuthenticated",
       "true"
     );
 
+    // Store username
     localStorage.setItem(
       "metroflowUser",
-      name.trim()
+      enteredName
     );
 
+    // Store user role
+    localStorage.setItem(
+      "metroflowRole",
+      account.role
+    );
+
+    // Navigate to dashboard
     navigate("/dashboard", {
       replace: true,
     });
@@ -51,130 +72,262 @@ function Login() {
   return (
     <div className="login-page">
 
-      <div className="login-card">
+      <div className="login-layout">
 
-        <div className="login-logo">
-          🚆
-        </div>
+        {/* =================================================
+            LEFT BRANDING
+        ================================================= */}
 
-        <h1>MetroFlow AI</h1>
+        <div className="login-brand-panel">
 
-        <p className="login-subtitle">
-          AI-Powered Metro Crowd Management
-        </p>
-
-        <div className="login-divider" />
-
-        <h2>Welcome Back</h2>
-
-        <p className="login-description">
-          Sign in to access the MetroFlow AI
-          dashboard.
-        </p>
-
-        <form onSubmit={handleLogin}>
-
-          {/* NAME */}
-
-          <div className="login-field">
-
-            <label htmlFor="name">
-              Name
-            </label>
-
-            <input
-              id="name"
-              type="text"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(event) =>
-                setName(event.target.value)
-              }
-              autoComplete="username"
-            />
-
+          <div className="brand-badge">
+            METROFLOW AI
           </div>
 
-          {/* PASSWORD */}
+          <div className="brand-icon">
+            🚆
+          </div>
 
-          <div className="login-field">
+          <h1>
+            Smarter Metro.
+            <br />
+            <span>Better Decisions.</span>
+          </h1>
 
-            <label htmlFor="password">
-              Password
-            </label>
+          <p className="brand-description">
+            AI-powered passenger demand forecasting,
+            crowd management and intelligent train
+            scheduling for modern metro operations.
+          </p>
 
-            <div className="password-wrapper">
+        </div>
 
-              <input
-                id="password"
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                placeholder="Enter your password"
-                value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
-                autoComplete="current-password"
-              />
 
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() =>
-                  setShowPassword(
-                    !showPassword
-                  )
-                }
-                aria-label={
-                  showPassword
-                    ? "Hide password"
-                    : "Show password"
-                }
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
+        {/* =================================================
+            LOGIN CARD
+        ================================================= */}
 
+        <div className="login-card">
+
+          {/* Header */}
+
+          <div className="login-card-header">
+
+            <div className="login-logo">
+              🚇
+            </div>
+
+            <div>
+              <h2>Welcome Back</h2>
+
+              <p>
+                Sign in to access MetroFlow AI
+              </p>
             </div>
 
           </div>
 
-          {/* ERROR */}
 
-          {error && (
-            <div className="login-error">
-              {error}
+          <div className="login-divider" />
+
+
+          {/* =================================================
+              LOGIN FORM
+          ================================================= */}
+
+          <form onSubmit={handleLogin}>
+
+            {/* NAME */}
+
+            <div className="login-field">
+
+              <label htmlFor="name">
+                Name
+              </label>
+
+              <div className="name-input-container">
+
+                <span
+                  className="name-icon"
+                  aria-hidden="true"
+                >
+                  👤
+                </span>
+
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(event) => {
+                    setName(event.target.value);
+                    setError("");
+                  }}
+                  autoComplete="username"
+                />
+
+              </div>
+
             </div>
-          )}
 
-          {/* LOGIN */}
 
-          <button
-            type="submit"
-            className="login-button"
-          >
-            Sign In
-          </button>
+            {/* PASSWORD */}
 
-        </form>
+            <div className="login-field">
 
-        <div className="login-demo">
-          <strong>Demo Access</strong>
+              <label htmlFor="password">
+                Password
+              </label>
 
-          <span>
-            Name: admin
-          </span>
+              <div className="password-input-container">
 
-          <span>
-            Password: metroflow123
-          </span>
+                <span
+                  className="password-icon"
+                  aria-hidden="true"
+                >
+                  🔒
+                </span>
+
+                <input
+                  id="password"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                    setError("");
+                  }}
+                  autoComplete="current-password"
+                />
+
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() =>
+                    setShowPassword(
+                      (previous) => !previous
+                    )
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+
+              </div>
+
+            </div>
+
+
+            {/* ERROR */}
+
+            {error && (
+              <div className="login-error">
+                {error}
+              </div>
+            )}
+
+
+            {/* LOGIN BUTTON */}
+
+            <button
+              type="submit"
+              className="login-button"
+            >
+              Sign In to MetroFlow
+              <span>→</span>
+            </button>
+
+          </form>
+
+
+          {/* =================================================
+              DEMO ACCOUNTS
+          ================================================= */}
+
+          <div className="login-demo">
+
+            <div className="demo-title">
+
+              <span className="demo-dot" />
+
+              Demo Accounts
+
+            </div>
+
+
+            {/* ADMIN */}
+
+            <div className="demo-account">
+
+              <div>
+
+                <strong>
+                  Admin
+                </strong>
+
+                <span>
+                  Full operational access
+                </span>
+
+              </div>
+
+              <code>
+                admin
+              </code>
+
+            </div>
+
+
+            {/* USER */}
+
+            <div className="demo-account">
+
+              <div>
+
+                <strong>
+                  User
+                </strong>
+
+                <span>
+                  Read-only access
+                </span>
+
+              </div>
+
+              <code>
+                user
+              </code>
+
+            </div>
+
+
+            {/* PASSWORD */}
+
+            <p className="demo-password">
+              Password:{" "}
+              <code>
+                metroflow123
+              </code>
+            </p>
+
+          </div>
+
+
+          {/* FOOTER */}
+
+          <p className="login-footer">
+            MetroFlow AI • Smart Metro Operations
+          </p>
+
         </div>
-
-        <p className="login-footer">
-          MetroFlow AI • Smart Metro Operations
-        </p>
 
       </div>
 
