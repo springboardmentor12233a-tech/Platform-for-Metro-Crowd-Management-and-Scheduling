@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useHour } from "../components/HourContext";
 import { Activity, AlertCircle } from "lucide-react";
 
 export default function LiveMonitoring() {
 
+    const { selectedHour } = useHour();
     const [stations, setStations] = useState<any[]>([]);
     const [lastUpdated, setLastUpdated] = useState("");
     const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ export default function LiveMonitoring() {
         try {
 
             const response = await fetch(
-                "http://localhost:8000/api/crowd/all-stations"
+                `http://localhost:8000/api/crowd/all-stations?hour=${selectedHour}`
             );
 
             const result = await response.json();
@@ -25,9 +27,9 @@ export default function LiveMonitoring() {
             setStations(result.stations || []);
 
             const alertResponse = await fetch(
-                "http://localhost:8000/api/alerts/active"
+                `http://localhost:8000/api/alerts/active?hour=${selectedHour}`
             );
-
+            
             const alertData = await alertResponse.json();
 
             setAlerts(alertData.alerts || []);
@@ -49,20 +51,17 @@ export default function LiveMonitoring() {
         }
     };
 
-
     useEffect(() => {
 
         fetchLiveData();
-
 
         const interval = setInterval(() => {
             fetchLiveData();
         }, 10000);
 
-
         return () => clearInterval(interval);
 
-    }, []);
+    }, [selectedHour]);
 
 
 

@@ -17,6 +17,7 @@ import {
 export default function ForecastPage() {
   const [forecast, setForecast] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [forecastDate, setForecastDate] = useState("");
 
   useEffect(() => {
     loadForecast();
@@ -26,12 +27,13 @@ export default function ForecastPage() {
     const result = await apiService.getForecast();
 
     console.log(result);
-    console.log(result.forecast[0]);
+    console.log(result.forecast?.[0]);
 
     if (Array.isArray(result)) {
       setForecast(result);
     } else if (result.forecast) {
       setForecast(result.forecast);
+      setForecastDate(result.date || "");
     }
 
     setLoading(false);
@@ -53,13 +55,13 @@ export default function ForecastPage() {
       </h1>
 
       <p className="text-slate-400 mt-2 mb-8">
-        AI Passenger Demand Forecast (Next 24 Hours)
+        AI Passenger Demand Forecast • {forecastDate}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
         <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-          <p className="text-slate-400">Total Forecast</p>
+          <p className="text-slate-400">24-Hour Demand</p>
           <h2 className="text-3xl font-bold mt-2">
             {forecast.reduce(
               (sum, item) => sum + item.predicted_passengers,
@@ -135,7 +137,7 @@ export default function ForecastPage() {
               />
 
               {forecast
-                .filter((item: any) => item.predicted_passengers > 900)
+                .filter((item: any) => item.is_peak)
                 .map((item: any) => (
                   <ReferenceDot
                     key={item.hour}
@@ -164,7 +166,7 @@ export default function ForecastPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
 
           {forecast
-            .filter((item: any) => item.predicted_passengers > 900)
+            .filter((item: any) => item.is_peak)
             .map((item: any) => (
 
               <div
@@ -240,6 +242,7 @@ export default function ForecastPage() {
           <tr className="border-b border-slate-700">
             <th className="py-3">Hour</th>
             <th>Predicted Passengers</th>
+            <th>Confidence</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -262,19 +265,19 @@ export default function ForecastPage() {
               </td>
 
               <td>
+                {(item.confidence * 100).toFixed(1)}%
+              </td>
+
+              <td>
                 <span
-                  className={`px-3 py-1 rounded-full ${item.predicted_passengers > 900
-                      ? "bg-red-500/20 text-red-400"
-                      : item.predicted_passengers > 400
-                        ? "bg-yellow-500/20 text-yellow-400"
-                        : "bg-green-500/20 text-green-400"
+                  className={`px-3 py-1 rounded-full ${item.demand_level === "HIGH"
+                    ? "bg-red-500/20 text-red-400"
+                    : item.demand_level === "MEDIUM"
+                      ? "bg-yellow-500/20 text-yellow-400"
+                      : "bg-green-500/20 text-green-400"
                     }`}
                 >
-                  {item.predicted_passengers > 900
-                    ? "High"
-                    : item.predicted_passengers > 400
-                      ? "Medium"
-                      : "Low"}
+                  {item.demand_level}
                 </span>
               </td>
 

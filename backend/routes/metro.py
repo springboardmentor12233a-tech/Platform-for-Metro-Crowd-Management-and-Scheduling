@@ -74,7 +74,32 @@ if not crowd_df.empty:
 
 
 @router.get("/network")
-def get_metro_network():
+def get_metro_network(hour: int | None = None):
+
+    # Select crowd data based on requested hour
+    selected_crowd = crowd_df
+
+    if hour is not None and not crowd_df.empty:
+        selected_crowd = crowd_df[
+            crowd_df["timestamp"].dt.hour == hour
+        ]
+
+    # Get the latest record for each station
+    selected_latest_crowd = {}
+
+    if not selected_crowd.empty:
+        latest_rows = (
+            selected_crowd
+            .sort_values("timestamp")
+            .groupby("station_id")
+            .tail(1)
+        )
+
+        selected_latest_crowd = (
+            latest_rows
+            .set_index("station_id")
+            .to_dict("index")
+        )
 
     total_stations = len(stations_df)
     total_lines = len(routes_df)
@@ -127,7 +152,7 @@ def get_metro_network():
 
                     station_id = int(station.iloc[0]["stop_id"])
 
-                    crowd = latest_crowd.get(station_id, {})
+                    crowd = selected_latest_crowd.get(station_id, {})
 
                     stations.append({
                         "station_id": station_id,
@@ -142,11 +167,11 @@ def get_metro_network():
                     
                         "status": (
                             "critical"
-                            if crowd.get("crowd_level", 1) == 4
+                            if crowd.get("crowd_level", 1) >= 4
                             else "crowded"
                             if crowd.get("crowd_level", 1) == 3
                             else "normal"
-                    ),
+                        ),
                 })
 
             print(

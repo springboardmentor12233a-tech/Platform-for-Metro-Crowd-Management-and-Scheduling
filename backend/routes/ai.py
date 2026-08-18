@@ -1,4 +1,6 @@
 from fastapi import APIRouter
+from pydantic import BaseModel
+
 from backend.services.gemini_service import (
     get_ai_recommendation,
     get_ai_chat_response
@@ -6,8 +8,10 @@ from backend.services.gemini_service import (
 
 router = APIRouter(prefix="/api/ai", tags=["AI"])
 
-# Endpoint 1: Get AI recommendations for a station
-from pydantic import BaseModel
+
+# ============================================================
+# AI RECOMMENDATION
+# ============================================================
 
 class RecommendationRequest(BaseModel):
     station: str
@@ -17,6 +21,7 @@ class RecommendationRequest(BaseModel):
 
 @router.post("/recommendation")
 async def recommendation(data: RecommendationRequest):
+
     try:
 
         recommendation = get_ai_recommendation(
@@ -31,22 +36,36 @@ async def recommendation(data: RecommendationRequest):
         }
 
     except Exception as e:
+
         return {
             "status": "error",
             "recommendation": str(e)
         }
 
-# Endpoint 2: Chat with AI assistant
+
+# ============================================================
+# AI CHAT ASSISTANT
+# ============================================================
+
+class ChatRequest(BaseModel):
+    question: str
+
+
 @router.post("/chat")
-async def chat(question: str):
-    """Ask MetroFlow AI Assistant a question"""
+async def chat(data: ChatRequest):
+
     try:
-        response = get_ai_chat_response(question)
+
+        response = get_ai_chat_response(data.question)
+
         return {
             "status": "success",
+            "question": data.question,
             "answer": response
         }
+
     except Exception as e:
+
         return {
             "status": "error",
             "message": str(e)

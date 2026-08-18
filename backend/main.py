@@ -460,48 +460,96 @@ def get_all_station_crowd(hour: int = 23):
 @app.get("/api/forecast/tomorrow")
 def get_forecast():
     """Get 24-hour passenger demand forecast"""
-    
+
     if forecast_df is None:
-        return {"error": "Forecast data not available", "status": "error"}
-    
+        return {
+            "status": "error",
+            "message": "Forecast data not available"
+        }
+
     try:
-        latest_forecasts = forecast_df.tail(1440)
-        
-        hourly = latest_forecasts.groupby('forecast_hour').agg({
-            'predicted_passengers': 'mean',
-            'confidence_score': 'mean'
-        }).reset_index()
-        
+        # Use the latest available forecast date in the dataset
+        forecast_date = forecast_df["forecast_date"].max()
+
+        # Get only that date
+        daily_forecast = forecast_df[
+            forecast_df["forecast_date"] == forecast_date
+        ]
+
+        # Aggregate predictions across all stations and routes
+        hourly = (
+            daily_forecast
+            .groupby("forecast_hour")
+            .agg(
+                predicted_passengers=("predicted_passengers", "mean"),
+                confidence=("confidence_score", "mean")
+            )
+            .reset_index()
+            .sort_values("forecast_hour")
+        )
+
         forecast_list = []
-        peak_hours = []
-        
+
         for _, row in hourly.iterrows():
-            hour = int(row['forecast_hour'])
-            passengers = int(row['predicted_passengers'])
-            confidence = float(row['confidence_score'])
-            
+
+            hour = int(row["forecast_hour"])
+            passengers = round(float(row["predicted_passengers"]))
+            confidence = round(float(row["confidence"]), 3)
+
+            # Determine demand level
+            if passengers > 900:
+                demand_level = "HIGH"
+            elif passengers > 400:
+                demand_level = "MEDIUM"
+            else:
+                demand_level = "LOW"
+
+            # Actual peak-hour definition
+            is_peak = hour in [7, 8, 9, 17, 18, 19]
+
             forecast_list.append({
                 "hour": hour,
                 "predicted_passengers": passengers,
-                "confidence": round(confidence, 3)
+                "confidence": confidence,
+                "demand_level": demand_level,
+                "is_peak": is_peak
             })
-            
-            if hour in [7, 8, 9, 17, 18, 19]:
-                peak_hours.append(hour)
-        
+
+        peak_hours = [
+            item["hour"]
+            for item in forecast_list
+            if item["is_peak"]
+        ]
+
+        highest_demand = max(
+            forecast_list,
+            key=lambda x: x["predicted_passengers"]
+        )
+
         return {
-            "date": str(datetime.now().date()),
-            "forecast": sorted(forecast_list, key=lambda x: x['hour']),
+            "status": "success",
+            "date": str(forecast_date),
+            "forecast": forecast_list,
             "peak_hours": peak_hours,
             "peak_hours_info": "7-9am (morning), 5-7pm (evening)",
             "accuracy": 0.912,
-            "recommendation": "Add more trains during peak hours"
+            "recommendation": (
+                "Increase train frequency during peak hours "
+                "to reduce congestion."
+            ),
+            "highest_demand": {
+                "hour": highest_demand["hour"],
+                "predicted_passengers": highest_demand[
+                    "predicted_passengers"
+                ]
+            }
         }
-    
+
     except Exception as e:
-        return {"error": str(e), "status": "error"}
-
-
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 # ============================================================================
 # ENDPOINT 5: GET ACTIVE ALERTS
 # ============================================================================
@@ -637,8 +685,8 @@ def get_alerts(
 # ============================================================================
 
 @app.get("/api/statistics/top-stations")
-def get_top_stations(limit: int = 262):
-    """Get top busiest stations"""
+def get_top_stations(limit: int = 5, hour: int = 17):
+    """Get top busiest stations for the selected hour"""
 
     if crowd_df is None:
         return {
@@ -647,57 +695,81 @@ def get_top_stations(limit: int = 262):
         }
 
     try:
+        df = crowd_df.copy()
 
-        # Calculate total passengers per station
-        station_totals = (
-            crowd_df.groupby("station_id")["passenger_count"]
-            .sum()
-            .reset_index(name="total_passengers")
+        # Convert timestamp
+        df["timestamp"] = pd.to_datetime(
+            df["timestamp"],
+            dayfirst=True
         )
 
-        # Merge with station master
-        station_totals = station_totals.merge(
-            station_master[["station_id", "station_name"]],
+        # Get latest available date
+        latest_date = df["timestamp"].dt.date.max()
+
+        # Filter for selected hour on latest date
+        selected_data = df[
+            (df["timestamp"].dt.date == latest_date) &
+            (df["timestamp"].dt.hour == hour)
+        ]
+
+        # Keep latest record for each station
+        latest_data = (
+            selected_data
+            .sort_values("timestamp")
+            .drop_duplicates(
+                subset="station_id",
+                keep="last"
+            )
+        )
+
+        # Sort by passenger count
+        top_data = (
+            latest_data
+            .sort_values(
+                "passenger_count",
+                ascending=False
+            )
+            .head(limit)
+        )
+
+        # Merge station names
+        top_data = top_data.merge(
+            station_master[
+                ["station_id", "station_name"]
+            ],
             on="station_id",
             how="left"
         )
 
-        # Sort by busiest stations
-        station_totals = station_totals.sort_values(
-            "total_passengers",
-            ascending=False
-        ).head(limit)
-
         top_stations = []
 
-        for rank, (_, row) in enumerate(station_totals.iterrows(), start=1):
-
+        for rank, (_, row) in enumerate(
+            top_data.iterrows(),
+            start=1
+        ):
             top_stations.append({
                 "rank": rank,
                 "station_id": int(row["station_id"]),
                 "station_name": row["station_name"],
-                "total_passengers": int(row["total_passengers"]),
-                "average_per_hour": int(row["total_passengers"] / 168)
+                "total_passengers": int(row["passenger_count"]),
+                "average_per_hour": int(row["passenger_count"]),
+                "capacity_percentage": float(
+                    row["capacity_percentage"]
+                )
             })
 
-        total_traffic = crowd_df["passenger_count"].sum()
-
-        hub_percentage = (
-            station_totals["total_passengers"].sum()
-            / total_traffic
-            * 100
-        )
-
         return {
-            "period": "7 days",
-            "top_stations": top_stations,
-            "hub_concentration": f"Top {limit} stations handle {hub_percentage:.1f}% of traffic"
+            "status": "success",
+            "date": str(latest_date),
+            "selected_hour": hour,
+            "period": f"{hour:02d}:00",
+            "top_stations": top_stations
         }
 
     except Exception as e:
         return {
-            "error": str(e),
-            "status": "error"
+            "status": "error",
+            "message": str(e)
         }
 
 
@@ -1025,13 +1097,9 @@ def dashboard_kpi(hour: int = 17):
         )
 
         # Active alerts from current crowd
-
-        active_alerts = int(
-            latest_hour_data[
-                latest_hour_data["capacity_percentage"] >= 80
-            ].shape[0]
-        )
-
+        # Every congested station is treated as an active alert
+        active_alerts = congested_stations
+        
         # Other KPIs
         forecast_records = (
             len(forecast_df)
@@ -1114,32 +1182,7 @@ def system_health():
 
         "server_time": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
-    } 
-
-# ============================================================================
-# ENDPOINT 11: AI CHAT ASSISTANT
-# ============================================================================
-
-@app.post("/api/ai/chat")
-def ai_chat(request: ChatRequest):
-    """
-    Ask MetroFlow AI any question.
-    """
-
-    try:
-        answer = get_ai_chat_response(request.question)
-
-        return {
-            "status": "success",
-            "question": request.question,
-            "answer": answer
-        }
-
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e)
-        }  
+    }   
 if __name__ == "__main__":
     import uvicorn
     

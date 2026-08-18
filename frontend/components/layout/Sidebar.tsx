@@ -98,7 +98,7 @@ export default function Sidebar() {
   return (
     <aside
       className={`${open ? "w-72" : "w-20"
-        } transition-all duration-300 bg-slate-900 border-r border-slate-800 h-screen sticky top-0 overflow-hidden`}
+        } fixed left-0 top-0 h-screen transition-all duration-300 bg-slate-900 border-r border-slate-800 overflow-hidden flex flex-col z-50`}
     >
 
       <div className="p-4 border-b border-slate-800">
@@ -124,7 +124,7 @@ export default function Sidebar() {
 
       </div>
 
-      <nav className="p-4 space-y-2">
+      <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
 
         {menu
           .filter((item) => !item.adminOnly || userRole === "admin")
@@ -154,7 +154,7 @@ export default function Sidebar() {
 
       </nav>
 
-      <div className="absolute bottom-0 w-full p-4 border-t border-slate-800">
+      <div className="mt-auto w-full p-4 border-t border-slate-800">
 
         <button
           onClick={handleLogout}

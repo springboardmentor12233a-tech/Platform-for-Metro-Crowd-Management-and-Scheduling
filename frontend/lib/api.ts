@@ -113,13 +113,16 @@ export const apiService = {
   },
 
   // Get top stations
-  async getTopStations(limit = 10) {
+  getTopStations: async (limit = 5, hour = 17) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/statistics/top-stations?limit=${limit}`);
+      const response = await fetch(
+        `${API_BASE_URL}/api/statistics/top-stations?limit=${limit}&hour=${hour}`
+      );
+
       return await response.json();
     } catch (error) {
-      console.error('Failed to get top stations:', error);
-      return { error: 'Failed to fetch' };
+      console.error("Failed to get top stations:", error);
+      return { error: "Failed to fetch" };
     }
   },
 
@@ -134,9 +137,9 @@ export const apiService = {
     }
   },
   // Get KPI data
-  async getKpi() {
+  getKpi: async (hour = 17) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/kpi`);
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/kpi?hour=${hour}`);
       return await response.json();
     } catch (error) {
       console.error('Failed to get KPI data:', error);
@@ -221,21 +224,31 @@ export const apiService = {
   async chatWithAI(question: string) {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/ai/chat?question=${encodeURIComponent(question)}`,
+        `${API_BASE_URL}/api/ai/chat`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question: question,
+          }),
         }
       );
 
-      return await response.json();
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || data.message || `AI request failed: ${response.status}`
+        );
+      }
+
+      return data;
 
     } catch (error) {
-      console.error("AI Chat failed:", error);
-
-      return {
-        status: "error",
-        answer: "Unable to contact AI Assistant."
-      };
+      console.error("AI Chat Error:", error);
+      throw error;
     }
   },
   async simulateDelay(

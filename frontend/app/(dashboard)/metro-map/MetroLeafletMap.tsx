@@ -51,7 +51,7 @@ const interchangeStations = [
   "New Delhi",
   "Azadpur"
 ];
-function FitBounds({ routes, selectedStation }: any) {
+function FitBounds({ routes, selectedStation, network }: any) {
   const map = useMap();
 
   const positions = routes.flatMap((r: any) =>
@@ -68,7 +68,7 @@ function FitBounds({ routes, selectedStation }: any) {
         maxZoom: 13,
       });
     }
-  }, [routes, map, selectedStation]);
+  }, [routes, map, selectedStation, network]);
 
   return null;
 }
@@ -77,15 +77,15 @@ function FlyToStation({ station }: any) {
   const map = useMap();
 
   useEffect(() => {
-    if (station) {
-      map.setView(
-        [station.latitude, station.longitude],
-        13,
-        {
-          animate: false,
-        }
-      );
-    }
+    if (!station) return;
+
+    map.setView(
+      [station.latitude, station.longitude],
+      12,
+      {
+        animate: false,
+      }
+    );
   }, [station, map]);
 
   return null;
@@ -118,15 +118,20 @@ export default function MetroLeafletMap(
     ).values()
   );
   const getMarkerIcon = (station: any) => {
+    let color = "#22c55e"; // Normal
 
-    let color = "#22c55e"; // Green
-
-    if (station.crowd_level === 3) {
-      color = "#facc15"; // Yellow
+    if (
+      station.crowd_level === 3 ||
+      station.status?.toLowerCase() === "crowded"
+    ) {
+      color = "#facc15"; // Crowded
     }
 
-    if (station.crowd_level === 4) {
-      color = "#ef4444"; // Red
+    if (
+      station.crowd_level === 4 ||
+      station.status?.toLowerCase() === "critical"
+    ) {
+      color = "#ef4444"; // Critical
     }
 
     return L.divIcon({
@@ -168,6 +173,7 @@ export default function MetroLeafletMap(
             )
         }
         selectedStation={selectedStation}
+        network={network}
       />
       <FlyToStation station={selectedStation} />
 
@@ -218,9 +224,9 @@ export default function MetroLeafletMap(
                   center={[station.latitude, station.longitude]}
                   radius={15}
                   pathOptions={{
-                    color: "#ef4444",
-                    fillColor: "#ef4444",
-                    fillOpacity: 0.35,
+                    color: "#22d3ee",
+                    fillColor: "#22d3ee",
+                    fillOpacity: 0.25,
                     weight: 3,
                   }}
                 />

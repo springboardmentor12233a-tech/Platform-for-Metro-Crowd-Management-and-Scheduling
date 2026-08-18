@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { useHour } from "../components/HourContext";
 
 import {
   Train,
@@ -26,6 +27,7 @@ const MetroLeafletMap = dynamic(
 
 export default function MetroMapPage() {
 
+  const { selectedHour } = useHour();
   const [network, setNetwork] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState<number | null>(null);
@@ -36,23 +38,35 @@ export default function MetroMapPage() {
   const [aiRecommendation, setAiRecommendation] = useState("");
   const [loadingAI, setLoadingAI] = useState(false);
   useEffect(() => {
-    const fetchNetwork = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/metro/network");
-        const data = await response.json();
+  const fetchNetwork = async () => {
+    try {
+      setLoading(true);
 
-        console.log(data); // Check data in browser console
+      const hour = Number(selectedHour);
 
-        setNetwork(data);
-      } catch (error) {
-        console.error("Error fetching metro network:", error);
-      } finally {
-        setLoading(false);
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/metro/network?hour=${hour}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Network request failed: ${response.status}`);
       }
-    };
 
-    fetchNetwork();
-  }, []);
+      const data = await response.json();
+
+      console.log("Metro Map Hour:", hour);
+      console.log("Metro Network:", data);
+
+      setNetwork(data);
+    } catch (error) {
+      console.error("Error fetching metro network:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchNetwork();
+}, [selectedHour]);
 
   useEffect(() => {
     if (!selectedStation) return;

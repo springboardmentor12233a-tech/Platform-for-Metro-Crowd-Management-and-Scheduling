@@ -42,11 +42,24 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [healthStatus, setHealthStatus] = useState('checking');
   const [currentTime, setCurrentTime] = useState(new Date());
+
+
+  const crowdStations = data?.crowd?.stations || [];
+
   const crowdSummary = {
-    total: 262,
-    normal: 184,
-    overcrowded: 65,
-    critical: 13
+    total: crowdStations.length,
+
+    normal: crowdStations.filter(
+      (s: any) => s.status === "Normal"
+    ).length,
+
+    overcrowded: crowdStations.filter(
+      (s: any) => s.status === "Overcrowded"
+    ).length,
+
+    critical: crowdStations.filter(
+      (s: any) => s.status === "Critical"
+    ).length,
   };
 
   const peakHours = [8, 9, 10, 17, 18, 19];
@@ -86,7 +99,7 @@ export default function Dashboard() {
         setHealthStatus(health.status === 'healthy' ? 'online' : 'offline');
 
         // Fetch KPI data
-        const kpiData = await apiService.getKpi();
+        const kpiData = await apiService.getKpi(selectedHour);
         console.log("KPI:", kpiData);
 
 
@@ -95,7 +108,7 @@ export default function Dashboard() {
 
         const [alerts, topStations, crowd, hourly] = await Promise.all([
           apiService.getAlerts(selectedHour),
-          apiService.getTopStations(5),
+          apiService.getTopStations(5, selectedHour),
           apiService.getAllStations(selectedHour),
           apiService.getHourlyPattern()
         ]);
@@ -105,6 +118,15 @@ export default function Dashboard() {
         console.log("HOURLY TYPE:", typeof hourly);
         console.log("Alerts Response:", alerts);
         console.log("Crowd Response:", crowd);
+        console.log("CROWD SUMMARY DEBUG:", {
+          hour: selectedHour,
+          total: crowd?.total,
+          stations: crowd?.stations?.length,
+          statuses: crowd?.stations?.reduce((acc: any, s: any) => {
+            acc[s.status] = (acc[s.status] || 0) + 1;
+            return acc;
+          }, {})
+        });
 
         // Get prediction
         const sampleData = [150, 145, 160, 155, 170, 165, 180, 175, 172, 168, 155, 160, 165, 170, 175, 180, 185, 190, 195, 1000, 1050, 1020, 980, 950];
@@ -221,12 +243,17 @@ export default function Dashboard() {
           </div>
 
 
-          <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
-            <AlertCircle className="text-red-400 mb-3" />
-            <p className="text-slate-400">Critical Stations</p>
+          <div className="bg-slate-900 border border-blue-500/30 rounded-lg p-6">
+            <Brain className="text-blue-400 mb-3" />
+            <p className="text-slate-400">Next Hour Prediction</p>
             <h2 className="text-3xl font-bold">
-              {data?.kpiData?.kpis?.congested_stations || "N/A"}
+              {data?.prediction?.prediction
+                ? `${data.prediction.prediction.toLocaleString()}`
+                : "N/A"}
             </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Expected passengers
+            </p>
           </div>
 
 
@@ -255,7 +282,7 @@ export default function Dashboard() {
               🟢 Normal
             </p>
             <h2 className="text-4xl font-bold">
-              184
+              {crowdSummary.normal}
             </h2>
           </div>
 
@@ -265,7 +292,7 @@ export default function Dashboard() {
               🟡 Overcrowded
             </p>
             <h2 className="text-4xl font-bold">
-              65
+              {crowdSummary.overcrowded}
             </h2>
           </div>
 
@@ -275,7 +302,7 @@ export default function Dashboard() {
               🔴 Critical
             </p>
             <h2 className="text-4xl font-bold">
-              13
+              {crowdSummary.critical}
             </h2>
           </div>
 
@@ -312,7 +339,7 @@ export default function Dashboard() {
                           </p>
 
                           <p className="text-xs text-slate-500">
-                            {(s.total_passengers / 1000).toFixed(1)}K passengers
+                            {s.total_passengers.toLocaleString()} passengers
                           </p>
                         </div>
                       </div>
@@ -320,7 +347,7 @@ export default function Dashboard() {
                       <div className="w-16 h-1 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-cyan-600 to-blue-600"
-                          style={{ width: "100%" }}
+                          style={{ width: `${Math.min(s.capacity_percentage || 0, 100)}%` }}
                         ></div>
                       </div>
                     </div>
@@ -340,16 +367,20 @@ export default function Dashboard() {
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-green-500/20">
-                <span className="text-sm text-slate-300">API Uptime</span>
-                <span className="font-bold text-green-400">{data?.kpiData?.kpis?.uptime || '99.8%'}</span>
+                <span className="text-sm text-slate-300">API Status</span>
+                <span className="font-bold text-green-400">
+                  {healthStatus.toUpperCase()}
+                </span>
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-blue-500/20">
                 <span className="text-sm text-slate-300">Model Accuracy</span>
-                <span className="font-bold text-blue-400">{data?.prediction?.confidence_percentage || '92.1%'}</span>
+                <span className="font-bold text-blue-400">92.1%</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-cyan-500/20">
-                <span className="text-sm text-slate-300">Response Time</span>
-                <span className="font-bold text-cyan-400">{data?.kpiData?.kpis?.response_time || '45ms'}</span>
+                <span className="text-sm text-slate-300">Model Status</span>
+                <span className="font-bold text-cyan-400">
+                  {data?.kpiData?.kpis?.model_status || "Online"}
+                </span>
               </div>
             </div>
           </div>
@@ -437,9 +468,9 @@ export default function Dashboard() {
 
 
             <div className="bg-slate-800 rounded-lg p-5">
-              <p className="text-slate-400 text-sm">Prediction Accuracy</p>
+              <p className="text-slate-400 text-sm">Prediction Confidence</p>
               <p className="text-cyan-400 text-2xl font-bold">
-                {data?.prediction?.confidence_percentage || "92.1%"}
+                {data?.prediction?.confidence_percentage || "N/A"}
               </p>
             </div>
 
