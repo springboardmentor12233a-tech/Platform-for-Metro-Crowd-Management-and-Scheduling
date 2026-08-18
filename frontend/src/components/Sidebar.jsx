@@ -22,7 +22,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          📊 Dashboard
+           Dashboard
         </NavLink>
 
         <NavLink
@@ -31,7 +31,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🤖 AI Prediction
+           AI Prediction
         </NavLink>
 
         <NavLink
@@ -40,7 +40,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          📡 Monitoring
+           Monitoring
         </NavLink>
 
         <NavLink
@@ -49,7 +49,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🚆 Schedule
+           Schedule
         </NavLink>
 
         <NavLink
@@ -58,7 +58,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🔔 Notifications & Alerts
+           Notifications & Alerts
         </NavLink>
 
         <NavLink
@@ -67,7 +67,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          📈 Reports
+           Reports
         </NavLink>
 
         <NavLink
@@ -76,7 +76,7 @@ const handleLogout = () => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          📜 Prediction History
+           Prediction History
         </NavLink>
 
       </div>
