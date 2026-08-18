@@ -8,41 +8,89 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  { line: "Blue", utilization: 92 },
-  { line: "Yellow", utilization: 88 },
-  { line: "Red", utilization: 75 },
-  { line: "Green", utilization: 64 },
-  { line: "Magenta", utilization: 81 },
-];
+function LineUtilizationChart({
+  schedules = [],
+  loading = false,
+}) {
+  const lineCounts = {};
 
-function LineUtilizationChart() {
+  schedules.forEach((train) => {
+    const line = train.line || "Unknown";
+
+    lineCounts[line] =
+      (lineCounts[line] || 0) + 1;
+  });
+
+  const data = Object.entries(lineCounts)
+    .sort(([a], [b]) =>
+      a.localeCompare(b)
+    )
+    .map(([line, trains]) => ({
+      line,
+      trains,
+    }));
+
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6">
 
-      <h3 className="text-xl font-bold mb-6">
-        Line Utilization
+      <h3 className="text-xl font-bold">
+        Line Schedule Distribution
       </h3>
 
-      <ResponsiveContainer width="100%" height={320}>
-        <BarChart data={data}>
+      <p className="text-sm text-slate-500 mt-1 mb-6">
+        Scheduled trains by metro line
+      </p>
 
-          <CartesianGrid strokeDasharray="3 3" />
+      {loading ? (
 
-          <XAxis dataKey="line" />
+        <div className="h-[320px] flex items-center justify-center text-slate-500">
+          Loading line data...
+        </div>
 
-          <YAxis />
+      ) : data.length === 0 ? (
 
-          <Tooltip />
+        <div className="h-[320px] flex items-center justify-center text-slate-500">
+          No line data available.
+        </div>
 
-          <Bar
-            dataKey="utilization"
-            fill="#4f46e5"
-            radius={[8, 8, 0, 0]}
-          />
+      ) : (
 
-        </BarChart>
-      </ResponsiveContainer>
+        <ResponsiveContainer
+          width="100%"
+          height={320}
+        >
+
+          <BarChart data={data}>
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+            <XAxis dataKey="line" />
+
+            <YAxis
+              allowDecimals={false}
+            />
+
+            <Tooltip />
+
+            <Bar
+              dataKey="trains"
+              name="Scheduled Trains"
+              fill="#4f46e5"
+              radius={[
+                8,
+                8,
+                0,
+                0,
+              ]}
+            />
+
+          </BarChart>
+
+        </ResponsiveContainer>
+
+      )}
 
     </div>
   );

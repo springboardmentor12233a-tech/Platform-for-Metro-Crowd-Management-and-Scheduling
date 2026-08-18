@@ -8,44 +8,87 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { hour: "06", trains: 18 },
-  { hour: "07", trains: 28 },
-  { hour: "08", trains: 40 },
-  { hour: "09", trains: 35 },
-  { hour: "10", trains: 24 },
-  { hour: "11", trains: 20 },
-  { hour: "12", trains: 22 },
-];
+function DepartureTrendChart({
+  schedules = [],
+  loading = false,
+}) {
+  const hourlyCounts = {};
 
-function DepartureTrendChart() {
+  schedules.forEach((train) => {
+    if (!train.departure_time) return;
+
+    const hour = String(
+      train.departure_time
+    ).substring(0, 2);
+
+    hourlyCounts[hour] =
+      (hourlyCounts[hour] || 0) + 1;
+  });
+
+  const data = Object.entries(hourlyCounts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([hour, trains]) => ({
+      hour: `${hour}:00`,
+      trains,
+    }));
+
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6">
 
-      <h3 className="text-xl font-bold mb-6">
+      <h3 className="text-xl font-bold">
         Hourly Departures
       </h3>
 
-      <ResponsiveContainer width="100%" height={320}>
-        <LineChart data={data}>
+      <p className="text-sm text-slate-500 mt-1 mb-6">
+        Scheduled departures from PostgreSQL
+      </p>
 
-          <CartesianGrid strokeDasharray="3 3" />
+      {loading ? (
 
-          <XAxis dataKey="hour" />
+        <div className="h-[320px] flex items-center justify-center text-slate-500">
+          Loading departure data...
+        </div>
 
-          <YAxis />
+      ) : data.length === 0 ? (
 
-          <Tooltip />
+        <div className="h-[320px] flex items-center justify-center text-slate-500">
+          No departure data available.
+        </div>
 
-          <Line
-            type="monotone"
-            dataKey="trains"
-            stroke="#4f46e5"
-            strokeWidth={3}
-          />
+      ) : (
 
-        </LineChart>
-      </ResponsiveContainer>
+        <ResponsiveContainer
+          width="100%"
+          height={320}
+        >
+
+          <LineChart data={data}>
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+            <XAxis dataKey="hour" />
+
+            <YAxis
+              allowDecimals={false}
+            />
+
+            <Tooltip />
+
+            <Line
+              type="monotone"
+              dataKey="trains"
+              stroke="#4f46e5"
+              strokeWidth={3}
+              dot={{ r: 4 }}
+            />
+
+          </LineChart>
+
+        </ResponsiveContainer>
+
+      )}
 
     </div>
   );

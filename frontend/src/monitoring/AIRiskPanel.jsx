@@ -7,9 +7,7 @@ import {
   Target,
 } from "lucide-react";
 
-import {
-  generateRecommendation,
-} from "../../utils/aiDecisionEngine";
+import { generateRecommendation } from "../utils/aiDecisionEngine";
 
 function AIRiskPanel({
   busiestStations = [],

@@ -1,840 +1,651 @@
 import { motion } from "framer-motion";
+
 import {
-  Activity,
-  Users,
   AlertTriangle,
+  Activity,
   ShieldCheck,
   Clock,
+  Radio,
 } from "lucide-react";
 
 function LiveNetworkHeader({
-  summary,
+  summary = {},
   recentAlerts = [],
-  lastUpdated,
+  lastUpdated = "",
 }) {
-  const totalStations = summary?.total_stations || 0;
-  const totalPassengers = summary?.total_passengers || 0;
+  // ============================================================
+  // NORMALIZE SUMMARY DATA
+  // ============================================================
 
-  const activeAlerts = recentAlerts.length;
+  const summaryData =
+    summary?.data ||
+    summary?.summary ||
+    summary ||
+    {};
 
-  const networkHealth =
-    totalStations > 0
-      ? Math.round(
-          ((totalStations - activeAlerts) /
-            totalStations) *
-            100
-        )
-      : 100;
+  const totalStations = Number(
+    summaryData?.total_stations ??
+      summaryData?.totalStations ??
+      0
+  );
+
+  const totalPassengers = Number(
+    summaryData?.total_passengers ??
+      summaryData?.totalPassengers ??
+      summaryData?.active_passengers ??
+      summaryData?.activePassengers ??
+      0
+  );
+
+  // ============================================================
+  // NORMALIZE ALERTS
+  // ============================================================
+
+  const alerts = Array.isArray(recentAlerts)
+    ? recentAlerts
+    : Array.isArray(recentAlerts?.data)
+    ? recentAlerts.data
+    : Array.isArray(recentAlerts?.alerts)
+    ? recentAlerts.alerts
+    : [];
+
+  // ============================================================
+  // ALERT COUNTS
+  // ============================================================
+
+  const criticalAlerts = alerts.filter((alert) => {
+    const severity = String(
+      alert?.severity ??
+        alert?.level ??
+        alert?.risk ??
+        ""
+    )
+      .trim()
+      .toLowerCase();
+
+    return (
+      severity === "critical" ||
+      severity === "high"
+    );
+  }).length;
+
+  const warningAlerts = alerts.filter((alert) => {
+    const severity = String(
+      alert?.severity ??
+        alert?.level ??
+        alert?.risk ??
+        ""
+    )
+      .trim()
+      .toLowerCase();
+
+    return (
+      severity === "warning" ||
+      severity === "medium"
+    );
+  }).length;
+
+  const activeAlerts =
+    criticalAlerts + warningAlerts;
+
+  // ============================================================
+  // NETWORK HEALTH
+  // ============================================================
+
+  const networkHealth = Math.max(
+    0,
+    Math.min(
+      100,
+      100 -
+        criticalAlerts * 5 -
+        warningAlerts * 2
+    )
+  );
+
+  // ============================================================
+  // AI STATUS
+  // ============================================================
+
+  const aiRecommendation =
+    criticalAlerts > 0
+      ? "Critical crowd conditions detected. Increase monitoring and consider additional train frequency."
+      : warningAlerts > 0
+      ? "Some stations require observation. Monitor passenger density and prepare additional services."
+      : "No critical congestion events detected. Continue normal metro operations.";
 
   return (
-    <motion.section
-      initial={{
-        opacity: 0,
-        y: 20,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.45,
-      }}
-      className="
-        rounded-[32px]
-        overflow-hidden
-        border
-        border-slate-200
-        bg-gradient-to-br
-        from-slate-900
-        via-slate-800
-        to-slate-900
-        shadow-2xl
-      "
-    >
+    <div className="space-y-5">
 
-      {/* ==========================
-          Hero Header
-      ========================== */}
+      {/* ======================================================
+          MAIN CROWD CONTROL HEADER
+      ====================================================== */}
 
-      <div
+      <motion.section
+        initial={{
+          opacity: 0,
+          y: 15,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.4,
+        }}
         className="
-          relative
           overflow-hidden
-          px-10
-          py-10
+          rounded-[28px]
+          border
+          border-slate-200
+          bg-white
+          shadow-lg
         "
       >
 
-        {/* Decorative Background */}
+        {/* ====================================================
+            PAGE TITLE
+        ==================================================== */}
 
-        <div className="absolute inset-0 opacity-10">
+        <div className="px-7 pb-5 pt-7">
 
-          <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-cyan-400 blur-3xl" />
-
-          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-emerald-400 blur-3xl" />
-
-        </div>
-
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-
-          <div>
-
-            <div className="flex items-center gap-3">
-
-              <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse" />
-
-              <span className="font-medium tracking-wide text-green-300 uppercase">
-                Live Monitoring
-              </span>
-
-            </div>
-
-            <h1 className="mt-4 text-5xl font-bold text-white">
-
-              Metro Network
-              <br />
-              Operations Center
-
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-
-              Monitor station activity, crowd density,
-              operational alerts and AI insights across
-              the entire metro network in real time.
-
-            </p>
-
-          </div>
-
-          <div
-            className="
-              rounded-3xl
-              border
-              border-white/10
-              bg-white/5
-              p-6
-              backdrop-blur-xl
-            "
-          >
-
-            <div className="flex items-center gap-3">
-
-              <Clock
-                size={20}
-                className="text-cyan-300"
-              />
-
-              <span className="text-slate-300">
-
-                Last Updated
-
-              </span>
-
-            </div>
-
-            <h2 className="mt-3 text-3xl font-bold text-white">
-
-              {lastUpdated || "Just now"}
-
-            </h2>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <div className="border-t border-white/10" />
-            {/* ==========================
-          Live KPI Cards
-      ========================== */}
-
-      <div className="grid grid-cols-1 gap-6 p-8 md:grid-cols-2 xl:grid-cols-4">
-
-        {/* Total Stations */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-6">
 
             <div>
 
-              <p className="text-slate-500">
-                Total Stations
-              </p>
-
-              <h2 className="mt-3 text-5xl font-bold text-slate-900">
-                {totalStations}
-              </h2>
-
-            </div>
-
-            <div
-              className="
-                rounded-2xl
-                bg-cyan-100
-                p-4
-              "
-            >
-
-              <Activity
-                size={34}
-                className="text-cyan-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Connected to the metro network
-          </p>
-
-        </motion.div>
-
-        {/* Active Passengers */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Active Passengers
-              </p>
-
-              <h2 className="mt-3 text-5xl font-bold text-indigo-600">
-
-                {totalPassengers.toLocaleString()}
-
-              </h2>
-
-            </div>
-
-            <div
-              className="
-                rounded-2xl
-                bg-indigo-100
-                p-4
-              "
-            >
-
-              <Users
-                size={34}
-                className="text-indigo-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Current monitored passenger flow
-          </p>
-
-        </motion.div>
-
-        {/* Active Alerts */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Active Alerts
-              </p>
-
-              <h2
-                className={`mt-3 text-5xl font-bold ${
-                  activeAlerts > 0
-                    ? "text-red-600"
-                    : "text-green-600"
-                }`}
+              <h1
+                className="
+                  text-4xl
+                  font-bold
+                  tracking-tight
+                  text-slate-900
+                  lg:text-5xl
+                "
               >
+                MetroVision Crowd Control Center
+              </h1>
 
-                {activeAlerts}
-
-              </h2>
-
-            </div>
-
-            <div
-              className={`
-                rounded-2xl
-                p-4
-                ${
-                  activeAlerts > 0
-                    ? "bg-red-100"
-                    : "bg-green-100"
-                }
-              `}
-            >
-
-              <AlertTriangle
-                size={34}
-                className={
-                  activeAlerts > 0
-                    ? "text-red-600"
-                    : "text-green-600"
-                }
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-
-            {activeAlerts > 0
-              ? "Stations requiring attention"
-              : "No active operational alerts"}
-
-          </p>
-
-        </motion.div>
-
-        {/* Network Health */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Network Health
+              <p
+                className="
+                  mt-2
+                  text-base
+                  text-slate-500
+                "
+              >
+                AI-powered real-time crowd monitoring dashboard
               </p>
 
-              <h2
-                className={`mt-3 text-5xl font-bold ${
-                  networkHealth >= 90
-                    ? "text-emerald-600"
-                    : networkHealth >= 75
-                    ? "text-amber-500"
-                    : "text-red-600"
-                }`}
-              >
-
-                {networkHealth}%
-
-              </h2>
-
             </div>
+
+            {/* LIVE BADGE */}
 
             <div
               className="
-                rounded-2xl
+                flex
+                shrink-0
+                items-center
+                gap-2
+                rounded-full
                 bg-emerald-100
-                p-4
+                px-5
+                py-2.5
+                text-sm
+                font-semibold
+                text-emerald-700
               "
             >
-
-              <ShieldCheck
-                size={34}
-                className="text-emerald-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Overall operational availability
-          </p>
-
-        </motion.div>
-
-      </div>
-
-      <div className="border-t border-slate-200" />
-            {/* ==========================
-          Live KPI Cards
-      ========================== */}
-
-      <div className="grid grid-cols-1 gap-6 p-8 md:grid-cols-2 xl:grid-cols-4">
-
-        {/* Total Stations */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Total Stations
-              </p>
-
-              <h2 className="mt-3 text-5xl font-bold text-slate-900">
-                {totalStations}
-              </h2>
-
-            </div>
-
-            <div
-              className="
-                rounded-2xl
-                bg-cyan-100
-                p-4
-              "
-            >
-
-              <Activity
-                size={34}
-                className="text-cyan-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Connected to the metro network
-          </p>
-
-        </motion.div>
-
-        {/* Active Passengers */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Active Passengers
-              </p>
-
-              <h2 className="mt-3 text-5xl font-bold text-indigo-600">
-
-                {totalPassengers.toLocaleString()}
-
-              </h2>
-
-            </div>
-
-            <div
-              className="
-                rounded-2xl
-                bg-indigo-100
-                p-4
-              "
-            >
-
-              <Users
-                size={34}
-                className="text-indigo-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Current monitored passenger flow
-          </p>
-
-        </motion.div>
-
-        {/* Active Alerts */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Active Alerts
-              </p>
-
-              <h2
-                className={`mt-3 text-5xl font-bold ${
-                  activeAlerts > 0
-                    ? "text-red-600"
-                    : "text-green-600"
-                }`}
-              >
-
-                {activeAlerts}
-
-              </h2>
-
-            </div>
-
-            <div
-              className={`
-                rounded-2xl
-                p-4
-                ${
-                  activeAlerts > 0
-                    ? "bg-red-100"
-                    : "bg-green-100"
-                }
-              `}
-            >
-
-              <AlertTriangle
-                size={34}
-                className={
-                  activeAlerts > 0
-                    ? "text-red-600"
-                    : "text-green-600"
-                }
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-
-            {activeAlerts > 0
-              ? "Stations requiring attention"
-              : "No active operational alerts"}
-
-          </p>
-
-        </motion.div>
-
-        {/* Network Health */}
-
-        <motion.div
-          whileHover={{
-            y: -6,
-          }}
-          className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-7
-            shadow-sm
-          "
-        >
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-                Network Health
-              </p>
-
-              <h2
-                className={`mt-3 text-5xl font-bold ${
-                  networkHealth >= 90
-                    ? "text-emerald-600"
-                    : networkHealth >= 75
-                    ? "text-amber-500"
-                    : "text-red-600"
-                }`}
-              >
-
-                {networkHealth}%
-
-              </h2>
-
-            </div>
-
-            <div
-              className="
-                rounded-2xl
-                bg-emerald-100
-                p-4
-              "
-            >
-
-              <ShieldCheck
-                size={34}
-                className="text-emerald-600"
-              />
-
-            </div>
-
-          </div>
-
-          <p className="mt-6 text-slate-500">
-            Overall operational availability
-          </p>
-
-        </motion.div>
-
-      </div>
-
-      <div className="border-t border-slate-200" />
-          {/* ==========================
-          Live Status & AI Recommendation
-      ========================== */}
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 p-8">
-
-        {/* Live System Status */}
-
-        <div
-          className="
-            rounded-3xl
-            bg-gradient-to-br
-            from-slate-900
-            via-slate-800
-            to-slate-900
-            p-8
-            text-white
-            shadow-xl
-          "
-        >
-
-          <div className="flex items-center gap-3">
-
-            <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse" />
-
-            <h2 className="text-2xl font-bold">
-              Live System Status
-            </h2>
-
-          </div>
-
-          <div className="mt-8 space-y-6">
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-300">
-                Metro Network
-              </span>
-
-              <span className="font-semibold text-green-400">
-                Online
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-300">
-                Crowd Monitoring
-              </span>
-
-              <span className="font-semibold text-green-400">
-                Active
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-300">
-                AI Prediction Engine
-              </span>
-
-              <span className="font-semibold text-green-400">
-                Running
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-300">
-                Alert Monitoring
-              </span>
 
               <span
-                className={`font-semibold ${
-                  activeAlerts > 0
-                    ? "text-yellow-400"
-                    : "text-green-400"
-                }`}
-              >
-                {activeAlerts > 0
-                  ? "Monitoring"
-                  : "Normal"}
-              </span>
+                className="
+                  h-2.5
+                  w-2.5
+                  animate-pulse
+                  rounded-full
+                  bg-emerald-500
+                "
+              />
+
+              LIVE
 
             </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-300">
-                Network Availability
-              </span>
-
-              <span className="font-semibold text-cyan-300">
-                {networkHealth}%
-              </span>
-
-            </div>
-
-          </div>
-
-          <div
-            className="
-              mt-8
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/5
-              p-6
-            "
-          >
-
-            <p className="leading-8 text-slate-300">
-
-              MetroVision continuously receives operational data from
-              connected stations and updates crowd analytics, alerts,
-              and AI predictions in real time to support faster
-              operational decision-making.
-
-            </p>
 
           </div>
 
         </div>
 
-        {/* AI Recommendation */}
+        {/* ====================================================
+            ORANGE ALERT CENTER
+        ==================================================== */}
 
         <div
           className="
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            p-8
-            shadow-lg
+            relative
+            overflow-hidden
+            bg-gradient-to-r
+            from-red-600
+            via-orange-500
+            to-amber-400
+            px-7
+            py-5
+            text-white
           "
         >
 
-          <h2 className="text-2xl font-bold text-slate-900">
-            AI Recommendation
-          </h2>
+          <div className="relative z-10 flex items-center justify-between">
 
-          <p className="mt-2 text-slate-500">
-            Live operational guidance
-          </p>
+            <div className="flex items-center gap-4">
 
-          <div className="mt-8 rounded-2xl bg-slate-50 p-6">
+              <div
+                className="
+                  flex
+                  h-11
+                  w-11
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-white/15
+                "
+              >
 
-            <p className="leading-8 text-slate-700">
+                <AlertTriangle size={24} />
 
-              {activeAlerts === 0
-                ? "No critical congestion events detected. Continue normal metro operations while maintaining automated monitoring across all stations."
-                : activeAlerts <= 3
-                ? "A small number of stations require observation. Continue monitoring crowd density and prepare additional services if passenger demand increases."
-                : "Multiple operational alerts are active. Dispatch additional personnel, increase train frequency where necessary, and prioritize high-congestion stations."}
+              </div>
 
-            </p>
+              <div>
 
-          </div>
+                <h2 className="text-xl font-bold">
+                  Metro Operations Alert Center
+                </h2>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+                <p className="mt-0.5 text-sm text-white/90">
+                  AI-powered real-time operational monitoring
+                </p>
 
-            <span className="rounded-full bg-emerald-100 px-4 py-2 font-medium text-emerald-700">
-              AI Enabled
-            </span>
+              </div>
 
-            <span className="rounded-full bg-cyan-100 px-4 py-2 font-medium text-cyan-700">
-              Live Monitoring
-            </span>
+            </div>
 
-            <span className="rounded-full bg-indigo-100 px-4 py-2 font-medium text-indigo-700">
-              Smart Analytics
-            </span>
+            <div
+              className="
+                hidden
+                items-center
+                gap-2
+                rounded-full
+                bg-white/15
+                px-4
+                py-2
+                text-sm
+                font-semibold
+                sm:flex
+              "
+            >
+
+              <Radio size={15} />
+
+              LIVE
+
+            </div>
 
           </div>
 
         </div>
 
+        {/* ====================================================
+            KPI CARDS
+        ==================================================== */}
+
+        <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
+
+          {/* CRITICAL */}
+
+          <motion.div
+            whileHover={{ y: -2 }}
+            className="
+              rounded-2xl
+              border
+              border-red-200
+              bg-red-50
+              p-5
+            "
+          >
+
+            <div className="flex items-start justify-between">
+
+              <div>
+
+                <div className="flex items-center gap-2">
+
+                  <AlertTriangle
+                    size={18}
+                    className="text-red-600"
+                  />
+
+                  <span className="text-sm font-semibold text-red-700">
+                    Critical Alerts
+                  </span>
+
+                </div>
+
+                <h3
+                  className="
+                    mt-2
+                    text-3xl
+                    font-bold
+                    text-red-700
+                  "
+                >
+                  {criticalAlerts}
+                </h3>
+
+                <p className="mt-1 text-xs text-red-600">
+                  {criticalAlerts > 0
+                    ? "Stations require immediate action"
+                    : "No critical alerts detected"}
+                </p>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+
+          {/* WARNING */}
+
+          <motion.div
+            whileHover={{ y: -2 }}
+            className="
+              rounded-2xl
+              border
+              border-amber-200
+              bg-amber-50
+              p-5
+            "
+          >
+
+            <div className="flex items-start justify-between">
+
+              <div>
+
+                <div className="flex items-center gap-2">
+
+                  <AlertTriangle
+                    size={18}
+                    className="text-amber-600"
+                  />
+
+                  <span className="text-sm font-semibold text-amber-700">
+                    Warning
+                  </span>
+
+                </div>
+
+                <h3
+                  className="
+                    mt-2
+                    text-3xl
+                    font-bold
+                    text-amber-700
+                  "
+                >
+                  {warningAlerts}
+                </h3>
+
+                <p className="mt-1 text-xs text-amber-600">
+                  {warningAlerts > 0
+                    ? "Stations under observation"
+                    : "No warning conditions detected"}
+                </p>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+
+          {/* NETWORK HEALTH */}
+
+          <motion.div
+            whileHover={{ y: -2 }}
+            className="
+              rounded-2xl
+              border
+              border-emerald-200
+              bg-emerald-50
+              p-5
+            "
+          >
+
+            <div className="flex items-start justify-between">
+
+              <div>
+
+                <div className="flex items-center gap-2">
+
+                  <ShieldCheck
+                    size={18}
+                    className="text-emerald-600"
+                  />
+
+                  <span className="text-sm font-semibold text-emerald-700">
+                    Network Health
+                  </span>
+
+                </div>
+
+                <h3
+                  className={`
+                    mt-2
+                    text-3xl
+                    font-bold
+                    ${
+                      networkHealth >= 90
+                        ? "text-emerald-700"
+                        : networkHealth >= 75
+                        ? "text-amber-600"
+                        : "text-red-600"
+                    }
+                  `}
+                >
+                  {networkHealth}%
+                </h3>
+
+                <p className="mt-1 text-xs text-emerald-700">
+                  All systems operational
+                </p>
+
+              </div>
+
+            </div>
+
+          </motion.div>
+
+        </div>
+
+        {/* ====================================================
+            LAST UPDATED
+        ==================================================== */}
+
+        <div
+          className="
+            mx-5
+            border-t
+            border-slate-200
+            py-4
+          "
+        >
+
+          <div className="flex items-center justify-between">
+
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+
+              <Clock
+                size={17}
+                className="text-slate-500"
+              />
+
+              <span>
+                Last Updated:
+              </span>
+
+              <span className="font-semibold text-slate-700">
+                {lastUpdated || "Just now"}
+              </span>
+
+            </div>
+
+            <div className="flex items-center gap-2">
+
+              <span
+                className="
+                  h-2.5
+                  w-2.5
+                  animate-pulse
+                  rounded-full
+                  bg-emerald-500
+                "
+              />
+
+              <span className="text-sm font-semibold text-emerald-700">
+                AI Monitoring Active
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </motion.section>
+
+      {/* ======================================================
+          LIVE TREND STRIP
+      ====================================================== */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 10,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.4,
+          delay: 0.1,
+        }}
+        className="
+          relative
+          h-28
+          overflow-hidden
+          rounded-2xl
+          bg-[#252932]
+          shadow-lg
+        "
+      >
+
+        {/* GRID */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            opacity-10
+            [background-image:linear-gradient(rgba(255,255,255,.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.15)_1px,transparent_1px)]
+            [background-size:40px_40px]
+          "
+        />
+
+        {/* TREND LINE */}
+
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 1000 120"
+          preserveAspectRatio="none"
+        >
+
+          <path
+            d="
+              M0 78
+              C80 76 110 75 160 76
+              C220 78 260 77 320 76
+              C390 75 430 78 490 75
+              C560 72 600 70 660 68
+              C730 65 770 64 830 61
+              C900 59 940 58 1000 57
+            "
+            fill="none"
+            stroke="rgba(139,92,246,0.95)"
+            strokeWidth="2"
+          />
+
+        </svg>
+
+        <div className="relative z-10 flex h-full flex-col justify-between px-5 py-4">
+
+          <span className="text-xs font-semibold text-emerald-400">
+            ↗ +4.8%
+          </span>
+
+          <div className="flex items-center justify-between">
+
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+
+              <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+
+              Live
+
+            </div>
+
+            <Radio
+              size={13}
+              className="text-slate-600"
+            />
+
+          </div>
+
+        </div>
+
+      </motion.div>
+
+      {/* ======================================================
+          DATA SUMMARY FOR LOWER COMPONENTS
+      ====================================================== */}
+
+      <div
+        className="
+          hidden
+          items-center
+          gap-4
+          rounded-xl
+          bg-slate-900
+          px-5
+          py-3
+          text-xs
+          text-white
+        "
+      >
+
+        <Activity size={15} />
+
+        <span>
+          Stations: {totalStations.toLocaleString("en-IN")}
+        </span>
+
+        <span>
+          Passengers: {totalPassengers.toLocaleString("en-IN")}
+        </span>
+
+        <span>
+          Active Alerts: {activeAlerts}
+        </span>
+
+        <span>
+          AI Status: Active
+        </span>
+
       </div>
 
-    </motion.section>
+    </div>
   );
 }
 

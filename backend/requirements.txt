@@ -3,10 +3,12 @@ uvicorn[standard]==0.35.0
 
 pandas==2.3.1
 numpy==2.3.1
+scikit-learn==1.9.0
+joblib==1.5.1
 
 pydantic==2.11.7
+pydantic-settings==2.10.1
 python-multipart==0.0.20
-
 starlette==0.47.2
 
 aiofiles==24.1.0
@@ -20,18 +22,19 @@ email-validator==2.3.0
 dnspython==2.8.0
 
 passlib[bcrypt]==1.7.4
+bcrypt==4.3.0
 
 python-jose[cryptography]==3.5.0
-
 cryptography==49.0.0
 cffi==2.1.0
 pycparser==3.0
-
 ecdsa==0.19.2
 rsa==4.9.1
 pyasn1==0.6.4
 
 matplotlib==3.10.3
 seaborn==0.13.2
-jupyter==1.1.1
-ipykernel==6.30.0
+
+google-genai==1.31.0
+
+reportlab==4.4.3

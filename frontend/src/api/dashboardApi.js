@@ -35,6 +35,18 @@ export const getTopRoutes = async () => {
 };
 
 // ===============================
+// Recent Alerts
+// ===============================
+
+export const getRecentAlerts = async () => {
+  const response = await api.get("/dashboard/recent-alerts");
+
+  console.log("Recent Alerts API:", response.data);
+
+  return response.data;
+};
+
+// ===============================
 // Live Dashboard
 // ===============================
 

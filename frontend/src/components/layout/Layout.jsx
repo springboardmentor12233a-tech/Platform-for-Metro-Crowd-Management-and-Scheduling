@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-function Layout() {
+function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -33,7 +33,7 @@ function Layout() {
 
         {/* Page Content */}
         <div className="p-4 md:p-6 lg:p-8">
-          <Outlet />
+          {children ?? <Outlet />}
         </div>
       </main>
     </div>

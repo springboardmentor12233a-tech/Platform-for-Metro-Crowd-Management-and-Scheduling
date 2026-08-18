@@ -3,6 +3,11 @@ import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
+
+/* =========================================================
+   AXIOS INSTANCE
+========================================================= */
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 60000,
@@ -12,9 +17,10 @@ const api = axios.create({
   },
 });
 
-/* ============================
+
+/* =========================================================
    REQUEST INTERCEPTOR
-============================ */
+========================================================= */
 
 api.interceptors.request.use(
   (config) => {
@@ -26,18 +32,27 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-/* ============================
+
+/* =========================================================
    RESPONSE INTERCEPTOR
-============================ */
+========================================================= */
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
 
   async (error) => {
     const originalRequest = error.config;
+
+    /* -------------------------------------------------------
+       401 - Unauthorized
+    ------------------------------------------------------- */
 
     if (
       error.response?.status === 401 &&
@@ -52,16 +67,34 @@ api.interceptors.response.use(
       if (window.location.pathname !== "/") {
         window.location.replace("/");
       }
+
+      return Promise.reject(error);
     }
 
+
+    /* -------------------------------------------------------
+       403 - Forbidden
+    ------------------------------------------------------- */
+
     if (error.response?.status === 403) {
-      if (window.location.pathname !== "/unauthorized") {
+      if (
+        window.location.pathname !==
+        "/unauthorized"
+      ) {
         window.location.replace("/unauthorized");
       }
+
+      return Promise.reject(error);
     }
+
+
+    /* -------------------------------------------------------
+       Other errors
+    ------------------------------------------------------- */
 
     return Promise.reject(error);
   }
 );
+
 
 export default api;

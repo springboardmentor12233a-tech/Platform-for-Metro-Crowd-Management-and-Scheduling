@@ -3,7 +3,10 @@ import DelayAnalysisChart from "./DelayAnalysisChart";
 import LineUtilizationChart from "./LineUtilizationChart";
 import AIDemandPrediction from "./AIDemandPrediction";
 
-function ScheduleAnalytics() {
+function ScheduleAnalytics({
+  schedules = [],
+  loading = false,
+}) {
   return (
     <section className="mt-8">
 
@@ -14,20 +17,33 @@ function ScheduleAnalytics() {
         </h2>
 
         <p className="text-slate-500 mt-2">
-          AI-powered operational insights for today's metro schedule.
+          AI-powered operational insights
+          from today's PostgreSQL schedule.
         </p>
 
       </div>
 
       <div className="grid xl:grid-cols-2 gap-8">
 
-        <DepartureTrendChart />
+        <DepartureTrendChart
+          schedules={schedules}
+          loading={loading}
+        />
 
-        <DelayAnalysisChart />
+        <DelayAnalysisChart
+          schedules={schedules}
+          loading={loading}
+        />
 
-        <LineUtilizationChart />
+        <LineUtilizationChart
+          schedules={schedules}
+          loading={loading}
+        />
 
-        <AIDemandPrediction />
+        <AIDemandPrediction
+          schedules={schedules}
+          loading={loading}
+        />
 
       </div>
 

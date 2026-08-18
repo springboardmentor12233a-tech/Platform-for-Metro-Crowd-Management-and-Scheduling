@@ -1,92 +1,364 @@
-
-# Python
-
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.egg-info/
-*.egg
-
-# Virtual Environment
-venv/
-.venv/
-env/
-ENV/
-
-# FastAPI / Python
+# =========================================================
+# METROVISION - GLOBAL GITIGNORE
+# =========================================================
 
 
-.pytest_cache/
-.mypy_cache/
-
-# Environment Variables
+# =========================================================
+# ENVIRONMENT VARIABLES & SECRETS
+# =========================================================
 
 .env
 .env.*
 !.env.example
 
-# Logs
+# Secret / credential files
+*.pem
+*.key
+*.crt
+credentials.json
+secrets.json
 
+
+# =========================================================
+# PYTHON
+# =========================================================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+*.egg
+*.egg-info/
+*.whl
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+.coverage
+.coverage.*
+htmlcov/
+
+.pyre/
+
+
+# =========================================================
+# VIRTUAL ENVIRONMENTS
+# =========================================================
+
+venv/
+.venv/
+env/
+ENV/
+.ENV/
+
+pip-wheel-metadata/
+
+
+# =========================================================
+# FASTAPI / BACKEND
+# =========================================================
 
 *.log
 logs/
 
-# Database
+instance/
 
-
+# Local databases
 *.db
+*.sqlite
 *.sqlite3
 
-# React / Node
+# Uploaded/generated files
+uploads/
+generated/
+tmp/
+
+
+# =========================================================
+# NODE / REACT
+# =========================================================
 
 node_modules/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.npm/
+.yarn/
+.pnpm-store/
+
+
+# =========================================================
+# VITE
+# =========================================================
+
+dist/
+.vite/
+
+# Vite temporary files
+*.local
+
+
+# =========================================================
+# FRONTEND BUILD
+# =========================================================
+
+build/
+coverage/
+
+storybook-static/
+
+
+# =========================================================
+# DOCKER
+# =========================================================
+
+# Docker logs
+docker/*.log
+docker/logs/
+
+# Local Docker overrides
+docker-compose.override.yml
+
+# Docker environment files
+docker/.env
+
+
+# =========================================================
+# POSTGRESQL / DATABASE
+# =========================================================
+
+# Local database files
+*.sql.gz
+*.dump
+*.bak
+
+# PostgreSQL local data
+postgres_data/
+pgdata/
+
+# Database exports
+database/backups/
+database/dumps/
+
+# IMPORTANT:
+# Do NOT ignore your actual SQL schema/migration files
+# if they are meant to be committed.
+
+
+# =========================================================
+# DATASETS
+# =========================================================
+
+# Ignore large raw datasets
+datasets/raw/
+
+# Ignore generated/processed datasets if they are large
+datasets/processed/
+
+# Dataset caches
+datasets/cache/
+
+# Keep dataset documentation
+!datasets/README.md
+
+
+# =========================================================
+# MACHINE LEARNING / NOTEBOOKS
+# =========================================================
+
+.ipynb_checkpoints/
+
+# Python ML caches
+.cache/
+.pytest_cache/
+
+# Model artifacts
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.h5
+*.hdf5
+*.joblib
+
+# TensorFlow / PyTorch logs
+runs/
+wandb/
+mlruns/
+
+# Generated model outputs
+model_outputs/
+predictions/
+
+
+# =========================================================
+# JUPYTER
+# =========================================================
+
+.ipynb_checkpoints/
+
+# Jupyter temporary files
+.jupyter/
+
+
+# =========================================================
+# IDE - VS CODE
+# =========================================================
+
+.vscode/
+
+# Keep shared VS Code configuration if you intentionally
+# want to commit it:
+# !.vscode/extensions.json
+# !.vscode/settings.json
+
+
+# =========================================================
+# OTHER IDEs
+# =========================================================
+
+.idea/
+*.iml
+
+*.swp
+*.swo
+
+
+# =========================================================
+# OPERATING SYSTEM
+# =========================================================
+
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+
+ehthumbs.db
+Icon?
+._*
+
+
+# =========================================================
+# TEMPORARY FILES
+# =========================================================
+
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+*.orig
+*.rej
+
+*.cache
+
+
+# =========================================================
+# EDITOR / LOG FILES
+# =========================================================
+
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
 
-# Vite
+# =========================================================
+# BUILD ARTIFACTS
+# =========================================================
+
+target/
+out/
+release/
+
+*.map
 
 
-dist/
-.vite/
+# =========================================================
+# DOCUMENTATION TEMP FILES
+# =========================================================
 
-# IDE
-
-
-.vscode/
-.idea/
-
-# OS
-
-
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Build
-
-
-build/
-coverage/
-
-# Misc
-
-
+~$*
 *.tmp
 *.temp
+
+
+# =========================================================
+# SCREENSHOT TEMP FILES
+# =========================================================
+
+# Keep your Screenshots/ folder tracked.
+# Only ignore temporary screenshot files.
+Screenshots/*.tmp
+
+
+# =========================================================
+# PYTHON DISTRIBUTION
+# =========================================================
+
+dist/
+*.egg-info/
+
+
+# =========================================================
+# LOCAL CONFIGURATION
+# =========================================================
+
+config.local.*
+settings.local.*
+*.local.json
+
+
+# =========================================================
+# SECURITY
+# =========================================================
+
+# Never commit private keys or certificates
+*.pem
+*.p12
+*.pfx
+*.jks
+
+# Never commit service-account credentials
+service-account*.json
+firebase-adminsdk*.json
+
+
+# =========================================================
+# METROVISION LOCAL FILES
+# =========================================================
+
+# Local development files
+.local/
+.local-data/
+
+# Runtime files
+runtime/
+.cache/
+
+# Temporary API exports
+api-output/
 
 # Python cache
 __pycache__/
 *.py[cod]
+*$py.class
 
-# Virtual environment
+# Virtual environments
 venv/
+.venv/
+
+# Environment files
 .env
-
-# Jupyter
-.ipynb_checkpoints/
-
+.env.*
+!.env.example
 *.pkl

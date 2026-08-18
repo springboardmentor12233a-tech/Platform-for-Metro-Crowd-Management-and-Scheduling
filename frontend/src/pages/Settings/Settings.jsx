@@ -1,23 +1,98 @@
 import { useState } from "react";
 
-import SettingsHeader from "../../components/settings/SettingsHeader";
-import SettingsSidebar from "../../components/settings/SettingsSidebar";
-import SystemStatusCard from "../../components/settings/SystemStatusCard";
-import SaveBar from "../../components/settings/SaveBar";
+import SettingsHeader from "./SettingsHeader";
+import SettingsSidebar from "./SettingsSidebar";
+import SystemStatusCard from "./SystemStatusCard";
+import SaveBar from "./SaveBar";
 
-import GeneralSettings from "../../components/settings/GeneralSettings";
-import ProfileSettings from "../../components/settings/ProfileSettings";
-import SecuritySettings from "../../components/settings/SecuritySettings";
-import NotificationSettings from "../../components/settings/NotificationSettings";
-import AISettings from "../../components/settings/AISettings";
-import AppearanceSettings from "../../components/settings/AppearanceSettings";
-import ApiSettings from "../../components/settings/ApiSettings";
+import GeneralSettings from "./GeneralSettings";
+import ProfileSettings from "./ProfileSettings";
+import SecuritySettings from "./SecuritySettings";
+import NotificationSettings from "./NotificationSettings";
+import AISettings from "./AISettings";
+import AppearanceSettings from "./AppearanceSettings";
+import ApiSettings from "./ApiSettings";
+import MetroSettings from "./MetroSettings";
+
+const DEFAULT_SETTINGS = {
+  platformName: "MetroVision AI",
+  organisation: "Delhi Metro Rail Corporation",
+  timezone: "Asia/Kolkata",
+  language: "English",
+};
+
+function getSavedSettings() {
+  try {
+    const saved = localStorage.getItem(
+      "metrovision_general_settings"
+    );
+
+    if (saved) {
+      return {
+        ...DEFAULT_SETTINGS,
+        ...JSON.parse(saved),
+      };
+    }
+  } catch (error) {
+    console.error("Error loading settings:", error);
+  }
+
+  return { ...DEFAULT_SETTINGS };
+}
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("general");
+
+  const [settings, setSettings] = useState(
+    getSavedSettings()
+  );
+
+  const [savedSettings, setSavedSettings] = useState(
+    getSavedSettings()
+  );
+
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleChange = () => {
+  const [saving, setSaving] = useState(false);
+
+  // General settings change
+  const handleSettingsChange = (updatedSettings) => {
+    setSettings(updatedSettings);
+    setHasChanges(true);
+  };
+
+  // Save settings
+  const handleSave = () => {
+    try {
+      setSaving(true);
+
+      localStorage.setItem(
+        "metrovision_general_settings",
+        JSON.stringify(settings)
+      );
+
+      setSavedSettings({ ...settings });
+
+      setHasChanges(false);
+
+      console.log("Settings saved successfully:", settings);
+    } catch (error) {
+      console.error("Save error:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Cancel changes
+  const handleCancel = () => {
+    setSettings({ ...savedSettings });
+    setHasChanges(false);
+
+    console.log("Changes cancelled");
+  };
+
+  // For other settings tabs
+  const handleOtherSettingsChange = () => {
     setHasChanges(true);
   };
 
@@ -25,9 +100,13 @@ export default function Settings() {
     <div className="space-y-8">
 
       {/* Header */}
-      <SettingsHeader />
+      <SettingsHeader
+        onSave={handleSave}
+        saving={saving}
+        disabled={!hasChanges}
+      />
 
-      {/* Main Layout */}
+      {/* Main Content */}
       <div className="grid grid-cols-12 gap-6">
 
         {/* Sidebar */}
@@ -38,63 +117,81 @@ export default function Settings() {
           />
         </div>
 
-        {/* Main Content */}
+        {/* Settings Content */}
         <div className="col-span-12 lg:col-span-7">
 
+          {/* GENERAL */}
           {activeTab === "general" && (
             <GeneralSettings
-              onChange={handleChange}
+              settings={settings}
+              onChange={handleSettingsChange}
             />
           )}
 
+          {/* PROFILE */}
           {activeTab === "profile" && (
             <ProfileSettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
+          {/* SECURITY */}
           {activeTab === "security" && (
             <SecuritySettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
+          {/* NOTIFICATIONS */}
           {activeTab === "notifications" && (
             <NotificationSettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
+          {/* AI SETTINGS */}
           {activeTab === "ai" && (
             <AISettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
+          {/* METRO OPERATIONS */}
+          {activeTab === "metro" && (
+            <MetroSettings
+              onChange={handleOtherSettingsChange}
+            />
+          )}
+
+          {/* APPEARANCE */}
           {activeTab === "appearance" && (
             <AppearanceSettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
+          {/* API */}
           {activeTab === "api" && (
             <ApiSettings
-              onChange={handleChange}
+              onChange={handleOtherSettingsChange}
             />
           )}
 
         </div>
 
-        {/* Right Sidebar */}
+        {/* System Status */}
         <div className="col-span-12 lg:col-span-3">
           <SystemStatusCard />
         </div>
 
       </div>
 
-      {/* Floating Save Bar */}
+      {/* Bottom Save Bar */}
       <SaveBar
         visible={hasChanges}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        saving={saving}
       />
 
     </div>
