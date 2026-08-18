@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MetroFlow - AI Analytics & Crowd Prediction</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <a href="/index.html" class="brand">
+            <div class="brand-logo-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 6C4 3.79086 5.79086 2 8 2H16C18.2091 2 20 3.79086 20 6V15C20 17.2091 18.2091 19 16 19H8C5.79086 19 4 17.2091 4 15V6Z" fill="#FFFFFF"/>
+                    <path d="M6 5C6 4.44772 6.44772 4 7 4H17C17.5523 4 18 4.44772 18 5V9H6V5Z" fill="#0F172A"/>
+                    <circle cx="8" cy="14" r="1.5" fill="#38BDF8"/>
+                    <circle cx="16" cy="14" r="1.5" fill="#38BDF8"/>
+                    <path d="M2 22L7 19M22 22L17 19" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5 21H19" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="brand-text-wrap">
+                <span class="brand-name"><span>AI</span> MetroFlow</span>
+                <span class="brand-subtitle">Smart Transportation</span>
+            </div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html">📊 Overview</a></li>
+            <li><a href="/stations.html">🚉 Stations & Crowd</a></li>
+            <li><a href="/schedules.html">🚆 Train Schedules</a></li>
+            <li><a href="/analytics.html" class="active">🤖 AI Analytics</a></li>
+            <li><a href="/metrics.html">📈 Evaluation Metrics</a></li>
+        </ul>
+        <div id="user-badge-container"></div>
+    </header>
+
+    <div id="top-alert-banner"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">AI Crowd Prediction & Traffic Analytics</h1>
+                <p class="page-subtitle">Scikit-Learn Random Forest Regressor inference for near-term passenger density forecasting.</p>
+            </div>
+        </div>
+
+        <!-- AI Prediction Interactive Simulator -->
+        <div class="grid-2" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+            
+            <div class="card">
+                <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem;">🔮 AI Density Prediction Model</h2>
+                
+                <form onsubmit="event.preventDefault(); runPrediction();">
+                    <div class="form-group">
+                        <label class="form-label" for="predict-station-select">Target Metro Station</label>
+                        <select id="predict-station-select" class="form-select" onchange="runPrediction()">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="predict-hour-select">Forecast Hour</label>
+                            <select id="predict-hour-select" class="form-select" onchange="runPrediction()">
+                                <option value="7">07:00 (Early Peak)</option>
+                                <option value="8" selected>08:00 (Morning Peak)</option>
+                                <option value="9">09:00 (Peak Commute)</option>
+                                <option value="12">12:00 (Mid Day)</option>
+                                <option value="17">17:00 (Evening Peak)</option>
+                                <option value="18">18:00 (Evening Peak)</option>
+                                <option value="21">21:00 (Late Night)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="predict-day-select">Day of Week</label>
+                            <select id="predict-day-select" class="form-select" onchange="runPrediction()">
+                                <option value="0">Monday</option>
+                                <option value="1" selected>Tuesday</option>
+                                <option value="2">Wednesday</option>
+                                <option value="3">Thursday</option>
+                                <option value="4">Friday</option>
+                                <option value="5">Saturday (Weekend)</option>
+                                <option value="6">Sunday (Weekend)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="predict-lag-input">1-Hour Prior Footfall (Lag Sensor Feature)</label>
+                        <input type="number" id="predict-lag-input" class="form-input" value="850" min="0" max="3000" onchange="runPrediction()">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        ⚡ Predict Near-Term Station Density
+                    </button>
+                </form>
+            </div>
+
+            <!-- Prediction Result Card -->
+            <div id="prediction-result-card" class="card" style="display: flex; flex-direction: column; justify-content: center;">
+                <!-- Populated via JS -->
+            </div>
+
+        </div>
+
+        <!-- Visual Analytics Charts Grid -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">📈 Diurnal Passenger Footfall Trend (24-Hour Network Profile)</h2>
+            <div style="height: 320px; position: relative;">
+                <canvas id="analyticsLineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">🚉 Station Density Breakdown (%)</h2>
+                <div style="height: 260px; position: relative;">
+                    <canvas id="analyticsBarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">📊 Network Congestion Distribution</h2>
+                <div style="height: 260px; position: relative;">
+                    <canvas id="analyticsDoughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/analytics.js"></script>
+</body>
+</html>

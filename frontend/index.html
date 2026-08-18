@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MetroFlow - Smart Metro Crowd Management Platform</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <a href="/index.html" class="brand">
+            <div class="brand-logo-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 6C4 3.79086 5.79086 2 8 2H16C18.2091 2 20 3.79086 20 6V15C20 17.2091 18.2091 19 16 19H8C5.79086 19 4 17.2091 4 15V6Z" fill="#FFFFFF"/>
+                    <path d="M6 5C6 4.44772 6.44772 4 7 4H17C17.5523 4 18 4.44772 18 5V9H6V5Z" fill="#0F172A"/>
+                    <circle cx="8" cy="14" r="1.5" fill="#38BDF8"/>
+                    <circle cx="16" cy="14" r="1.5" fill="#38BDF8"/>
+                    <path d="M2 22L7 19M22 22L17 19" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5 21H19" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="brand-text-wrap">
+                <span class="brand-name"><span>AI</span> MetroFlow</span>
+                <span class="brand-subtitle">Smart Transportation</span>
+            </div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="active">📊 Overview</a></li>
+            <li><a href="/stations.html">🚉 Stations & Crowd</a></li>
+            <li><a href="/schedules.html">🚆 Train Schedules</a></li>
+            <li><a href="/analytics.html">🤖 AI Analytics</a></li>
+            <li><a href="/metrics.html">📈 Evaluation Metrics</a></li>
+        </ul>
+        <div id="user-badge-container"></div>
+    </header>
+
+    <!-- Top Overcrowd Alert Banner -->
+    <div id="top-alert-banner"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Network Crowd Overview</h1>
+                <p class="page-subtitle">Real-time footfall density tracking, automated overcrowding alerts, and AI dispatch recommendations.</p>
+            </div>
+            <button onclick="loadDashboardData()" class="btn btn-secondary btn-sm">🔄 Refresh Live Feed</button>
+        </div>
+
+        <!-- KPI Metrics Grid -->
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <span class="stat-label">Total Active Passengers</span>
+                <span class="stat-value" id="stat-total-inflow">--</span>
+                <span class="stat-trend trend-up">▲ Across 15 Namma Metro Stations</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Average Network Occupancy</span>
+                <span class="stat-value" id="stat-avg-density">--%</span>
+                <span class="stat-trend trend-down">● Safe Threshold: 80%</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Critical Overcrowded Hubs</span>
+                <span class="stat-value" id="stat-critical-count" style="color: var(--accent-rose);">--</span>
+                <span class="stat-trend trend-up">⚠️ Requires Train Dispatch</span>
+            </div>
+
+            <div class="card stat-card">
+                <span class="stat-label">Total System Capacity</span>
+                <span class="stat-value" id="stat-total-capacity">--</span>
+                <span class="stat-trend">🚆 3 Active Lines (Purple, Green, Yellow)</span>
+            </div>
+        </div>
+
+        <!-- Main Overview Grid -->
+        <div class="grid-2" style="grid-template-columns: 1.6fr 1fr; margin-bottom: 2rem;">
+            
+            <!-- Station Live Status Table -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <h2 style="font-size: 1.2rem; font-weight: 700;">Live Station Footfall Status</h2>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Auto-refreshes every 15s</span>
+                </div>
+
+                <div class="table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Station</th>
+                                <th>Line</th>
+                                <th>Passenger Volume</th>
+                                <th>Crowd Density</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-stations-tbody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Alerts & Overcrowding Banner -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card">
+                    <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">🚨 Active Overcrowd & Delay Alerts</h2>
+                    <div id="active-alerts-list">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <div class="card" style="flex: 1; min-height: 260px;">
+                    <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">📈 Station Capacity vs Traffic</h2>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="dashboardOverviewChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

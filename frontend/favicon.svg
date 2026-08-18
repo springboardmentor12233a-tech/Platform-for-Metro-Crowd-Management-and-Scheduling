@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="metroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="aiGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Shield -->
+  <rect width="48" height="48" rx="12" fill="url(#metroGrad)"/>
+  
+  <!-- Sleek Metro Train Body -->
+  <path d="M14 12 C14 8, 34 8, 34 12 L35 27 C35 31, 30 33, 24 33 C18 33, 13 31, 13 27 Z" fill="#FFFFFF" opacity="0.95"/>
+  <!-- Train Windshield -->
+  <path d="M16 14 C16 11, 32 11, 32 14 L32 20 L16 20 Z" fill="#0F172A"/>
+  <!-- Front Headlights (AI Nodes) -->
+  <circle cx="18" cy="27" r="2" fill="url(#aiGlow)"/>
+  <circle cx="30" cy="27" r="2" fill="url(#aiGlow)"/>
+  <circle cx="24" cy="24" r="1.5" fill="#2563EB"/>
+  
+  <!-- Smart Rails / AI Flow Tracks -->
+  <path d="M10 40 L18 35 M38 40 L30 35" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M14 38 L34 38" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+</svg>
