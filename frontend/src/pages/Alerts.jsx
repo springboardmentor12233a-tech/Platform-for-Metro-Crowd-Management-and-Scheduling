@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import {
@@ -18,10 +17,6 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
 
-
-// ============================================================
-// SEVERITY STYLES
-// ============================================================
 
 const SEVERITY_STYLES = {
   CRITICAL: {
