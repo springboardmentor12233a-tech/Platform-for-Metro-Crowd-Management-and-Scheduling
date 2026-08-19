@@ -12,13 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
+# Copy entire project (backend + frontend)
 COPY backend /app/backend
+COPY frontend /app/frontend
 
 WORKDIR /app/backend
 
-# Expose port
-EXPOSE 8000
+# Expose backend API and frontend static server ports
+EXPOSE 8000 3000
 
-# Command to initialize DB, train models, and run server
-CMD ["sh", "-c", "python init_db.py && python train_model.py && uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Entrypoint script to start backend & frontend concurrently
+CMD ["sh", "-c", "python init_db.py && python train_model.py && uvicorn main:app --host 0.0.0.0 --port 8000 & cd /app/frontend && python -m http.server 3000"]

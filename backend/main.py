@@ -524,6 +524,12 @@ def log_train_delay(req: LogDelayRequest):
         conn.commit()
         conn.close()
         
+        # Broadcast real-time schedule & delay update to all live WebSocket clients
+        try:
+            asyncio.create_task(broadcast_schedule_update())
+        except Exception:
+            pass
+        
         return {
             "status": "success",
             "message": f"Delay of {req.delay_minutes} min logged for Train {req.train_id} on {req.line}.",
@@ -722,3 +728,138 @@ async def websocket_live_monitoring(websocket: WebSocket):
     except Exception as e:
         print(f"WebSocket error: {e}")
 
+
+# ==================================================
+# MODULE 11: CONGESTION HEATMAP DATA (MILESTONE 3)
+# ==================================================
+
+@app.get("/crowd/heatmap")
+def get_congestion_heatmap():
+    """Returns station-wise congestion intensity data for heatmap rendering."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT station, line, 
+                   SUM(entry_count) as total_entries, 
+                   AVG(entry_count) as avg_flow,
+                   MAX(entry_count) as peak_flow,
+                   SUM(exit_count) as total_exits
+            FROM passenger_flow 
+            GROUP BY station, line
+            ORDER BY total_entries DESC
+        """)
+        rows = cursor.fetchall()
+        
+        heatmap_data = []
+        if rows:
+            max_entries = max(r["total_entries"] for r in rows) if rows else 1
+            for row in rows:
+                total = row["total_entries"] if row["total_entries"] else 0
+                avg = round(float(row["avg_flow"]), 1) if row["avg_flow"] else 0
+                peak = row["peak_flow"] if row["peak_flow"] else 0
+                intensity = round((total / max_entries) * 100, 1) if max_entries > 0 else 0
+                
+                if intensity >= 80:
+                    level = "CRITICAL"
+                elif intensity >= 60:
+                    level = "HIGH"
+                elif intensity >= 35:
+                    level = "MODERATE"
+                else:
+                    level = "LOW"
+                
+                heatmap_data.append({
+                    "station": row["station"],
+                    "line": row["line"],
+                    "total_entries": total,
+                    "total_exits": row["total_exits"] if row["total_exits"] else 0,
+                    "avg_flow": avg,
+                    "peak_flow": peak,
+                    "intensity_percent": intensity,
+                    "congestion_level": level
+                })
+        
+        conn.close()
+        return {
+            "status": "success",
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "stations": heatmap_data
+        }
+    except Exception as e:
+        conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================================================
+# MODULE 12: REAL-TIME SCHEDULE UPDATES WEBSOCKET (MILESTONE 3)
+# ==================================================
+
+# Global list to track connected schedule WebSocket clients
+schedule_ws_clients: list = []
+
+@app.websocket("/ws/schedule-updates")
+async def websocket_schedule_updates(websocket: WebSocket):
+    """WebSocket that pushes real-time schedule changes to connected frontends."""
+    await websocket.accept()
+    schedule_ws_clients.append(websocket)
+    try:
+        while True:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # Fetch latest schedule snapshot
+            cursor.execute("""
+                SELECT train_id, line, departure_station as from_station, 
+                       arrival_station as to_station,
+                       scheduled_departure as departure_time, 
+                       scheduled_arrival as arrival_time, 
+                       frequency as frequency_per_hour
+                FROM train_schedule 
+                ORDER BY line, scheduled_departure
+                LIMIT 50
+            """)
+            schedules = [dict(row) for row in cursor.fetchall()]
+            
+            # Fetch latest delay logs (last 5)
+            cursor.execute("""
+                SELECT train_id, line, station, delay_minutes, delay_reason as cause, date, time
+                FROM delay_logs 
+                ORDER BY date DESC, time DESC 
+                LIMIT 5
+            """)
+            recent_delays = [dict(row) for row in cursor.fetchall()]
+            
+            conn.close()
+            
+            update_payload = {
+                "type": "SCHEDULE_UPDATE",
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "schedules": schedules,
+                "recent_delays": recent_delays,
+                "total_schedules": len(schedules),
+                "system_status": "LIVE"
+            }
+            
+            await websocket.send_json(update_payload)
+            await asyncio.sleep(8)  # Push updates every 8 seconds
+    except WebSocketDisconnect:
+        if websocket in schedule_ws_clients:
+            schedule_ws_clients.remove(websocket)
+    except Exception as e:
+        if websocket in schedule_ws_clients:
+            schedule_ws_clients.remove(websocket)
+        print(f"Schedule WS error: {e}")
+
+# Helper to broadcast schedule changes to all connected clients
+async def broadcast_schedule_update():
+    """Called internally when a schedule is modified to push immediate updates."""
+    for ws in schedule_ws_clients[:]:
+        try:
+            await ws.send_json({
+                "type": "SCHEDULE_CHANGED",
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "message": "Schedule table has been updated. Refreshing..."
+            })
+        except Exception:
+            schedule_ws_clients.remove(ws)

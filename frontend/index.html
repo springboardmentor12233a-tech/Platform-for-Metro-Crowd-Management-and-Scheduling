@@ -438,6 +438,137 @@
             margin-top: 4px;
         }
 
+        /* Modern Hero Landing Page Login Layout */
+        .login-wrapper {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(11, 15, 25, 0.78), rgba(17, 24, 39, 0.84)), 
+                        url('metro_station_bg.jpg') center/cover no-repeat fixed;
+            padding: 32px 24px;
+            position: relative;
+        }
+
+        .login-hero-container {
+            max-width: 1280px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .login-hero-container {
+                grid-template-columns: 1fr;
+            }
+            .hero-left-branding {
+                display: none;
+            }
+        }
+
+        .hero-left-branding h1 {
+            font-size: 35px;
+            font-weight: 900;
+            line-height: 1.25;
+            background: linear-gradient(to right, #ffffff, #93c5fd, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 12px;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-left-branding p {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 540px;
+        }
+
+        .feature-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .feature-mini-card {
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-mini-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .feature-mini-card i {
+            font-size: 20px;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .feature-mini-card h4 {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .feature-mini-card p {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .login-box {
+            width: 100%;
+            padding: 36px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .role-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .role-btn.active {
+            border-color: var(--primary-blue);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .role-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
         .role-desc {
             font-size: 10px;
             color: var(--text-muted);
@@ -447,58 +578,94 @@
 <body>
 
     <!-- ============================================================ -->
-    <!-- LOGIN SCREEN MODULE -->
+    <!-- LOGIN SCREEN MODULE (HERO LANDING STYLE) -->
     <!-- ============================================================ -->
     <div id="login-container" class="login-wrapper">
-        <div class="glass-panel login-box">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <div class="logo-icon" style="margin: 0 auto 16px auto; width: 56px; height: 56px; font-size: 26px;">
-                    <i class="fa-solid fa-train-subway"></i>
+        <div class="login-hero-container">
+            <!-- Left Branding Side -->
+            <div class="hero-left-branding">
+                <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:20px;font-size:12px;font-weight:700;color:#60a5fa;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#10b981;"></span>
+                    MetroFlow AI Platform
                 </div>
-                <h2 style="font-weight: 800; font-size: 22px; color: #fff;">AI MetroFlow</h2>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Milestones 1–3 Platform Access Portal</p>
-            </div>
-
-            <!-- Role Selector -->
-            <div class="role-selector">
-                <div id="role-btn-operator" class="role-btn active" onclick="selectRole('operator')">
-                    <i class="fa-solid fa-user-gear" style="color: #60a5fa;"></i>
-                    <div class="role-name">Station Operator</div>
-                    <div class="role-desc">Operations & Schedules</div>
-                </div>
-
-                <div id="role-btn-admin" class="role-btn" onclick="selectRole('admin')">
-                    <div class="role-icon">
-                        <i class="fa-solid fa-shield-halved" style="color: #a78bfa;"></i>
+                <h1>MetroFlow: AI Platform for Metro Crowd Management and Scheduling</h1>
+                <p>AI-powered metro crowd management, operational intelligence, passenger forecasting, smart scheduling, and real-time transportation analytics.</p>
+                
+                <div class="feature-cards-grid">
+                    <div class="feature-mini-card">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <h4>Live Crowd Monitoring</h4>
+                        <p>Monitor passenger density and 119-station heatmaps in real time.</p>
                     </div>
-                    <div class="role-name">System Admin</div>
-                    <div class="role-desc">Full System Control</div>
+                    <div class="feature-mini-card">
+                        <i class="fa-solid fa-brain"></i>
+                        <h4>AI Predictions</h4>
+                        <p>Forecast congestion before it happens with 99.95% accuracy.</p>
+                    </div>
+                    <div class="feature-mini-card">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <h4>Smart Scheduling</h4>
+                        <p>Optimize train headways and automated delay tracking.</p>
+                    </div>
+                    <div class="feature-mini-card">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <h4>Operational Safety</h4>
+                        <p>Multi-severity broadcasts and alert resolution workflows.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Credentials Form -->
-            <form id="login-form">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="username" class="form-control" value="operator" required placeholder="Enter username">
+            <!-- Right Side Login Box -->
+            <div class="glass-panel login-box">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div class="logo-icon" style="margin: 0 auto 16px auto; width: 56px; height: 56px; font-size: 26px;">
+                        <i class="fa-solid fa-train-subway"></i>
+                    </div>
+                    <h2 style="font-weight: 800; font-size: 22px; color: #fff;">Welcome Back</h2>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Sign in to continue to your MetroFlow workspace</p>
                 </div>
 
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="password" class="form-control" value="operatorpassword" required placeholder="Enter password">
+                <!-- Role Selector -->
+                <div class="role-selector">
+                    <div id="role-btn-operator" class="role-btn active" onclick="selectRole('operator')">
+                        <i class="fa-solid fa-user-gear" style="color: #60a5fa;"></i>
+                        <div class="role-name">Station Operator</div>
+                        <div class="role-desc">Operations & Schedules</div>
+                    </div>
+
+                    <div id="role-btn-admin" class="role-btn" onclick="selectRole('admin')">
+                        <div class="role-icon">
+                            <i class="fa-solid fa-shield-halved" style="color: #a78bfa;"></i>
+                        </div>
+                        <div class="role-name">System Admin</div>
+                        <div class="role-desc">Full System Control</div>
+                    </div>
                 </div>
 
-                <div id="login-error" class="hidden" style="color: var(--rose); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; margin-bottom: 16px;"></div>
+                <!-- Credentials Form -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Username / Email</label>
+                        <input type="text" id="username" class="form-control" value="operator" required placeholder="Enter username">
+                    </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;">
-                    <span>Sign In to MetroFlow</span>
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" class="form-control" value="operatorpassword" required placeholder="Enter password">
+                    </div>
+
+                    <div id="login-error" class="hidden" style="color: var(--rose); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; margin-bottom: 16px;"></div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;">
+                        <span>Sign In to MetroFlow</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <button type="button" class="btn btn-quick-login" onclick="quickLogin()">
+                    <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Instant 1-Click Platform Access (Demo Mode)
                 </button>
-            </form>
-
-            <button type="button" class="btn btn-quick-login" onclick="quickLogin()">
-                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Instant 1-Click Platform Access (Demo Mode)
-            </button>
+            </div>
         </div>
     </div>
 
@@ -704,10 +871,55 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- CONGESTION HEATMAP (MILESTONE 3) -->
+                <div class="glass-panel" style="padding: 24px; margin-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-fire" style="color: #ef4444;"></i>
+                                Station Congestion Heatmap
+                            </h2>
+                            <p style="font-size: 12px; color: var(--text-muted);">Visual density map showing crowd intensity across all stations</p>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="display: flex; gap: 8px; font-size: 10px; align-items: center;">
+                                <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:12px;height:12px;border-radius:3px;background:#10b981;display:inline-block;"></span> Low</span>
+                                <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> Moderate</span>
+                                <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:12px;height:12px;border-radius:3px;background:#f97316;display:inline-block;"></span> High</span>
+                                <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:12px;height:12px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Critical</span>
+                            </div>
+                            <button id="refresh-heatmap-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div id="heatmap-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+                        <p style="color: var(--text-muted); font-size: 12px; text-align: center; grid-column: 1/-1; padding: 20px;">Loading heatmap data...</p>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 2: SCHEDULING & FREQUENCY -->
             <div id="section-scheduling" class="tab-content hidden space-y-6">
+                <!-- Real-Time Schedule Status Bar -->
+                <div class="glass-panel" style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--emerald);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div id="schedule-ws-dot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald); animation: pulse-dot 2s infinite;"></div>
+                        <span style="font-size: 12px; font-weight: 700; color: var(--emerald);">REAL-TIME SCHEDULE STREAM</span>
+                        <span id="schedule-ws-status" style="font-size: 11px; color: var(--text-muted);">Connecting...</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span id="schedule-last-update" style="font-size: 11px; color: var(--text-muted);">Last update: —</span>
+                        <span id="schedule-update-badge" class="badge badge-normal" style="display:none;">
+                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> LIVE UPDATE
+                        </span>
+                    </div>
+                </div>
+                <style>
+                    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+                </style>
+
                 <div class="glass-panel" style="padding: 24px; border-left: 4px solid var(--primary-indigo);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <div>

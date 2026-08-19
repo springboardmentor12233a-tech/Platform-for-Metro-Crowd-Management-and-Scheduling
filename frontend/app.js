@@ -169,8 +169,8 @@ function switchTab(name) {
     if (activeBtn) activeBtn.classList.add('active');
 
     // Load data for the activated tab
-    if (name === 'crowd') { fetchCrowdData(); fetchAlerts(); }
-    if (name === 'scheduling') { fetchSchedules(); fetchDelays(); fetchFrequencyRecommendations(); }
+    if (name === 'crowd') { fetchCrowdData(); fetchAlerts(); fetchHeatmapData(); }
+    if (name === 'scheduling') { fetchSchedules(); fetchDelays(); fetchFrequencyRecommendations(); connectScheduleWebSocket(); }
     if (name === 'ai') { /* AI form is user-triggered */ }
     if (name === 'alerts') { fetchAnnouncements(); }
     if (name === 'reports') { fetchTrafficReport(); }
@@ -954,6 +954,251 @@ function showOfflineAlertsFallback() {
         { id: 'OFFLINE-2', type: 'STATION_WARNING', severity: 'WARNING', target: 'Lajpat Nagar', line: 'Violet Line', message: 'High passenger inflow at Lajpat Nagar (130 entries/min). Monitoring platform density.', metric: '130 pax/min' }
     ]);
 }
+
+// =============================================
+// CONGESTION HEATMAP (MILESTONE 3)
+// =============================================
+async function fetchHeatmapData() {
+    try {
+        const res = await fetch(`${API_URL}/crowd/heatmap`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (data.status === 'success') {
+            renderHeatmap(data.stations);
+        }
+    } catch (err) {
+        console.warn('Heatmap fetch failed, using fallback');
+        renderHeatmap([
+            { station: 'Rajiv Chowk', line: 'Blue Line', intensity_percent: 92, congestion_level: 'CRITICAL', avg_flow: 245, peak_flow: 312 },
+            { station: 'Kashmere Gate', line: 'Red Line', intensity_percent: 78, congestion_level: 'HIGH', avg_flow: 185, peak_flow: 240 },
+            { station: 'Hauz Khas', line: 'Yellow Line', intensity_percent: 55, congestion_level: 'MODERATE', avg_flow: 130, peak_flow: 175 },
+            { station: 'ITO', line: 'Violet Line', intensity_percent: 65, congestion_level: 'HIGH', avg_flow: 155, peak_flow: 200 },
+            { station: 'Lajpat Nagar', line: 'Violet Line', intensity_percent: 48, congestion_level: 'MODERATE', avg_flow: 110, peak_flow: 145 },
+            { station: 'Noida Sector 16', line: 'Blue Line', intensity_percent: 25, congestion_level: 'LOW', avg_flow: 60, peak_flow: 85 },
+            { station: 'Dwarka Sector 21', line: 'Blue Line', intensity_percent: 30, congestion_level: 'LOW', avg_flow: 70, peak_flow: 95 },
+            { station: 'Chandni Chowk', line: 'Yellow Line', intensity_percent: 72, congestion_level: 'HIGH', avg_flow: 170, peak_flow: 220 }
+        ]);
+    }
+}
+
+function renderHeatmap(stations) {
+    const grid = document.getElementById('heatmap-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    stations.forEach(s => {
+        const intensity = s.intensity_percent || 0;
+        let bgColor, textColor, borderColor, glowColor;
+
+        if (intensity >= 80) {
+            bgColor = 'rgba(239, 68, 68, 0.25)'; textColor = '#fca5a5'; borderColor = 'rgba(239, 68, 68, 0.5)'; glowColor = 'rgba(239, 68, 68, 0.15)';
+        } else if (intensity >= 60) {
+            bgColor = 'rgba(249, 115, 22, 0.2)'; textColor = '#fdba74'; borderColor = 'rgba(249, 115, 22, 0.45)'; glowColor = 'rgba(249, 115, 22, 0.12)';
+        } else if (intensity >= 35) {
+            bgColor = 'rgba(245, 158, 11, 0.15)'; textColor = '#fcd34d'; borderColor = 'rgba(245, 158, 11, 0.35)'; glowColor = 'rgba(245, 158, 11, 0.08)';
+        } else {
+            bgColor = 'rgba(16, 185, 129, 0.12)'; textColor = '#6ee7b7'; borderColor = 'rgba(16, 185, 129, 0.3)'; glowColor = 'rgba(16, 185, 129, 0.06)';
+        }
+
+        const cell = document.createElement('div');
+        cell.style.cssText = `
+            background: ${bgColor}; border: 1px solid ${borderColor}; border-radius: 10px;
+            padding: 14px; cursor: default; transition: all 0.3s ease;
+            box-shadow: 0 4px 16px ${glowColor};
+        `;
+        cell.onmouseover = function() { this.style.transform = 'scale(1.03)'; this.style.boxShadow = `0 6px 24px ${glowColor}`; };
+        cell.onmouseout = function() { this.style.transform = 'scale(1)'; this.style.boxShadow = `0 4px 16px ${glowColor}`; };
+
+        // Intensity bar fill width
+        const barFill = Math.min(100, intensity);
+
+        cell.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-weight:700;font-size:12px;color:#fff;">${s.station}</span>
+                <span style="font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;color:${textColor};background:rgba(0,0,0,0.3);">${s.congestion_level}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:${getLineColor(s.line)};display:inline-block;flex-shrink:0;"></span>
+                <span style="font-size:10px;color:#94a3b8;">${s.line}</span>
+            </div>
+            <div style="font-size:22px;font-weight:900;color:${textColor};margin-bottom:4px;">${intensity.toFixed(0)}%</div>
+            <div style="width:100%;background:rgba(255,255,255,0.08);border-radius:9999px;height:5px;margin-bottom:6px;">
+                <div style="width:${barFill}%;background:${textColor};height:5px;border-radius:9999px;transition:width 0.6s;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#6b7280;">
+                <span>Avg: <b style="color:#94a3b8;">${s.avg_flow || 0}</b>/min</span>
+                <span>Peak: <b style="color:#94a3b8;">${s.peak_flow || 0}</b></span>
+            </div>
+        `;
+        grid.appendChild(cell);
+    });
+}
+
+// Refresh heatmap button
+const heatmapBtn = document.getElementById('refresh-heatmap-btn');
+if (heatmapBtn) {
+    heatmapBtn.addEventListener('click', () => {
+        fetchHeatmapData();
+        showToast('🔥 Heatmap data refreshed', 'success');
+    });
+}
+
+
+// =============================================
+// REAL-TIME SCHEDULE WEBSOCKET (MILESTONE 3)
+// =============================================
+let scheduleWs = null;
+let scheduleWsReconnectTimer = null;
+
+function connectScheduleWebSocket() {
+    // Don't create duplicate connections
+    if (scheduleWs && scheduleWs.readyState === WebSocket.OPEN) return;
+
+    const wsUrl = API_URL.replace('http', 'ws') + '/ws/schedule-updates';
+    
+    try {
+        scheduleWs = new WebSocket(wsUrl);
+    } catch (err) {
+        updateScheduleWsUI(false);
+        return;
+    }
+
+    scheduleWs.onopen = function () {
+        updateScheduleWsUI(true);
+        showToast('🔗 Real-time schedule stream connected', 'success');
+    };
+
+    scheduleWs.onmessage = function (event) {
+        try {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'SCHEDULE_UPDATE' || data.type === 'SCHEDULE_CHANGED') {
+                // Update the schedule table with live data
+                if (data.schedules && data.schedules.length > 0) {
+                    renderScheduleTableFromWS(data.schedules);
+                }
+                
+                // Update the delay list with live data
+                if (data.recent_delays && data.recent_delays.length > 0) {
+                    renderRecentDelaysFromWS(data.recent_delays);
+                }
+                
+                // Update status UI
+                const lastUpdate = document.getElementById('schedule-last-update');
+                if (lastUpdate) lastUpdate.innerText = `Last update: ${data.timestamp || new Date().toLocaleTimeString()}`;
+                
+                // Flash the live update badge
+                const badge = document.getElementById('schedule-update-badge');
+                if (badge) {
+                    badge.style.display = 'inline-flex';
+                    setTimeout(() => { badge.style.display = 'none'; }, 2000);
+                }
+            }
+        } catch (err) {
+            console.error('Schedule WS parse error:', err);
+        }
+    };
+
+    scheduleWs.onclose = function () {
+        updateScheduleWsUI(false);
+        // Auto-reconnect after 10 seconds
+        if (!scheduleWsReconnectTimer) {
+            scheduleWsReconnectTimer = setTimeout(() => {
+                scheduleWsReconnectTimer = null;
+                const schedSection = document.getElementById('section-scheduling');
+                if (schedSection && !schedSection.classList.contains('hidden')) {
+                    connectScheduleWebSocket();
+                }
+            }, 10000);
+        }
+    };
+
+    scheduleWs.onerror = function () {
+        updateScheduleWsUI(false);
+    };
+}
+
+function updateScheduleWsUI(connected) {
+    const dot = document.getElementById('schedule-ws-dot');
+    const statusText = document.getElementById('schedule-ws-status');
+    if (dot) {
+        dot.style.background = connected ? 'var(--emerald)' : '#ef4444';
+    }
+    if (statusText) {
+        statusText.innerText = connected ? 'WebSocket Connected — Receiving live updates' : 'Disconnected — Retrying...';
+        statusText.style.color = connected ? 'var(--text-muted)' : '#f87171';
+    }
+}
+
+let activeDelayedTrainMap = {};
+
+function renderScheduleTableFromWS(schedules) {
+    const body = document.getElementById('schedule-table-body');
+    if (!body) return;
+    body.innerHTML = '';
+    schedules.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'animation: fadeInRow 0.3s ease;';
+        
+        // Check if train has active delay logged
+        const isDelayed = activeDelayedTrainMap[s.train_id];
+        const statusBadge = isDelayed 
+            ? `<span class="badge badge-critical" style="margin-left:6px;"><i class="fa-solid fa-clock"></i> +${isDelayed}m DELAY</span>` 
+            : `<span class="badge badge-normal">${s.frequency_per_hour}</span>`;
+
+        tr.innerHTML = `
+            <td style="padding:10px 16px;font-weight:700;color:#60a5fa;font-family:monospace;">
+                ${s.train_id}
+            </td>
+            <td style="padding:10px 16px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${getLineColor(s.line)};display:inline-block;"></span>
+                    ${s.line}
+                </span>
+            </td>
+            <td style="padding:10px 16px;color:#94a3b8;">${s.from_station} → ${s.to_station}</td>
+            <td style="padding:10px 16px;text-align:center;font-weight:700;color:${isDelayed ? '#f87171' : '#fff'};">${s.departure_time}</td>
+            <td style="padding:10px 16px;text-align:center;color:${isDelayed ? '#f87171' : '#94a3b8'};">${s.arrival_time}</td>
+            <td style="padding:10px 16px;text-align:center;">${statusBadge}</td>
+        `;
+        body.appendChild(tr);
+    });
+}
+
+function renderRecentDelaysFromWS(delays) {
+    const list = document.getElementById('delays-list');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    // Update the delayed trains map
+    activeDelayedTrainMap = {};
+    delays.forEach(d => {
+        activeDelayedTrainMap[d.train_id] = d.delay_minutes;
+    });
+
+    delays.forEach(d => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding:10px 12px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.25);border-radius:8px;font-size:12px;margin-bottom:8px;animation:fadeInRow 0.3s ease;';
+        div.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <span style="font-weight:700;color:#f87171;font-family:monospace;">${d.train_id}</span>
+                <span style="background:rgba(239,68,68,0.2);color:#f87171;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;">+${d.delay_minutes} MIN DELAY</span>
+            </div>
+            <div style="color:#94a3b8;">${d.station} · ${d.line}</div>
+            <div style="color:#6b7280;margin-top:2px;">Cause: ${d.cause}</div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// Inject the row animation CSS
+if (!document.getElementById('ws-animation-style')) {
+    const style = document.createElement('style');
+    style.id = 'ws-animation-style';
+    style.textContent = `@keyframes fadeInRow { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }`;
+    document.head.appendChild(style);
+}
+
 
 // =============================================
 // OPERATOR QUICK ACTIONS
