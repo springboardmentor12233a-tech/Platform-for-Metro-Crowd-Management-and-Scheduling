@@ -34,7 +34,25 @@ export default function Home() {
           >
             Login
           </a>
-        </div>
+          <a
+            href="/predict"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 ml-2"
+          >
+            Crowd Prediction
+          </a>
+          <a
+            href="/insights"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 ml-2"
+          >
+            AI Insights
+          </a>
+          <a
+            href="/alerts"
+            className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 ml-2"
+          >
+            Alerts
+          </a>
+          </div>
 
         {stations.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500">

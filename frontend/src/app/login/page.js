@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -20,7 +21,12 @@ export default function LoginPage() {
       setMessage(data.error);
     } else {
       setIsError(false);
-      setMessage(`Welcome ${data.username}! Role: ${data.role}`);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("role", data.role);
+      setMessage(`Welcome ${data.username}! Redirecting...`);
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     }
   };
 
