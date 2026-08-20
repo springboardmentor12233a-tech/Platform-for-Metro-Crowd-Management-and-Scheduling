@@ -1,8 +1,24 @@
 "use client";
+import Navbar from "./components/Navbar";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [stations, setStations] = useState([]);
+  const router = useRouter();
+  const [username, setUsername] = useState(null);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    setUsername(localStorage.getItem("username"));
+    setRole(localStorage.getItem("role"));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    router.push("/login");
+  };
 
   useEffect(() => {
     fetch("http://localhost:8000/stations")
@@ -17,9 +33,11 @@ export default function Home() {
   };
 
   return (
+    <>
+      <Navbar />
     <main className="min-h-screen bg-slate-50 px-6 py-10">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">
               MetroFlow Dashboard
@@ -28,31 +46,7 @@ export default function Home() {
               Live station data from backend
             </p>
           </div>
-          <a
-            href="/login"
-            className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700"
-          >
-            Login
-          </a>
-          <a
-            href="/predict"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 ml-2"
-          >
-            Crowd Prediction
-          </a>
-          <a
-            href="/insights"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 ml-2"
-          >
-            AI Insights
-          </a>
-          <a
-            href="/alerts"
-            className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 ml-2"
-          >
-            Alerts
-          </a>
-          </div>
+        </div>
 
         {stations.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500">
@@ -87,5 +81,6 @@ export default function Home() {
         )}
       </div>
     </main>
+        </>
   );
 }

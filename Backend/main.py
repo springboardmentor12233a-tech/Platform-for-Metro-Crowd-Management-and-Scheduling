@@ -250,6 +250,35 @@ def get_schedules():
     db.close()
     return schedules
 
+@app.get("/analytics")
+def get_analytics():
+    db = SessionLocal()
+
+    stations = db.query(models.Station).all()
+    schedules = db.query(models.Schedule).all()
+    alerts = db.query(models.Alert).all()
+
+    total_capacity = sum(s.capacity for s in stations)
+    total_stations = len(stations)
+
+    delayed_count = len([s for s in schedules if s.status == "Delayed"])
+    on_time_count = len([s for s in schedules if s.status == "On Time"])
+
+    alert_type_counts = {}
+    for a in alerts:
+        alert_type_counts[a.alert_type] = alert_type_counts.get(a.alert_type, 0) + 1
+
+    db.close()
+
+    return {
+        "total_stations": total_stations,
+        "total_capacity": total_capacity,
+        "total_schedules": len(schedules),
+        "on_time_count": on_time_count,
+        "delayed_count": delayed_count,
+        "alerts_by_type": alert_type_counts,
+        "total_alerts": len(alerts),
+    }
 
 @app.put("/schedules/{schedule_id}")
 async def update_schedule(schedule_id: int, station_name: str = None, departure_time: str = None, frequency_minutes: int = None, status: str = None):

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState([]);
@@ -11,8 +12,10 @@ export default function SchedulesPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
-      <div className="max-w-4xl mx-auto">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-slate-50 px-6 py-10">
+        <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">
             Train Schedules
@@ -42,7 +45,13 @@ export default function SchedulesPage() {
                 <p className="text-slate-500 text-sm">
                   Frequency: every {schedule.frequency_minutes} min
                 </p>
-                <span className="inline-block mt-2 text-xs font-medium px-2 py-1 rounded-full border bg-blue-100 text-blue-700 border-blue-300">
+                <span
+                  className={`inline-block mt-2 text-xs font-medium px-2 py-1 rounded-full border ${
+                    schedule.status === "Delayed"
+                      ? "bg-red-100 text-red-700 border-red-200"
+                      : "bg-blue-100 text-blue-700 border-blue-200"
+                  }`}
+                >
                   {schedule.status}
                 </span>
               </div>
@@ -51,5 +60,6 @@ export default function SchedulesPage() {
         )}
       </div>
     </main>
+        </>
   );
 }

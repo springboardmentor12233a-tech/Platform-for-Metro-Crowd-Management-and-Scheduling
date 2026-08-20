@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Navbar from "../components/Navbar";
 
 export default function PredictPage() {
   const [passengerCount, setPassengerCount] = useState("");
@@ -32,8 +33,10 @@ export default function PredictPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10">
-      <div className="max-w-lg mx-auto bg-white shadow-md rounded-xl p-8">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-slate-50 px-4 py-10">
+        <div className="max-w-lg mx-auto bg-white shadow-md rounded-xl p-8">
         <h1 className="text-2xl font-bold text-slate-900 text-center">
           Crowd Prediction
         </h1>
@@ -145,5 +148,6 @@ export default function PredictPage() {
         )}
       </div>
     </main>
+        </>
   );
 }

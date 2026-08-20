@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 export default function InsightsPage() {
   const [insights, setInsights] = useState([]);
@@ -20,8 +21,10 @@ export default function InsightsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
-      <div className="max-w-3xl mx-auto">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-slate-50 px-6 py-10">
+        <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-slate-900">AI Insights</h1>
         <p className="text-slate-500 mt-1 mb-8">
           AI-generated observations from station data
@@ -53,5 +56,6 @@ export default function InsightsPage() {
         </div>
       </div>
     </main>
+        </>
   );
 }
